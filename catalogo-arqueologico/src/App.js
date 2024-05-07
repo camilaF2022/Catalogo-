@@ -1,5 +1,7 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import Button from "@mui/material/Button";
+import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
 
 function App() {
   return (
@@ -17,6 +19,9 @@ function App() {
         >
           Learn React
         </a>
+        <Button variant="contained" startIcon={<CollectionsBookmarkIcon />}>
+          Hello World
+        </Button>
       </header>
     </div>
   );
