@@ -7,7 +7,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Stack } from "@mui/material";
 
-const Login = ({ setToken, navigateTo = "" }) => {
+const Login = ({ setToken, navigateTo = "/" }) => {
   const navigate = useNavigate();
   const [formValues, setFormValues] = useState({
     email: "",
