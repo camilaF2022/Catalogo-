@@ -5,6 +5,7 @@ import Grid from "@mui/material/Grid";
 import MenuBar from "./MenuBar";
 import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
+import {ObjectDetail} from "../pages/ObjectDetail";
 
 const Layout = () => {
   return (
@@ -13,6 +14,7 @@ const Layout = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/detail" element={<ObjectDetail pieceId={2}/>} />
       </Routes>
     </CustomGrid>
   );
