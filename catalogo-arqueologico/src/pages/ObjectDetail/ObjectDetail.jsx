@@ -8,27 +8,28 @@ import { Typography, ImageList, ImageListItem, Button, Chip, Grid, Container, St
 import { styled } from '@mui/material/styles';
 
 
-function Scene({objPath,mtlPath}) {
-    const material = useLoader(MTLLoader,mtlPath)
+function Scene({ objPath, mtlPath }) {
+    const material = useLoader(MTLLoader, mtlPath)
     const object = useLoader(OBJLoader, objPath, loader => {
-    material.preload()
-    loader.setMaterials(material)})
-    
+        material.preload()
+        loader.setMaterials(material)
+    })
+
     return (
         <div style={{ width: '800px', height: '500px' }} id="canvas-container">
-                <Canvas style={{ background: '#2e2d2c' }} camera={{ fov: 25, position: [0, 0, -500] }}>
-                    <ambientLight intensity={2} />
-                    <primitive position={[0, 0, 0]} object={object} />
-                    <OrbitControls />
-                </Canvas>
-            </div>
-    
+            <Canvas style={{ background: '#2e2d2c' }} camera={{ fov: 25, position: [0, 0, -500] }}>
+                <ambientLight intensity={2} />
+                <primitive position={[0, 0, 0]} object={object} />
+                <OrbitControls />
+            </Canvas>
+        </div>
+
     )
 }
 
-function ObjectDetail({pieceId}) {
+function ObjectDetail({ pieceId }) {
     const [piece, setPiece] = useState();
-    
+
     useEffect(() => {
         fetch('./pieces_models/response.json')
             .then(response => response.json())
@@ -38,7 +39,7 @@ function ObjectDetail({pieceId}) {
                 setPiece(object);
             })
             .catch(error => console.error(error));
-    },[])
+    }, [])
     console.log("rendering")
     return (
         <CustomGrid container>
@@ -57,19 +58,15 @@ function ObjectDetail({pieceId}) {
                     </CustomGrid>
 
                     <CustomBox >
-                        {piece && <Scene objPath={piece.model.object} mtlPath={piece.model.material}/>}
-                        <ImageList cols={3} rows={1}>
-                            <ImageListItem key={1}>
-                                <img src="./pieces_models/0001/0001.jpg" alt="lazy" style={{ maxWidth: '200px' }} />
-                            </ImageListItem>
-                            <ImageListItem key={2}>
-                                <img src="./pieces_models/0001/0001.jpg" alt="lazy" style={{ maxWidth: '200px' }} />
-                            </ImageListItem>
-
-                            <ImageListItem key={3}>
-                                <img src="./pieces_models/0001/0001.jpg" alt="lazy" style={{ maxWidth: '200px' }} />
-                            </ImageListItem>
-                        </ImageList>
+                        {piece && <Scene objPath={piece.model.object} mtlPath={piece.model.material} />}
+                        {piece && <ImageList cols={3} rows={1}>
+                            {piece.images.map((imgPath, index) =>
+                                <ImageListItem key={index}>
+                                    {console.log(imgPath)}
+                                    <img src={imgPath} alt="lazy" style={{ maxWidth: '200px'}} />
+                                </ImageListItem>
+                            )}
+                        </ImageList>}
                     </CustomBox>
                 </Box>
             </CustomGridItem>
@@ -79,11 +76,11 @@ function ObjectDetail({pieceId}) {
                     <Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h4'>Cultura:</Typography>  <Typography> {piece && piece.atributes.culture} </Typography></Stack>
                     <Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h4'> Forma: </Typography> <Typography> {piece && piece.atributes.shape}</Typography></Stack>
                     <Typography>{piece && piece.atributes.description}</Typography>
-                    <Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h4'>Etiquetas:</Typography> <Container>
+                    {<Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h4'>Etiquetas:</Typography> <Container>
                         {piece && piece.atributes.tags.map((tag, index) =>
                             <Chip key={index} label={tag} />
                         )}
-                    </Container></Stack>
+                    </Container></Stack>}
                 </Stack>
             </Grid>
         </CustomGrid>
