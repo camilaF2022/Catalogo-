@@ -4,9 +4,9 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { OrbitControls } from '@react-three/drei'
 import { useEffect, useState } from 'react'
-import { Typography, ImageList, ImageListItem, Button, Chip, Grid, Container, Stack, Box } from '@mui/material';
+import { Paper, TextField, Modal, Typography, ImageList, ImageListItem, Button, Chip, Grid, Container, Stack, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-
+import DownloadForm from './DownloadModalForm';
 
 function Scene({ objPath, mtlPath }) {
     const material = useLoader(MTLLoader, mtlPath)
@@ -27,6 +27,7 @@ function Scene({ objPath, mtlPath }) {
     )
 }
 
+
 function ObjectDetail({ pieceId }) {
     const [piece, setPiece] = useState();
 
@@ -40,7 +41,26 @@ function ObjectDetail({ pieceId }) {
             })
             .catch(error => console.error(error));
     }, [])
-    console.log("rendering")
+
+    function ModalDownloadButton() {
+        const [open, setOpen] = useState(false);
+        const handleOpen = () => setOpen(true);
+        const handleClose = () => setOpen(false);
+
+        return (
+            <div>
+                <Button onClick={handleOpen } variant="contained">Descargar </Button>
+                <CustomModal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <DownloadForm></DownloadForm>
+                </CustomModal>
+            </div>
+        );
+    }
     return (
         <CustomGrid container>
             <CustomGridItem item lg={8}>
@@ -50,7 +70,7 @@ function ObjectDetail({ pieceId }) {
                             <Typography variant='h3'># ID: {piece && piece.id}</Typography>
                         </Grid>
                         <Grid item xs={3}>
-                            <Button variant="contained">Descargar Pieza</Button>
+                            <ModalDownloadButton />
                         </Grid>
                         <Grid item xs>
                             <Button variant="contained">Editar Pieza</Button>
@@ -63,7 +83,7 @@ function ObjectDetail({ pieceId }) {
                             {piece.images.map((imgPath, index) =>
                                 <ImageListItem key={index}>
                                     {console.log(imgPath)}
-                                    <img src={imgPath} alt="lazy" style={{ maxWidth: '200px'}} />
+                                    <img src={imgPath} alt="lazy" style={{ maxWidth: '200px' }} />
                                 </ImageListItem>
                             )}
                         </ImageList>}
@@ -111,4 +131,12 @@ const CustomBox = styled(Box)(({ theme }) => ({
     alignItems: 'center',
     justifyContent: 'center',
 }));
+
+const CustomModal =styled(Modal)(({theme})=>({
+    display:"flex",
+    flexDirection:"column",
+    alignItems: 'center',
+    justifyContent: 'center',
+
+}))
 export default ObjectDetail;
