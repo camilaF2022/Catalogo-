@@ -56,7 +56,9 @@ function ObjectDetail({ pieceId }) {
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
                 >
+                    <div>
                     <DownloadForm></DownloadForm>
+                    </div>
                 </CustomModal>
             </div>
         );

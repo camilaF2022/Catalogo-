@@ -14,7 +14,7 @@ const Layout = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/detail" element={<ObjectDetail pieceId={1}/>} />
+        <Route path="/detail" element={<ObjectDetail pieceId={78}/>} />
       </Routes>
     </CustomGrid>
   );
