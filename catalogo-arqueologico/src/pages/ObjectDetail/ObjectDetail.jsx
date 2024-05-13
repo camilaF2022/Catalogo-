@@ -25,7 +25,7 @@ const ObjectDetail = ({ pieceId }) => {
                 <LeftBox>
                     <CenterGrid container>
                         <Grid item xs={7}>
-                            <Typography variant='h3'># ID: {piece && piece.id}</Typography>
+                            <Typography variant='h4'># ID: {piece && piece.id}</Typography>
                         </Grid>
                         <Grid item xs>
                             <ModalButton>
@@ -41,7 +41,7 @@ const ObjectDetail = ({ pieceId }) => {
                         {piece && <ImageList cols={3} rows={1}>
                             {piece.images.map((imgPath, index) =>
                                 <ImageListItem key={index}>
-                                    <img src={imgPath} alt="lazy" style={{ maxWidth: '200px' }} />
+                                    <img src={imgPath} alt="lazy" style={{ maxWidth: '180px' }} />
                                 </ImageListItem>
                             )}
                         </ImageList>}
@@ -49,20 +49,20 @@ const ObjectDetail = ({ pieceId }) => {
                 </LeftBox>
             </CenterGrid>
             
-            <CenterGrid item lg>
+            <Grid item lg>
                 <RightBox >
-                <Stack   spacing={8}>
-                    <Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h4'>Cultura:</Typography>  <Typography> {piece && piece.atributes.culture} </Typography></Stack>
-                    <Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h4'> Forma: </Typography> <Typography> {piece && piece.atributes.shape}</Typography></Stack>
+                <Stack  spacing={4}>
+                    <Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h5'>Cultura:</Typography>  <Typography> {piece && piece.atributes.culture} </Typography></Stack>
+                    <Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h5'> Forma: </Typography> <Typography> {piece && piece.atributes.shape}</Typography></Stack>
                     <Typography>{piece && piece.atributes.description}</Typography>
-                    {<Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h4'>Etiquetas:</Typography> <Container>
+                    {<Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h5'>Etiquetas:</Typography> <Container>
                         {piece && piece.atributes.tags.map((tag, index) =>
                             <Chip key={index} label={tag} />
                         )}
                     </Container></Stack>}
                 </Stack>
                 </RightBox>
-            </CenterGrid>
+            </Grid>
         </CenterGrid>
     )
 }
@@ -83,20 +83,21 @@ const LeftBox = styled(Box)(({ theme }) => ({
 }));
 
 const RightBox = styled(Box)(({ theme }) => ({
-    height: "800px",
     paddingRight: theme.spacing(7),
+    marginTop: theme.spacing(15),
+    
     [theme.breakpoints.down('lg')]: {
         marginLeft: theme.spacing(5),
     },
     [theme.breakpoints.down('md')]: {
         marginLeft: theme.spacing(8),
+        marginTop: theme.spacing(3),
     }
 }));
 const CenterGrid = styled(Grid)(({ theme }) => ({
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
     display: 'flex',
-    alignItems: 'center',
     justifyContent: 'center',
 }));
 
