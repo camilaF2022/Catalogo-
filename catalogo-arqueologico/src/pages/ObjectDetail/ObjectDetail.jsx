@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import ModalButton from './ModalButton';
 import PieceVisualization from './PieceVisualization';
 import DownloadForm from './DownloadForm';
-
+import ModalImage from './ModalImage';
 const ObjectDetail = ({ pieceId }) => {
     const [piece, setPiece] = useState();
 
@@ -17,8 +17,8 @@ const ObjectDetail = ({ pieceId }) => {
                 setPiece(object);
             })
             .catch(error => console.error(error));
-    }, [])
-
+    },[pieceId])
+    
     return (
         <CenterGrid container>
             <CenterGrid item lg={7}>
@@ -28,7 +28,7 @@ const ObjectDetail = ({ pieceId }) => {
                             <Typography variant='h4'># ID: {piece && piece.id}</Typography>
                         </Grid>
                         <Grid item xs>
-                            <ModalButton>
+                            <ModalButton text={"Descargar"}>
                                 <DownloadForm />
                             </ModalButton>
                         </Grid>
@@ -41,7 +41,7 @@ const ObjectDetail = ({ pieceId }) => {
                         {piece && <ImageList cols={3} rows={1}>
                             {piece.images.map((imgPath, index) =>
                                 <ImageListItem key={index}>
-                                    <img src={imgPath} alt="lazy" style={{ maxWidth: '180px' }} />
+                                    <ModalImage path={imgPath} />
                                 </ImageListItem>
                             )}
                         </ImageList>}

@@ -2,14 +2,14 @@ import { useState } from 'react'
 import { Modal,Button} from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-const ModalDownloadButton = ({text,children}) => {
+const ModalImage = ({path}) => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
     return (
         <div>
-            <Button onClick={handleOpen} variant="contained"> {text} </Button>
+            <img src={path} alt="lazy" style={{ width:'200px', height:'200px' }} onClick={handleOpen} />
             <CustomModal
                 open={open}
                 onClose={handleClose}
@@ -17,7 +17,7 @@ const ModalDownloadButton = ({text,children}) => {
                 aria-describedby="modal-modal-description"
             >
                 <div>
-                    {children}
+                    <img src={path} alt="lazy" />
                 </div>
             </CustomModal>
         </div>
@@ -32,4 +32,4 @@ const CustomModal = styled(Modal)(({ theme }) => ({
 
 }))
 
-export default ModalDownloadButton;
+export default ModalImage;
