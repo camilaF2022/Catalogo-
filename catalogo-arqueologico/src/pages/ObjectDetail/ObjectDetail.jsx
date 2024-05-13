@@ -5,20 +5,22 @@ import ModalButton from './ModalButton';
 import PieceVisualization from './PieceVisualization';
 import DownloadForm from './DownloadForm';
 import ModalImage from './ModalImage';
-const ObjectDetail = ({ pieceId }) => {
-    const [piece, setPiece] = useState();
+import {useParams} from 'react-router-dom';
 
+const ObjectDetail = () => {
+    const [piece, setPiece] = useState();
+    const {pieceId} = useParams();
+    console.log(pieceId);
     useEffect(() => {
-        fetch('./pieces_models/response.json')
+        fetch('/pieces_models/response.json')
             .then(response => response.json())
             .then(response => {
                 //with the api  should retrieve a  single object
-                const object = response.data.find(obj => obj.id === pieceId);
+                const object = response.data.find(obj => obj.id === parseInt(pieceId));
                 setPiece(object);
             })
             .catch(error => console.error(error));
-    }, [pieceId])
-
+    }, [])
     return (
         <ContainerGrid container>
             <ItemGrid item lg={7}>
