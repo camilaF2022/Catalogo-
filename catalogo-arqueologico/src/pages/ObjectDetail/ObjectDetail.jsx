@@ -17,13 +17,13 @@ const ObjectDetail = ({ pieceId }) => {
                 setPiece(object);
             })
             .catch(error => console.error(error));
-    },[pieceId])
-    
+    }, [pieceId])
+
     return (
-        <CenterGrid container>
-            <CenterGrid item lg={7}>
+        <ContainerGrid container>
+            <ItemGrid item lg={7}>
                 <LeftBox>
-                    <CenterGrid container>
+                    <ItemGrid container>
                         <Grid item xs={7}>
                             <Typography variant='h4'># ID: {piece && piece.id}</Typography>
                         </Grid>
@@ -35,7 +35,7 @@ const ObjectDetail = ({ pieceId }) => {
                         <Grid item xs>
                             <Button variant="contained">Editar Pieza</Button>
                         </Grid>
-                    </CenterGrid>
+                    </ItemGrid>
                     <PieceBoxContainer >
                         {piece && <PieceVisualization objPath={piece.model.object} mtlPath={piece.model.material} />}
                         {piece && <ImageList cols={3} rows={1}>
@@ -47,29 +47,38 @@ const ObjectDetail = ({ pieceId }) => {
                         </ImageList>}
                     </PieceBoxContainer>
                 </LeftBox>
-            </CenterGrid>
-            
+            </ItemGrid>
+
             <Grid item lg>
                 <RightBox >
-                <Stack  spacing={4}>
-                    <Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h5'>Cultura:</Typography>  <Typography> {piece && piece.atributes.culture} </Typography></Stack>
-                    <Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h5'> Forma: </Typography> <Typography> {piece && piece.atributes.shape}</Typography></Stack>
-                    <Typography>{piece && piece.atributes.description}</Typography>
-                    {<Stack direction={"row"} alignItems={'center'} spacing={1}><Typography variant='h5'>Etiquetas:</Typography> <Container>
-                        {piece && piece.atributes.tags.map((tag, index) =>
-                            <Chip key={index} label={tag} />
-                        )}
-                    </Container></Stack>}
-                </Stack>
+                    <Stack spacing={4}>
+                        <EntryStack><Typography variant='h5'>Cultura:</Typography>  <Typography> {piece && piece.atributes.culture} </Typography></EntryStack>
+                        <EntryStack><Typography variant='h5'> Forma: </Typography> <Typography> {piece && piece.atributes.shape}</Typography></EntryStack>
+                        <Typography>{piece && piece.atributes.description}</Typography>
+                        {<EntryStack><Typography variant='h5'>Etiquetas:</Typography>
+                            <Container>
+                                {piece && piece.atributes.tags.map((tag, index) =>
+                                    <Chip key={index} label={tag} />
+                                )}
+                            </Container>
+                        </EntryStack>}
+                    </Stack>
                 </RightBox>
             </Grid>
-        </CenterGrid>
+        </ContainerGrid>
     )
 }
 
+const EntryStack = styled(Stack)(({ theme }) => ({
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing(1)
+
+}));
+
 const LeftBox = styled(Box)(({ theme }) => ({
     width: theme.spacing(50),
-    
+
     [theme.breakpoints.up('md')]: {
         width: theme.spacing(83),
     },
@@ -84,8 +93,8 @@ const LeftBox = styled(Box)(({ theme }) => ({
 
 const RightBox = styled(Box)(({ theme }) => ({
     paddingRight: theme.spacing(7),
-    marginTop: theme.spacing(15),
-    
+    marginTop: theme.spacing(10),
+
     [theme.breakpoints.down('lg')]: {
         marginLeft: theme.spacing(5),
     },
@@ -94,20 +103,26 @@ const RightBox = styled(Box)(({ theme }) => ({
         marginTop: theme.spacing(3),
     }
 }));
-const CenterGrid = styled(Grid)(({ theme }) => ({
-    marginTop: theme.spacing(2),
+
+const ItemGrid = styled(Grid)(({ theme }) => ({
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+}));
+
+const ContainerGrid = styled(Grid)(({ theme }) => ({
+    marginTop: theme.spacing(4),
     marginBottom: theme.spacing(2),
     display: 'flex',
     justifyContent: 'center',
 }));
-
 
 const PieceBoxContainer = styled(Box)(() => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    width:"100%"
+    width: "100%"
 }));
 
 
