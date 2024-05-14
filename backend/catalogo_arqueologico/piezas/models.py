@@ -14,7 +14,7 @@ class Metadata(models.Model):
 
     id = models.BigAutoField(primary_key=True, unique=True)
     type = models.IntegerField(choices=TIPO_METADATA)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name + ", " + str(self.type)
@@ -30,7 +30,7 @@ class Media(models.Model):
     ]
 
     id = models.BigAutoField(primary_key=True, unique=True)
-    path = models.CharField(max_length=100)
+    path = models.CharField(max_length=100, unique=True)
     type = models.IntegerField(choices=TIPO_MEDIA)
     
 

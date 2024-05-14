@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'coreapi',
+    'import_export',
     'piezas',
 ]
 
