@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import ModalButton from './ModalButton';
 import PieceVisualization from './PieceVisualization';
 import DownloadForm from './DownloadForm';
-import ModalImage from './ModalImage';
+import ModalImage from '../../components/ModalImage';
 import { useParams } from 'react-router-dom';
 
 const ObjectDetail = () => {
