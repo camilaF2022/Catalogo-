@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Typography, ImageList, ImageListItem, Button, Chip, Grid, Container, Stack, Box, Skeleton } from '@mui/material';
+import { Typography, ImageList, ImageListItem, Button, Chip, Grid, Container, Stack, Box} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ModalButton from './ModalButton';
 import PieceVisualization from './PieceVisualization';
@@ -29,7 +29,7 @@ const ObjectDetail = () => {
                 <LeftBox>
                     <CenterGrid container>
                         <Grid item xs={7}>
-                            <Typography variant='h4'># ID: {piece && piece.id}</Typography>
+                            <Typography variant='h3'><b>#{piece && String(pieceId).padStart(4, '0')}</b> </Typography>
                         </Grid>
                         <Grid item xs>
                             <ModalButton text={"Descargar"}>

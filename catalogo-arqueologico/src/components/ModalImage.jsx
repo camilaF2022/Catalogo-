@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Modal,Button} from '@mui/material';
+import { Modal} from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 const ModalImage = ({path}) => {
