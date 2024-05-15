@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Metadata, Media, PiezaArq
+from .models import Metadata, Media, Artifact
 from import_export.admin import ImportExportModelAdmin
 # Register your models here.
 class RecordMetadataAdmin(ImportExportModelAdmin):
@@ -8,4 +8,4 @@ class RecordMetadataAdmin(ImportExportModelAdmin):
 admin.site.register(Metadata,RecordMetadataAdmin)
 
 admin.site.register(Media)
-admin.site.register(PiezaArq)
+admin.site.register(Artifact)
