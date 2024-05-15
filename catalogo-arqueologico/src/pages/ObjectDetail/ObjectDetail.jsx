@@ -11,17 +11,18 @@ const ObjectDetail = () => {
 
     const [piece, setPiece] = useState();
     const { pieceId } = useParams();
-
+    
     useEffect(() => {
         fetch('/pieces_models/response.json')
-            .then(response => response.json())
-            .then(response => {
-                //with the api  should retrieve a  single object
-                const object = response.data.find(obj => obj.id === parseInt(pieceId));
-                setPiece(object);
-            })
-            .catch(error => console.error(error));
+        .then(response => response.json())
+        .then(response => {
+            //with the api  should retrieve a  single object
+            const object = response.data.find(obj => obj.id === parseInt(pieceId));
+            setPiece(object);
+        })
+        .catch(error => console.error(error));
     }, [])
+
     return (
         <ContainerGrid container>
             <CenterGrid item lg={7}>
