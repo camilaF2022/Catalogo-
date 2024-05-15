@@ -3,18 +3,37 @@ import { Route, Routes } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import MenuBar from "./MenuBar";
-import { Home } from "../pages/Home";
-import { Login } from "../pages/Login";
-import {ObjectDetail} from "../pages/ObjectDetail";
+import NotFound from "./NotFound";
+import { Home, Login, Gallery, CreateItem } from "../pages";
+import useToken from "../hooks/useToken";
 
 const Layout = () => {
+  const { token, setToken } = useToken();
+
+  const isAuthenticated = !!token;
+
   return (
     <CustomGrid>
-      <MenuBar />
+      <MenuBar loggedIn={isAuthenticated} setToken={setToken} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/detail/:pieceId" element={<ObjectDetail />} />
+        <Route path="/login" element={<Login setToken={setToken} />} />
+        <Route
+          path="/gallery"
+          element={<Gallery loggedIn={isAuthenticated} />}
+        />
+        {/* Private routes */}
+        <Route
+          path="/gallery/new"
+          element={
+            isAuthenticated ? (
+              <CreateItem />
+            ) : (
+              <Login setToken={setToken} navigateTo="/gallery/new" />
+            )
+          }
+        />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </CustomGrid>
   );
@@ -22,7 +41,7 @@ const Layout = () => {
 
 const CustomGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.main,
-  minHeight: theme.spacing(100),
+  minHeight: theme.spacing(103),
 }));
 
 export default Layout;

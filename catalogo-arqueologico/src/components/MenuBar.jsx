@@ -4,7 +4,11 @@ import Grid from "@mui/material/Grid";
 import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
 
-const MenuBar = () => {
+const MenuBar = ({ loggedIn, setToken }) => {
+  const handleLogout = () => {
+    setToken(null);
+  };
+
   return (
     <CustomGrid container>
       <Grid item textAlign="left">
@@ -15,11 +19,17 @@ const MenuBar = () => {
         </Link>
       </Grid>
       <Grid item textAlign="right">
-        <Link to="/login">
-          <Button variant="text" color="secondary">
-            Iniciar sesión
+        {!loggedIn ? (
+          <Link to="/login">
+            <Button variant="text" color="secondary">
+              Iniciar sesión
+            </Button>
+          </Link>
+        ) : (
+          <Button variant="text" color="secondary" onClick={handleLogout}>
+            Cerrar sesión
           </Button>
-        </Link>
+        )}
       </Grid>
     </CustomGrid>
   );
