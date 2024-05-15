@@ -24,9 +24,9 @@ const ObjectDetail = () => {
     }, [])
     return (
         <ContainerGrid container>
-            <ItemGrid item lg={7}>
+            <CenterGrid item lg={7}>
                 <LeftBox>
-                    <ItemGrid container>
+                    <CenterGrid container>
                         <Grid item xs={7}>
                             <Typography variant='h4'># ID: {piece && piece.id}</Typography>
                         </Grid>
@@ -38,7 +38,7 @@ const ObjectDetail = () => {
                         <Grid item xs>
                             <Button variant="contained">Editar Pieza</Button>
                         </Grid>
-                    </ItemGrid>
+                    </CenterGrid>
                     {piece && (
                         <>
                             <PieceVisualization objPath={piece.model.object} mtlPath={piece.model.material} />
@@ -53,7 +53,7 @@ const ObjectDetail = () => {
                     )}
 
                 </LeftBox>
-            </ItemGrid>
+            </CenterGrid>
 
             <Grid item lg>
                     <RightBox >
@@ -111,7 +111,7 @@ const RightBox = styled(Stack)(({ theme }) => ({
     gap : theme.spacing(4)
 }));
 
-const ItemGrid = styled(Grid)(({ theme }) => ({
+const CenterGrid = styled(Grid)(({ theme }) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
