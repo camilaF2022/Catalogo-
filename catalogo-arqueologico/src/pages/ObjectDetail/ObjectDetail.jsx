@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react'
-import { Typography, ImageList, ImageListItem, Button, Chip, Grid, Container, Stack, Box } from '@mui/material';
+import { Typography, ImageList, ImageListItem, Button, Chip, Grid, Container, Stack, Box, Skeleton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ModalButton from './ModalButton';
 import PieceVisualization from './PieceVisualization';
 import DownloadForm from './DownloadForm';
 import ModalImage from './ModalImage';
-import {useParams} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const ObjectDetail = () => {
+
     const [piece, setPiece] = useState();
-    const {pieceId} = useParams();
-    console.log(pieceId);
+    const { pieceId } = useParams();
+
     useEffect(() => {
         fetch('/pieces_models/response.json')
             .then(response => response.json())
@@ -38,34 +39,36 @@ const ObjectDetail = () => {
                             <Button variant="contained">Editar Pieza</Button>
                         </Grid>
                     </ItemGrid>
-                    <PieceBoxContainer >
-                        {piece && <PieceVisualization objPath={piece.model.object} mtlPath={piece.model.material} />}
-                        {piece && <ImageList cols={3} rows={1}>
-                            {piece.images.map((imgPath, index) =>
-                                <ImageListItem key={index}>
-                                    <ModalImage path={imgPath} />
-                                </ImageListItem>
-                            )}
-                        </ImageList>}
-                    </PieceBoxContainer>
+                    {piece && (
+                        <>
+                            <PieceVisualization objPath={piece.model.object} mtlPath={piece.model.material} />
+                            <ImageList cols={3} rows={1}>
+                                {piece.images.map((imgPath, index) =>
+                                    <ImageListItem key={index}>
+                                        <ModalImage path={imgPath} />
+                                    </ImageListItem>
+                                )}
+                            </ImageList>
+                        </>
+                    )}
+
                 </LeftBox>
             </ItemGrid>
 
             <Grid item lg>
-                <RightBox >
-                    <Stack spacing={4}>
-                        <EntryStack><Typography variant='h5'>Cultura:</Typography>  <Typography> {piece && piece.atributes.culture} </Typography></EntryStack>
-                        <EntryStack><Typography variant='h5'> Forma: </Typography> <Typography> {piece && piece.atributes.shape}</Typography></EntryStack>
+                    <RightBox >
+                        <EntryStack><Typography variant='h5'>Cultura:</Typography>  <Chip label={piece && piece.atributes.culture} /></EntryStack>
+                        <EntryStack><Typography variant='h5'> Forma: </Typography> <Chip label ={piece && piece.atributes.shape}/> </EntryStack>
                         <Typography>{piece && piece.atributes.description}</Typography>
                         {<EntryStack><Typography variant='h5'>Etiquetas:</Typography>
-                            <Container>
+                            <TagContainer >
                                 {piece && piece.atributes.tags.map((tag, index) =>
                                     <Chip key={index} label={tag} />
                                 )}
-                            </Container>
+                            </TagContainer>
                         </EntryStack>}
-                    </Stack>
-                </RightBox>
+
+                    </RightBox>
             </Grid>
         </ContainerGrid>
     )
@@ -79,7 +82,7 @@ const EntryStack = styled(Stack)(({ theme }) => ({
 }));
 
 const LeftBox = styled(Box)(({ theme }) => ({
-    width: theme.spacing(50),
+    width: theme.spacing(73),
 
     [theme.breakpoints.up('md')]: {
         width: theme.spacing(83),
@@ -91,19 +94,21 @@ const LeftBox = styled(Box)(({ theme }) => ({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: theme.spacing(2),
 }));
 
-const RightBox = styled(Box)(({ theme }) => ({
+const RightBox = styled(Stack)(({ theme }) => ({
     paddingRight: theme.spacing(7),
     marginTop: theme.spacing(10),
 
     [theme.breakpoints.down('lg')]: {
-        marginLeft: theme.spacing(5),
+        marginLeft: theme.spacing(15),
     },
     [theme.breakpoints.down('md')]: {
         marginLeft: theme.spacing(8),
         marginTop: theme.spacing(3),
-    }
+    },
+    gap : theme.spacing(4)
 }));
 
 const ItemGrid = styled(Grid)(({ theme }) => ({
@@ -119,13 +124,13 @@ const ContainerGrid = styled(Grid)(({ theme }) => ({
     justifyContent: 'center',
 }));
 
-const PieceBoxContainer = styled(Box)(() => ({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: "100%"
-}));
 
+const TagContainer = styled(Container)(({ theme }) => ({
+    display: 'flex',
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+    gap: theme.spacing(1),
+
+}))
 
 export default ObjectDetail;

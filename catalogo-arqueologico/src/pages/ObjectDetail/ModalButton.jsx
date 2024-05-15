@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Modal,Button} from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-const ModalDownloadButton = ({text,children}) => {
+const ModalButton = ({text,children}) => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -32,4 +32,4 @@ const CustomModal = styled(Modal)(({ theme }) => ({
 
 }))
 
-export default ModalDownloadButton;
+export default ModalButton;
