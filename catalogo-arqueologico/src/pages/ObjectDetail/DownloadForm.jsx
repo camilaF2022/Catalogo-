@@ -13,73 +13,76 @@ const DownloadForm = () => {
     // });
 
     return (
-        <CustomPaper>
-            <CustomStack>
-                <Typography>Para descargar los datos debe llenar este formulario de solicitud</Typography>
-                <CustomBox
-                    component="form"
-                    autoComplete="off"
-                //   onChange={}
-                //   onSubmit={}
-                >
-                    <TextField
-                        required
-                        id="nombreCompleto"
-                        name="nombreCompleto"
-                        label="Nombre Completo"
-                        type="text"
-                        margin="normal"
-                
-                    />
-                    <TextField
-                        required
-                        id="password"
-                        name="password"
-                        label="Rut"
-                        type="password"
-                        margin="normal"
-                        
-                    />
-                    <TextField
-                        required
-                        id="nombreCompleto"
-                        name="nombreCompleto"
-                        label="Correo Electrónico"
-                        type="text"
-                        margin="normal"
-                        
-                    />
-                    <TextField
-                        required
-                        id="nombreCompleto"
-                        name="nombreCompleto"
-                        label="Institución"
-                        type="text"
-                        margin="normal"
-                        
-                    />
-                    <TextField
-                        required
-                        id="nombreCompleto"
-                        name="nombreCompleto"
-                        label="Motivo de Solicitud"
-                        type="text"
-                        margin="normal"
-                        
-                    />
-                    
-                    <Box>
-                    <CustomButton variant="contained" color="primary" type="submit">
-                        Cancelar 
-                    </CustomButton>
-                    <CustomButton variant="contained" color="primary" type="submit">
-                        Enviar
-                    </CustomButton>
-                    </Box>
-                    
-                </CustomBox>
-            </CustomStack>
+        <CustomPaper sx={{ backgroundColor: "white" }}>
+        Formulario de descarga
         </CustomPaper>
+        // <CustomPaper>
+        //     <CustomStack>
+        //         <Typography>Para descargar los datos debe llenar este formulario de solicitud</Typography>
+        //         <CustomBox
+        //             component="form"
+        //             autoComplete="off"
+        //         //   onChange={}
+        //         //   onSubmit={}
+        //         >
+        //             <TextField
+        //                 required
+        //                 id="nombreCompleto"
+        //                 name="nombreCompleto"
+        //                 label="Nombre Completo"
+        //                 type="text"
+        //                 margin="normal"
+                
+        //             />
+        //             <TextField
+        //                 required
+        //                 id="password"
+        //                 name="password"
+        //                 label="Rut"
+        //                 type="password"
+        //                 margin="normal"
+                        
+        //             />
+        //             <TextField
+        //                 required
+        //                 id="nombreCompleto"
+        //                 name="nombreCompleto"
+        //                 label="Correo Electrónico"
+        //                 type="text"
+        //                 margin="normal"
+                        
+        //             />
+        //             <TextField
+        //                 required
+        //                 id="nombreCompleto"
+        //                 name="nombreCompleto"
+        //                 label="Institución"
+        //                 type="text"
+        //                 margin="normal"
+                        
+        //             />
+        //             <TextField
+        //                 required
+        //                 id="nombreCompleto"
+        //                 name="nombreCompleto"
+        //                 label="Motivo de Solicitud"
+        //                 type="text"
+        //                 margin="normal"
+                        
+        //             />
+                    
+        //             <Box>
+        //             <CustomButton variant="contained" color="primary" type="submit">
+        //                 Cancelar 
+        //             </CustomButton>
+        //             <CustomButton variant="contained" color="primary" type="submit">
+        //                 Enviar
+        //             </CustomButton>
+        //             </Box>
+                    
+        //         </CustomBox>
+        //     </CustomStack>
+        // </CustomPaper>
     );
 };
 

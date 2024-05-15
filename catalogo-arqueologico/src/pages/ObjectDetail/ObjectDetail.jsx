@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Typography, ImageList, ImageListItem, Button, Chip, Grid, Container, Stack, Box} from '@mui/material';
+import { Typography, ImageList, ImageListItem, Button, Chip, Grid, Container, Stack, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ModalButton from './ModalButton';
 import PieceVisualization from './PieceVisualization';
@@ -8,19 +8,18 @@ import ModalImage from '../../components/ModalImage';
 import { useParams } from 'react-router-dom';
 
 const ObjectDetail = () => {
-
     const [piece, setPiece] = useState();
     const { pieceId } = useParams();
-    
+
     useEffect(() => {
         fetch('/pieces_models/response.json')
-        .then(response => response.json())
-        .then(response => {
-            //with the api  should retrieve a  single object
-            const object = response.data.find(obj => obj.id === parseInt(pieceId));
-            setPiece(object);
-        })
-        .catch(error => console.error(error));
+            .then(response => response.json())
+            .then(response => {
+                //with the api  should retrieve a  single object
+                const object = response.data.find(obj => obj.id === parseInt(pieceId));
+                setPiece(object);
+            })
+            .catch(error => console.error(error));
     }, [])
 
     return (
@@ -57,19 +56,19 @@ const ObjectDetail = () => {
             </CenterGrid>
 
             <Grid item lg>
-                    <RightBox >
-                        <EntryStack><Typography variant='h5'>Cultura:</Typography>  <Chip label={piece && piece.atributes.culture} /></EntryStack>
-                        <EntryStack><Typography variant='h5'> Forma: </Typography> <Chip label ={piece && piece.atributes.shape}/> </EntryStack>
-                        <Typography>{piece && piece.atributes.description}</Typography>
-                        {<EntryStack><Typography variant='h5'>Etiquetas:</Typography>
-                            <TagContainer >
-                                {piece && piece.atributes.tags.map((tag, index) =>
-                                    <Chip key={index} label={tag} />
-                                )}
-                            </TagContainer>
-                        </EntryStack>}
+                <RightBox >
+                    <EntryStack><Typography variant='h5'>Cultura:</Typography>  <CustomCultureTag label={piece && piece.atributes.culture} /></EntryStack>
+                    <EntryStack><Typography variant='h5'> Forma: </Typography> <CustomShapeTag label={piece && piece.atributes.shape} /> </EntryStack>
+                    <Typography>{piece && piece.atributes.description}</Typography>
+                    {<EntryStack><Typography variant='h5'>Etiquetas:</Typography>
+                        <TagContainer >
+                            {piece && piece.atributes.tags.map((tag, index) =>
+                                <Chip key={index} label={tag} />
+                            )}
+                        </TagContainer>
+                    </EntryStack>}
 
-                    </RightBox>
+                </RightBox>
             </Grid>
         </ContainerGrid>
     )
@@ -109,7 +108,7 @@ const RightBox = styled(Stack)(({ theme }) => ({
         marginLeft: theme.spacing(8),
         marginTop: theme.spacing(3),
     },
-    gap : theme.spacing(4)
+    gap: theme.spacing(4)
 }));
 
 const CenterGrid = styled(Grid)(({ theme }) => ({
@@ -133,5 +132,13 @@ const TagContainer = styled(Container)(({ theme }) => ({
     gap: theme.spacing(1),
 
 }))
+
+const CustomCultureTag = styled(Chip)(() => ({
+    backgroundColor: "#FEE2DD",
+}));
+
+const CustomShapeTag = styled(Chip)(() => ({
+    backgroundColor: "#D2E5EF ",
+}));
 
 export default ObjectDetail;
