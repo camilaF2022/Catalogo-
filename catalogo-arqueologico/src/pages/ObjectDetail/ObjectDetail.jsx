@@ -6,11 +6,12 @@ import PieceVisualization from './PieceVisualization';
 import DownloadForm from './DownloadForm';
 import ModalImage from '../../components/ModalImage';
 import { useParams } from 'react-router-dom';
+import theme from '../../styles';
 
 const ObjectDetail = ({loggedIn}) => {
     const [piece, setPiece] = useState();
     const { pieceId } = useParams();
-    console.log("logged",loggedIn)
+    
     useEffect(() => {
         fetch('/pieces_models/response.json')
             .then(response => response.json())
@@ -142,12 +143,12 @@ const TagContainer = styled(Container)(({ theme }) => ({
 
 }))
 
-const CustomCultureTag = styled(Chip)(() => ({
-    backgroundColor: "#FEE2DD",
+const CustomShapeTag = styled(Chip)(({theme}) => ({
+    backgroundColor: theme.palette.tags.shape,
 }));
 
-const CustomShapeTag = styled(Chip)(() => ({
-    backgroundColor: "#D2E5EF ",
-}));
+const CustomCultureTag = styled(Chip)(({theme}) => ({
+    backgroundColor: theme.palette.tags.culture,
+}))
 
 export default ObjectDetail;

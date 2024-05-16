@@ -11,6 +11,8 @@ const COLORS = {
   AZUL2: "#1B98E0",
   AZUL3: "#006494",
   AZUL4: "#13293D",
+  CULTURE:"#FEE2DD",
+  SHAPE:"#D2E5EF"
 };
 
 // Define theme colors and typography
@@ -25,6 +27,10 @@ let theme = createTheme({
     footer: {
       main: COLORS.AZUL4,
     },
+    tags: {
+      culture: COLORS.CULTURE,
+      shape: COLORS.SHAPE,
+    }
   },
   typography: {
     h1: {
@@ -55,7 +61,8 @@ theme = createTheme(theme, {
         main: COLORS.AZUL3,
       },
       name: "secondary",
-    }),
+    }    
+    ),
   },
 });
 
