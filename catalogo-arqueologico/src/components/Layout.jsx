@@ -21,7 +21,7 @@ const Layout = () => {
           path="/gallery"
           element={<Gallery loggedIn={isAuthenticated} />}
         />
-        <Route path="/gallery/:pieceId" element={<ObjectDetail />} />
+        <Route path="/gallery/:pieceId" element={<ObjectDetail loggedIn={isAuthenticated}/>} />
         {/* Private routes */}
         <Route
           path="/gallery/new"

@@ -7,10 +7,10 @@ import DownloadForm from './DownloadForm';
 import ModalImage from '../../components/ModalImage';
 import { useParams } from 'react-router-dom';
 
-const ObjectDetail = () => {
+const ObjectDetail = ({loggedIn}) => {
     const [piece, setPiece] = useState();
     const { pieceId } = useParams();
-
+    console.log("logged",loggedIn)
     useEffect(() => {
         fetch('/pieces_models/response.json')
             .then(response => response.json())
@@ -30,14 +30,23 @@ const ObjectDetail = () => {
                         <Grid item xs={7}>
                             <Typography variant='h3'><b>#{piece && String(pieceId).padStart(4, '0')}</b> </Typography>
                         </Grid>
-                        <Grid item xs>
-                            <ModalButton text={"Descargar"}>
-                                <DownloadForm />
-                            </ModalButton>
-                        </Grid>
-                        <Grid item xs>
-                            <Button variant="contained">Editar Pieza</Button>
-                        </Grid>
+                        
+                            {loggedIn ? (
+                                <>
+                                    <Grid item xs>
+                                    <ModalButton text={"Descargar"}>
+                                        <DownloadForm />
+                                    </ModalButton>
+                                    </Grid>
+                                    <Grid item xs>
+                                    <Button variant="contained">Editar Pieza</Button>
+                                    </Grid>
+                                </>
+                            ) : (
+                                <Grid item xs>
+                                <Button variant="contained">Solicitar Pieza</Button>
+                                </Grid>
+                            )}
                     </CenterGrid>
                     {piece && (
                         <>
