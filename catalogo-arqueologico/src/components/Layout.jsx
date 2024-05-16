@@ -9,7 +9,6 @@ import useToken from "../hooks/useToken";
 
 const Layout = () => {
   const { token, setToken } = useToken();
-
   const isAuthenticated = !!token;
 
   return (
