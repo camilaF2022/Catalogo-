@@ -6,12 +6,11 @@ import PieceVisualization from './PieceVisualization';
 import DownloadForm from './DownloadForm';
 import ModalImage from '../../components/ModalImage';
 import { useParams } from 'react-router-dom';
-import theme from '../../styles';
 
-const ObjectDetail = ({loggedIn}) => {
+const ObjectDetail = ({ loggedIn }) => {
     const [piece, setPiece] = useState();
     const { pieceId } = useParams();
-    
+
     useEffect(() => {
         fetch('/pieces_models/response.json')
             .then(response => response.json())
@@ -27,28 +26,18 @@ const ObjectDetail = ({loggedIn}) => {
         <ContainerGrid container>
             <CenterGrid item lg={7}>
                 <LeftBox>
-                    <CenterGrid container>
-                        <Grid item xs={7}>
-                            <Typography variant='h3'><b>#{piece && String(pieceId).padStart(4, '0')}</b> </Typography>
-                        </Grid>
-                        
-                            {loggedIn ? (
-                                <>
-                                    <Grid item xs>
-                                    <ModalButton text={"Descargar"}>
-                                        <DownloadForm />
-                                    </ModalButton>
-                                    </Grid>
-                                    <Grid item xs>
-                                    <Button variant="contained">Editar Pieza</Button>
-                                    </Grid>
-                                </>
-                            ) : (
-                                <Grid item xs>
-                                <Button variant="contained">Solicitar Pieza</Button>
-                                </Grid>
-                            )}
-                    </CenterGrid>
+                    <CustomContainer >
+                        <Typography variant='h3'><b>#{piece && String(pieceId).padStart(4, '0')}</b> </Typography>
+                        {loggedIn ? (
+                            <HorizontalStack>
+                                <ModalButton text={"Descargar"}>
+                                </ModalButton>
+                                <Button variant="contained">Editar Pieza</Button>
+                            </HorizontalStack>
+                        ) : (
+                            <Button variant="contained">Solicitar Pieza</Button>
+                        )}
+                    </CustomContainer>
                     {piece && (
                         <>
                             <PieceVisualization objPath={piece.model.object} mtlPath={piece.model.material} />
@@ -67,16 +56,16 @@ const ObjectDetail = ({loggedIn}) => {
 
             <Grid item lg>
                 <RightBox >
-                    <EntryStack><Typography variant='h5'>Cultura:</Typography>  <CustomCultureTag label={piece && piece.atributes.culture} /></EntryStack>
-                    <EntryStack><Typography variant='h5'> Forma: </Typography> <CustomShapeTag label={piece && piece.atributes.shape} /> </EntryStack>
+                    <HorizontalStack><Typography variant='h5'>Cultura:</Typography>  <CustomCultureTag label={piece && piece.atributes.culture} /></HorizontalStack>
+                    <HorizontalStack><Typography variant='h5'> Forma: </Typography> <CustomShapeTag label={piece && piece.atributes.shape} /> </HorizontalStack>
                     <Typography>{piece && piece.atributes.description}</Typography>
-                    {<EntryStack><Typography variant='h5'>Etiquetas:</Typography>
+                    {<HorizontalStack><Typography variant='h5'>Etiquetas:</Typography>
                         <TagContainer >
                             {piece && piece.atributes.tags.map((tag, index) =>
                                 <Chip key={index} label={tag} />
                             )}
                         </TagContainer>
-                    </EntryStack>}
+                    </HorizontalStack>}
 
                 </RightBox>
             </Grid>
@@ -84,7 +73,13 @@ const ObjectDetail = ({loggedIn}) => {
     )
 }
 
-const EntryStack = styled(Stack)(({ theme }) => ({
+const CustomContainer = styled(Container)(() => ({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+
+}));
+const HorizontalStack = styled(Stack)(({ theme }) => ({
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing(1)
@@ -121,7 +116,7 @@ const RightBox = styled(Stack)(({ theme }) => ({
     gap: theme.spacing(4)
 }));
 
-const CenterGrid = styled(Grid)(({ theme }) => ({
+const CenterGrid = styled(Grid)(() => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
@@ -143,11 +138,11 @@ const TagContainer = styled(Container)(({ theme }) => ({
 
 }))
 
-const CustomShapeTag = styled(Chip)(({theme}) => ({
+const CustomShapeTag = styled(Chip)(({ theme }) => ({
     backgroundColor: theme.palette.tags.shape,
 }));
 
-const CustomCultureTag = styled(Chip)(({theme}) => ({
+const CustomCultureTag = styled(Chip)(({ theme }) => ({
     backgroundColor: theme.palette.tags.culture,
 }))
 
