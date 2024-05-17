@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Typography, ImageList, ImageListItem, Button, Chip, Grid, Container, Stack, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ModalButton from './ModalButton';
-import PieceVisualization from './PieceVisualization';
+import ModalButton from './components/ModalButton';
+import PieceVisualization from './components/PieceVisualization';
 import ModalImage from '../../components/ModalImage';
 import { useParams } from 'react-router-dom';
 
