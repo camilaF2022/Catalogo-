@@ -1,24 +1,40 @@
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import { Modal, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 const ModalImage = ({ path }) => {
     const [open, setOpen] = useState(false);
+    const [isWideImage, setIsWideImage] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    
+    const handleImageSize = (path) => {
+        const img = new Image();
+        img.src = path;
+        img.onload = () => {
+            if ((img.width/img.height)>2) {
+                setIsWideImage(true);
+            }
+        }
+    }
+    
+    useEffect(() => {
+        handleImageSize(path);
 
+    }, [path])
+    
     return (
         <div>
-            <img src={path} alt="lazy" style={{ width: '180px', height: '180px' }} onClick={handleOpen} />
+            <img src={path} alt="lazy" style={{ width: '180px', height: '180px' }} onClick={handleOpen}  />
             <CustomModal
                 open={open}
                 onClose={handleClose}
             >
                 <CustomBox >
                     <CancelIcon onClick={handleClose} style={{ cursor: 'pointer', color: "white" }} />
-                    <ImageContainer>
-                        <img src={path} alt="lazy" onClick={handleOpen} />
+                    <ImageContainer iswideimage={isWideImage? isWideImage.toString():undefined}>
+                        <img src={path} alt="modalImage"  onClick={handleOpen}/>
                     </ImageContainer>
                 </CustomBox>
             </CustomModal>
@@ -34,6 +50,7 @@ const CustomBox = styled(Box)(({ theme }) => ({
     backgroundColor: 'black',
     padding: theme.spacing(1),
 }))
+
 const CustomModal = styled(Modal)(() => ({
     display: "flex",
     flexDirection: "column",
@@ -41,13 +58,13 @@ const CustomModal = styled(Modal)(() => ({
     justifyContent: 'center',
 }))
 
-const ImageContainer = styled('div')(({ theme }) => ({
-    padding: theme.spacing(2),
+const ImageContainer = styled(Box)(({ theme,iswideimage}) => ({
+    padding: theme.spacing(4),
     display: 'flex',
-    justifyContent: 'center',
     height: "600px",
     width: '400px',
-    overflow: 'auto',
+    overflow: iswideimage?'auto':'hidden',
+    justifyContent: iswideimage ? 'flex-start' : 'center',
     [theme.breakpoints.up('sm')]: {
         width: '550px',
     },
@@ -59,8 +76,5 @@ const ImageContainer = styled('div')(({ theme }) => ({
     },
 }))
 
-// const CustomImage = styled('img')(() => ({
-//     width: '',
-    
-// })) 
+
 export default ModalImage;
