@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Typography, Button, Chip, Grid, Container, Stack, Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ModalButton from './components/ModalButton';
+import ModalRequestButton from './components/ModalButton';
 import PieceVisualization from './components/PieceVisualization';
 import ImagesCarousel from './components/ImagesCarousel';
 import { useParams } from 'react-router-dom';
@@ -29,12 +29,12 @@ const ObjectDetail = ({ loggedIn }) => {
                         <Typography variant='h3'><b>#{piece && String(pieceId).padStart(4, '0')}</b> </Typography>
                         {loggedIn ? (
                             <HorizontalStack>
-                                <ModalButton text={"Descargar"}>
-                                </ModalButton>
+                                <Button text={"Descargar Pieza"}>
+                                </Button>
                                 <Button variant="contained">Editar Pieza</Button>
                             </HorizontalStack>
                         ) : (
-                            <Button variant="contained">Solicitar Pieza</Button>
+                            <ModalRequestButton text={"Solicitar datos"}></ModalRequestButton>
                         )}
                     </CustomContainer>
                     {piece && (

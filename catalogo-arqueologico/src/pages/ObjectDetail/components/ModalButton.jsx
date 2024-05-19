@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Modal,Button} from '@mui/material';
 import { styled } from '@mui/material/styles';
+import RequestForm from './RequestForm';
 
-const ModalButton = ({text,children}) => {
+const ModalRequestButton = ({text,children}) => {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -17,7 +18,7 @@ const ModalButton = ({text,children}) => {
                 aria-describedby="modal-modal-description"
             >
                 <div>
-                    {children}
+                    <RequestForm handleClose={handleClose}></RequestForm>
                 </div>
             </CustomModal>
         </div>
@@ -32,4 +33,4 @@ const CustomModal = styled(Modal)(({ theme }) => ({
 
 }))
 
-export default ModalButton;
+export default ModalRequestButton;
