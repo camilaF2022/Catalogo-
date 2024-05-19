@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import ModalButton from './components/ModalButton';
 import PieceVisualization from './components/PieceVisualization';
 import ModalImage from './components/ModalImage';
+import ImagesCarousel from './components/ImagesCarousel';
 import { useParams } from 'react-router-dom';
 
 const ObjectDetail = ({ loggedIn }) => {
@@ -40,13 +41,8 @@ const ObjectDetail = ({ loggedIn }) => {
                     {piece && (
                         <>
                             <PieceVisualization objPath={piece.model.object} mtlPath={piece.model.material} />
-                            <ImageList cols={3} rows={1}>
-                                {piece.images.map((imgPath, index) =>
-                                    <ImageListItem key={index}>
-                                        <ModalImage path={imgPath} />
-                                    </ImageListItem>
-                                )}
-                            </ImageList>
+                                <ImagesCarousel images={piece.images} ></ImagesCarousel>
+                            
                         </>
                     )}
 

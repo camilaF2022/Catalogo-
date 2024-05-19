@@ -10,7 +10,7 @@ const ModalImage = ({ path }) => {
 
     return (
         <div>
-            <img src={path} alt="lazy" style={{ width: '200px', height: '200px' }} onClick={handleOpen} />
+            <img src={path} alt="lazy" style={{ width: '180px', height: '180px' }} onClick={handleOpen} />
             <CustomModal
                 open={open}
                 onClose={handleClose}
@@ -59,4 +59,8 @@ const ImageContainer = styled('div')(({ theme }) => ({
     },
 }))
 
+// const CustomImage = styled('img')(() => ({
+//     width: '',
+    
+// })) 
 export default ModalImage;
