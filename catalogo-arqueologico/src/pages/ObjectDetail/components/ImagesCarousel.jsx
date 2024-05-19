@@ -18,18 +18,18 @@ const ImagesCarousel = ({ images }) => {
     }
 
     return (
-        <CustomBox  >
+        <CustomBox width={1}>
             <CustomBackIcon onClick={handlePrev} />
-            <ImageList cols={3} rowHeight={200} >
+            
+            <ImageList cols={3} rowHeight={200} sx={{ width: 1 }}>
                 {images.slice((currentPage - 1) * itemsPerPage, currentPage * 3).map((item, index) => (
-                    <ImageListItem key={index}>
+                    <CustomImageListItem key={index}>
                         <ModalImage key={index} path={item} />
-                    </ImageListItem>
+                    </CustomImageListItem>
                 ))}
             </ImageList>
-            < CustomForwardIcon onClick={handleNext} />
+            <CustomForwardIcon onClick={handleNext} />
         </CustomBox>
-
     );
 }
 
@@ -46,4 +46,9 @@ const CustomBox = styled(Box)(() => ({
     justifyContent: 'center',
 }))
 
+const CustomImageListItem = styled(ImageList)(() => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}))
 export default ImagesCarousel;
