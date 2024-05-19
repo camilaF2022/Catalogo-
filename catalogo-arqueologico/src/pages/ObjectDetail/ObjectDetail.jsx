@@ -1,14 +1,25 @@
 import { useEffect, useState } from 'react'
-import { Typography, Button, Chip, Grid, Container, Stack, Box } from '@mui/material';
+import { Typography, Button, Chip, Grid, Container, Stack, Box, Snackbar } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import ModalRequestButton from './components/ModalButton';
+import ModalFormButton from './components/ModalFormButton';
+import RequestForm from './components/DownloadForm';
+import EditForm from './components/EditForm';
 import PieceVisualization from './components/PieceVisualization';
 import ImagesCarousel from './components/ImagesCarousel';
 import { useParams } from 'react-router-dom';
+import DownloadForm from './components/DownloadForm';
 
 const ObjectDetail = ({ loggedIn }) => {
     const [piece, setPiece] = useState();
     const { pieceId } = useParams();
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
+    const handleOpenSnackbar = () => {
+        setOpenSnackbar(true);
+    };
 
     useEffect(() => {
         fetch('/pieces_models/response.json')
@@ -28,25 +39,31 @@ const ObjectDetail = ({ loggedIn }) => {
                     <CustomContainer >
                         <Typography variant='h3'><b>#{piece && String(pieceId).padStart(4, '0')}</b> </Typography>
                         {loggedIn ? (
-                            <HorizontalStack>
-                                <Button text={"Descargar Pieza"}>
+                            <HorizontalStack >
+                                <Button variant='contained'>
+                                    Descargar Pieza
                                 </Button>
-                                <Button variant="contained">Editar Pieza</Button>
+
+                                <ModalFormButton text={"Editar Pieza"}>
+                                    <EditForm />
+                                </ModalFormButton>
+
                             </HorizontalStack>
                         ) : (
-                            <ModalRequestButton text={"Solicitar datos"}></ModalRequestButton>
+                            <ModalFormButton text={"Solicitar datos"}>
+                                {piece && <DownloadForm handleOpenSnackBar={handleOpenSnackbar} pieceInfo={piece}></DownloadForm>}
+                            </ModalFormButton>
                         )}
                     </CustomContainer>
                     {piece && (
                         <>
                             <PieceVisualization objPath={piece.model.object} mtlPath={piece.model.material} />
-                                <ImagesCarousel images={piece.images} ></ImagesCarousel>
+                            <ImagesCarousel images={piece.images} ></ImagesCarousel>
                         </>
                     )}
 
                 </LeftBox>
             </CenterGrid>
-
             <Grid item lg>
                 <RightBox >
                     <HorizontalStack><Typography variant='h5'>Cultura:</Typography>  <CustomCultureTag label={piece && piece.atributes.culture} /></HorizontalStack>
@@ -62,6 +79,8 @@ const ObjectDetail = ({ loggedIn }) => {
 
                 </RightBox>
             </Grid>
+            <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleCloseSnackbar} message={"Solicitud enviada correctamente.La descarga comenzará en unos segundos"}>
+            </Snackbar>
         </ContainerGrid>
     )
 }
