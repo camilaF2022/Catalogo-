@@ -18,25 +18,27 @@ const ImagesCarousel = ({ images }) => {
     }
 
     return (
-        <CustomBox width={1}>
-            <CustomBackIcon onClick={handlePrev} />
-            
-            <ImageList cols={3} rowHeight={200} sx={{ width: 1 }}>
-                {images.slice((currentPage - 1) * itemsPerPage, currentPage * 3).map((item, index) => (
-                    <CustomImageListItem key={index}>
-                        <ModalImage key={index} path={item} />
-                    </CustomImageListItem>
-                ))}
-            </ImageList>
-            <CustomForwardIcon onClick={handleNext} />
-        </CustomBox>
+        images.length >= 1 && (
+            <CustomBox width={1}>
+                <CustomBackIcon onClick={handlePrev} />
+
+                <ImageList cols={3} rowHeight={200} sx={{ width: 1 }}>
+                    {images.slice((currentPage - 1) * itemsPerPage, currentPage * 3).map((item, index) => (
+                        <CustomImageListItem key={index}>
+                            <ModalImage key={index} path={item} />
+                        </CustomImageListItem>
+                    ))}
+                </ImageList>
+                <CustomForwardIcon onClick={handleNext} />
+            </CustomBox>
+        )
     );
 }
 
-const CustomBackIcon = styled(ArrowBackIosIcon)(({theme}) => ({
+const CustomBackIcon = styled(ArrowBackIosIcon)(({ theme }) => ({
     cursor: 'pointer',
 }))
-const CustomForwardIcon = styled(ArrowForwardIosIcon)(({theme}) => ({
+const CustomForwardIcon = styled(ArrowForwardIosIcon)(({ theme }) => ({
     cursor: 'pointer',
 }))
 const CustomBox = styled(Box)(() => ({
