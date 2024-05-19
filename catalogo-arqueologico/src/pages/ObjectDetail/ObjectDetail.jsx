@@ -3,7 +3,7 @@ import { Typography, ImageList, ImageListItem, Button, Chip, Grid, Container, St
 import { styled } from '@mui/material/styles';
 import ModalButton from './components/ModalButton';
 import PieceVisualization from './components/PieceVisualization';
-import ModalImage from '../../components/ModalImage';
+import ModalImage from './components/ModalImage';
 import { useParams } from 'react-router-dom';
 
 const ObjectDetail = ({ loggedIn }) => {
