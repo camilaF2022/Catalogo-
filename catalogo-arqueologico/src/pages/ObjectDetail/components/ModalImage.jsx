@@ -15,15 +15,14 @@ const ModalImage = ({ path }) => {
         img.onload = () => {
             if ((img.width/img.height)>2) {
                 setIsWideImage(true);
+            }else{
+                setIsWideImage(false);
             }
         }
     }
-    
     useEffect(() => {
         handleImageSize(path);
-
-    }, [path])
-    
+    }, [path])    
     return (
         <div>
             <img src={path} alt="lazy" style={{ width: '180px', height: '180px' }} onClick={handleOpen}  />

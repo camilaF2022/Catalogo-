@@ -41,7 +41,6 @@ const ObjectDetail = ({ loggedIn }) => {
                         <>
                             <PieceVisualization objPath={piece.model.object} mtlPath={piece.model.material} />
                                 <ImagesCarousel images={piece.images} ></ImagesCarousel>
-                            
                         </>
                     )}
 
