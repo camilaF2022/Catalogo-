@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import {  Box, ImageList, ImageListItem } from '@mui/material'
+import { Box, ImageList, ImageListItem } from '@mui/material'
 import ModalImage from './ModalImage';
 import styled from '@mui/material/styles/styled';
 
@@ -19,26 +19,31 @@ const ImagesCarousel = ({ images }) => {
 
     return (
         <CustomBox  >
-            <ArrowBackIosIcon onClick={handlePrev} />
-            <Box >
-                <ImageList cols={3} rowHeight={250} >
-                    {images.slice((currentPage - 1) * itemsPerPage, currentPage * 3).map((item, index) => (
-                        <ImageListItem key={index}>
-                            <ModalImage key={index} path={item} />
-                        </ImageListItem>
-                    ))}
-                </ImageList>
-
-            </Box>
-            <ArrowForwardIosIcon onClick={handleNext} />
+            <CustomBackIcon onClick={handlePrev} />
+            <ImageList cols={3} rowHeight={200} >
+                {images.slice((currentPage - 1) * itemsPerPage, currentPage * 3).map((item, index) => (
+                    <ImageListItem key={index}>
+                        <ModalImage key={index} path={item} />
+                    </ImageListItem>
+                ))}
+            </ImageList>
+            < CustomForwardIcon onClick={handleNext} />
         </CustomBox>
 
     );
 }
 
+const CustomBackIcon = styled(ArrowBackIosIcon)(({theme}) => ({
+    cursor: 'pointer',
+}))
+const CustomForwardIcon = styled(ArrowForwardIosIcon)(({theme}) => ({
+    cursor: 'pointer',
+}))
 const CustomBox = styled(Box)(() => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
 }))
+
 export default ImagesCarousel;
