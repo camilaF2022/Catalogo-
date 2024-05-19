@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Autocomplete, TextField, Grid, Stack } from "@mui/material";
+import {
+  Autocomplete,
+  TextField,
+  Grid,
+  Stack,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import Clear from "@mui/icons-material/Clear";
 import { styled } from "@mui/system";
 import { useSearchParams } from "react-router-dom";
 
@@ -85,7 +93,13 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
 
       const filterTagsInLowerCase = filterTags.map((tag) => tag.toLowerCase());
 
-      if (query && !artifact.attributes.description.toLowerCase().includes(query.toLowerCase())) {
+      if (
+        query &&
+        !artifact.attributes.description
+          .toLowerCase()
+          .includes(query.toLowerCase()) &&
+        !query.includes(String(artifact.id))
+      ) {
         return false;
       }
 
@@ -93,7 +107,10 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
         return false;
       }
 
-      if (filterCulture && culture.toLowerCase() !== filterCulture.toLowerCase()) {
+      if (
+        filterCulture &&
+        culture.toLowerCase() !== filterCulture.toLowerCase()
+      ) {
         return false;
       }
 
@@ -140,7 +157,26 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
   return (
     <CustomBox>
       <TextField
-        InputProps={{ startAdornment: <SearchIcon /> }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon />
+            </InputAdornment>
+          ),
+          endAdornment: filter.query && (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="Clear search"
+                onClick={() => handleFilterChange("query", "")}
+                onMouseDown={(event) => event.preventDefault()}
+                edge="end"
+                size="small"
+              >
+                <Clear />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
         label="Buscar"
         variant="outlined"
         size="small"
