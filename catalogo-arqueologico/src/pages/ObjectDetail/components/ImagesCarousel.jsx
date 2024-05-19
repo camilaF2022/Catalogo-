@@ -22,7 +22,7 @@ const ImagesCarousel = ({ images }) => {
             <CustomBox width={1}>
                 <CustomBackIcon onClick={handlePrev} />
 
-                <ImageList cols={3} rowHeight={200} sx={{ width: 1 }}>
+                <ImageList cols={3} rowHeight={200} sx={{ width: 1 }} gap={10}>
                     {images.slice((currentPage - 1) * itemsPerPage, currentPage * 3).map((item, index) => (
                         <CustomImageListItem key={index}>
                             <ModalImage key={index} path={item} />
@@ -52,5 +52,6 @@ const CustomImageListItem = styled(ImageList)(() => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+
 }))
 export default ImagesCarousel;
