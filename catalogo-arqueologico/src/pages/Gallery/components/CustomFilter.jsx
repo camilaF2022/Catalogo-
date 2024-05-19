@@ -83,21 +83,23 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
         tags: filterTags,
       } = filter;
 
-      if (query && !artifact.attributes.description.includes(query)) {
+      const filterTagsInLowerCase = filterTags.map((tag) => tag.toLowerCase());
+
+      if (query && !artifact.attributes.description.toLowerCase().includes(query.toLowerCase())) {
         return false;
       }
 
-      if (filterShape && shape !== filterShape) {
+      if (filterShape && shape.toLowerCase() !== filterShape.toLowerCase()) {
         return false;
       }
 
-      if (filterCulture && culture !== filterCulture) {
+      if (filterCulture && culture.toLowerCase() !== filterCulture.toLowerCase()) {
         return false;
       }
 
       if (
-        filterTags.length > 0 &&
-        !filterTags.every((tag) => tags.includes(tag))
+        filterTagsInLowerCase.length > 0 &&
+        !filterTagsInLowerCase.every((tag) => tags.includes(tag.toLowerCase()))
       ) {
         return false;
       }
