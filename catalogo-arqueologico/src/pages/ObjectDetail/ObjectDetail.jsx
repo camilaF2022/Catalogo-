@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Typography, Button, Chip, Grid, Container, Stack, Box, Snackbar } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ModalFormButton from './components/ModalFormButton';
-import RequestForm from './components/DownloadForm';
 import EditForm from './components/EditForm';
 import PieceVisualization from './components/PieceVisualization';
 import ImagesCarousel from './components/ImagesCarousel';
@@ -13,7 +12,7 @@ const ObjectDetail = ({ loggedIn }) => {
     const [piece, setPiece] = useState();
     const { pieceId } = useParams();
     const [openSnackbar, setOpenSnackbar] = useState(false);
-
+    console.log(piece)
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
     };
@@ -66,12 +65,12 @@ const ObjectDetail = ({ loggedIn }) => {
             </CenterGrid>
             <Grid item lg>
                 <RightBox >
-                    <HorizontalStack><Typography variant='h5'>Cultura:</Typography>  <CustomCultureTag label={piece && piece.atributes.culture} /></HorizontalStack>
-                    <HorizontalStack><Typography variant='h5'> Forma: </Typography> <CustomShapeTag label={piece && piece.atributes.shape} /> </HorizontalStack>
-                    <Typography>{piece && piece.atributes.description}</Typography>
+                    <HorizontalStack><Typography variant='h5'>Cultura:</Typography>  <CustomCultureTag label={piece && piece.attributes.culture} /></HorizontalStack>
+                    <HorizontalStack><Typography variant='h5'> Forma: </Typography> <CustomShapeTag label={piece && piece.attributes.shape} /> </HorizontalStack>
+                    <Typography>{piece && piece.attributes.description}</Typography>
                     {<HorizontalStack><Typography variant='h5'>Etiquetas:</Typography>
                         <TagContainer >
-                            {piece && piece.atributes.tags.map((tag, index) =>
+                            {piece && piece.attributes.tags.map((tag, index) =>
                                 <Chip key={index} label={tag} />
                             )}
                         </TagContainer>
