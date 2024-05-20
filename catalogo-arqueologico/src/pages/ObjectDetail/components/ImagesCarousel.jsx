@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { Box, ImageList, ImageListItem } from '@mui/material'
+import { Box, ImageList } from '@mui/material'
 import ModalImage from './ModalImage';
 import styled from '@mui/material/styles/styled';
 
