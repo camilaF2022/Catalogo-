@@ -27,7 +27,7 @@ const DownloadForm = ({ handleClose,handleOpenSnackBar,pieceInfo}) => {
     const handleDownload = () => {                
         // metadata
         const jsonObj = {
-            "atributes": pieceInfo.atributes,
+            "attributes": pieceInfo.attributes,
         };
         const jsonStr = JSON.stringify(jsonObj);
         const blob = new Blob([jsonStr], { type: "application/json" });
