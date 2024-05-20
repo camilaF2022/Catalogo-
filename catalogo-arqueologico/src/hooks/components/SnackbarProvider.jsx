@@ -1,12 +1,12 @@
 // Source: https://medium.com/swlh/snackbars-in-react-an-exercise-in-hooks-and-context-299b43fd2a2b
-import {
+import React, {
   createContext,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
-import Snackbar from '@mui/material/Snackbar';
+import { Snackbar, SnackbarContent } from "@mui/material";
 
 export const SnackbarContext = createContext();
 
@@ -36,8 +36,15 @@ export function SnackbarProvider({ children }) {
   return (
     <SnackbarContext.Provider value={value}>
       {children}
-      {alerts.map((alert) => (
-        <Snackbar key={alert}>{alert}</Snackbar>
+      {alerts.map((alert, index) => (
+        <Snackbar
+          key={index}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          open
+          style={{ bottom: `${(index + 1) * 50}px` }} // Adjust the bottom margin for stacking
+        >
+          <SnackbarContent message={alert} />
+        </Snackbar>
       ))}
     </SnackbarContext.Provider>
   );

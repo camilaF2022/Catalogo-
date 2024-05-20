@@ -6,7 +6,6 @@ import MenuBar from "./MenuBar";
 import NotFound from "./NotFound";
 import { Home, Login, Gallery, CreateItem, ObjectDetail } from "../pages";
 import useToken from "../hooks/useToken";
-import { SnackbarProvider } from "../hooks/components/SnackbarProvider";
 
 const Layout = () => {
   const { token, setToken } = useToken();
@@ -14,33 +13,31 @@ const Layout = () => {
 
   return (
     <CustomGrid>
-      <SnackbarProvider>
-        <MenuBar loggedIn={isAuthenticated} setToken={setToken} />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login setToken={setToken} />} />
-          <Route
-            path="/gallery"
-            element={<Gallery loggedIn={isAuthenticated} />}
-          />
-          <Route
-            path="/gallery/:pieceId"
-            element={<ObjectDetail loggedIn={isAuthenticated} />}
-          />
-          {/* Private routes */}
-          <Route
-            path="/gallery/new"
-            element={
-              isAuthenticated ? (
-                <CreateItem />
-              ) : (
-                <Login setToken={setToken} navigateTo="/gallery/new" />
-              )
-            }
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </SnackbarProvider>
+      <MenuBar loggedIn={isAuthenticated} setToken={setToken} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login setToken={setToken} />} />
+        <Route
+          path="/gallery"
+          element={<Gallery loggedIn={isAuthenticated} />}
+        />
+        <Route
+          path="/gallery/:pieceId"
+          element={<ObjectDetail loggedIn={isAuthenticated} />}
+        />
+        {/* Private routes */}
+        <Route
+          path="/gallery/new"
+          element={
+            isAuthenticated ? (
+              <CreateItem />
+            ) : (
+              <Login setToken={setToken} navigateTo="/gallery/new" />
+            )
+          }
+        />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </CustomGrid>
   );
 };
