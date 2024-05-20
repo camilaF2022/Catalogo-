@@ -10,9 +10,12 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import useSnackBars from "../../hooks/useSnackbars";
 
 const CreateItem = () => {
   const navigate = useNavigate();
+  const { addAlert } = useSnackBars();
+
   const [newObjectAttributes, setNewObjectAttributes] = useState({
     model: "",
     images: [],
@@ -61,6 +64,7 @@ const CreateItem = () => {
     e.preventDefault();
     console.log(newObjectAttributes); // Send new object to the server
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Emulate POST delay
+    addAlert("¡Objeto creado con éxito!");
   };
 
   const handleCancel = () => {
