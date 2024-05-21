@@ -11,6 +11,15 @@ import {
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import useSnackBars from "../../hooks/useSnackbars";
+import UploadButton from "./components/UploadButton";
+
+export const allowedFileTypes = {
+  model: ["obj"],
+  texture: ["jpg"],
+  material: ["mtl"],
+  thumbnail: ["jpg"],
+  images: ["jpg"],
+};
 
 const CreateItem = () => {
   const navigate = useNavigate();
@@ -18,6 +27,9 @@ const CreateItem = () => {
 
   const [newObjectAttributes, setNewObjectAttributes] = useState({
     model: "",
+    texture: "",
+    material: "",
+    thumbnail: "",
     images: [],
     description: "",
     shape: "",
@@ -64,7 +76,9 @@ const CreateItem = () => {
     e.preventDefault();
     console.log(newObjectAttributes); // Send new object to the server
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Emulate POST delay
+    const newId = 1;
     addAlert("¡Objeto creado con éxito!");
+    navigate(`/gallery/${newId}`);
   };
 
   const handleCancel = () => {
@@ -77,14 +91,35 @@ const CreateItem = () => {
         <CustomTypography variant="h1">Agregar nuevo objeto</CustomTypography>
         <Grid container spacing={2}>
           <ColumnGrid item xs={6} rowGap={2}>
-            <FormLabel component="legend">Modelo 3D *</FormLabel>
-            <Button variant="contained" color="primary" component="label">
-              Cargar el archivo
-            </Button>
-            <FormLabel component="legend">Imágenes (opcional)</FormLabel>
-            <Button variant="contained" color="primary" component="label">
-              Cargar el archivo
-            </Button>
+            <UploadButton
+              label="Modelo *"
+              name="model"
+              isRequired
+              setStateFn={setNewObjectAttributes}
+            />
+            <UploadButton
+              label="Textura *"
+              name="texture"
+              isRequired
+              setStateFn={setNewObjectAttributes}
+            />
+            <UploadButton
+              label="Material *"
+              name="material"
+              isRequired
+              setStateFn={setNewObjectAttributes}
+            />
+            <UploadButton
+              label="Miniatura (opcional)"
+              name="thumbnail"
+              setStateFn={setNewObjectAttributes}
+            />
+            <UploadButton
+              label="Imágenes (opcional)"
+              name="images"
+              isMultiple
+              setStateFn={setNewObjectAttributes}
+            />
           </ColumnGrid>
           <ColumnGrid item xs={6} rowGap={1}>
             <FormLabel component="legend">Descripción *</FormLabel>
