@@ -1,49 +1,56 @@
 import React from "react";
 import { styled } from "@mui/material/styles";
-import Grid from "@mui/material/Grid";
-import { Link } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Link , useLocation, useNavigate} from "react-router-dom";
+import { AppBar, Toolbar, IconButton, Button, Typography } from "@mui/material";
+import logo from '../logo-removebg-preview.svg';
 
 const MenuBar = ({ loggedIn, setToken }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const handleLogout = () => {
     setToken(null);
   };
 
+  const handleLoginClick = () => {
+    navigate('/login', { state: { from: location.pathname } });
+  };
+
   return (
-    <CustomGrid container>
-      <Grid item textAlign="left">
-        <Link to="/gallery">
-          <Button variant="text" color="secondary">
-            Galería
-          </Button>
-        </Link>
-      </Grid>
-      <Grid item textAlign="right">
-        {!loggedIn ? (
-          <Link to="/login">
-            <Button variant="text" color="secondary">
-              Iniciar sesión
-            </Button>
+    <AppBar position="static">
+      <CustomToolbar>
+        <IconButton edge="start" color="inherit" aria-label="menu">
+          <img src={logo} alt="logo" style={{ height: '40px',marginLeft: 24 }} />
+        </IconButton>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Link to="/gallery" style={{ textDecoration: 'none', color: 'white', marginLeft: 55 }}>
+            <Button color="inherit">Galería</Button>
           </Link>
+        </Typography>
+        {loggedIn && (
+            <Button component={Link} to="/gallery/new" color="inherit" style={{ marginRight: 55 }}>
+              Agregar objeto
+            </Button>
+          )}
+        {!loggedIn ? (      
+            <Button color="inherit" onClick={handleLoginClick}>Iniciar sesión</Button>
         ) : (
-          <Button variant="text" color="secondary" onClick={handleLogout}>
+          <Button color="inherit" onClick={handleLogout}>
             Cerrar sesión
           </Button>
         )}
-      </Grid>
-    </CustomGrid>
+      </CustomToolbar>
+    </AppBar>
   );
 };
 
-const CustomGrid = styled(Grid)(({ theme }) => ({
-  backgroundColor: theme.palette.menu.main,
-  color: "white",
-  height: theme.spacing(7),
-  paddingLeft: theme.spacing(5),
-  paddingRight: theme.spacing(5),
-  justifyContent: "space-between",
-  display: "flex",
-  alignItems: "center",
+const CustomToolbar = styled(Toolbar)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
 }));
+
+
+
 
 export default MenuBar;
