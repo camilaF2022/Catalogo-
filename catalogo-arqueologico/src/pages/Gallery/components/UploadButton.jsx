@@ -35,7 +35,7 @@ const UploadButton = ({ label, name, isMultiple, isRequired, setStateFn }) => {
     // Save file in state
     if (inputName === "images") {
       const images = Array.from(files);
-      setFilename(images.map((image) => image.name).join(", "));
+      setFilename(images.map((image) => image.name).join("\n"));
       setStateFn((prevState) => ({ ...prevState, [inputName]: images }));
       return;
     }
@@ -59,7 +59,9 @@ const UploadButton = ({ label, name, isMultiple, isRequired, setStateFn }) => {
             tabIndex={-1}
             startIcon={<CloudUploadIcon />}
           >
-            Subir archivo ({allowedTypesLabel})
+            {isMultiple
+              ? `Subir archivo(s) (${allowedTypesLabel})`
+              : `Subir archivo (${allowedTypesLabel})`}
             <VisuallyHiddenInput
               type="file"
               name={name}
@@ -73,6 +75,8 @@ const UploadButton = ({ label, name, isMultiple, isRequired, setStateFn }) => {
             fullWidth
             size="small"
             disabled
+            required={isRequired}
+            multiline={isMultiple}
             value={filename}
             InputProps={{
               readOnly: true,

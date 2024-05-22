@@ -5,13 +5,14 @@ import {
   Typography,
   Button,
   TextField,
-  Autocomplete,
   FormLabel,
+  Box,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import useSnackBars from "../../hooks/useSnackbars";
 import UploadButton from "./components/UploadButton";
+import AutocompleteExtended from "./components/AutocompleteExtended";
 
 export const allowedFileTypes = {
   model: ["obj"],
@@ -87,125 +88,106 @@ const CreateItem = () => {
 
   return (
     <Container>
-      <Grid container rowGap={4}>
-        <CustomTypography variant="h1">Agregar nuevo objeto</CustomTypography>
-        <Grid container spacing={2}>
-          <ColumnGrid item xs={6} rowGap={2}>
-            <UploadButton
-              label="Modelo *"
-              name="model"
-              isRequired
-              setStateFn={setNewObjectAttributes}
-            />
-            <UploadButton
-              label="Textura *"
-              name="texture"
-              isRequired
-              setStateFn={setNewObjectAttributes}
-            />
-            <UploadButton
-              label="Material *"
-              name="material"
-              isRequired
-              setStateFn={setNewObjectAttributes}
-            />
-            <UploadButton
-              label="Miniatura (opcional)"
-              name="thumbnail"
-              setStateFn={setNewObjectAttributes}
-            />
-            <UploadButton
-              label="Imágenes (opcional)"
-              name="images"
-              isMultiple
-              setStateFn={setNewObjectAttributes}
-            />
-          </ColumnGrid>
-          <ColumnGrid item xs={6} rowGap={1}>
-            <FormLabel component="legend">Descripción *</FormLabel>
-            <TextField
-              required
-              id="description"
-              name="description"
-              placeholder="Descripción del objeto"
-              multiline
-              rows={4}
-              fullWidth
-              value={newObjectAttributes.description}
-              onChange={(e) => handleInputChange(e.target.name, e.target.value)}
-            />
-            <FormLabel component="legend">Forma *</FormLabel>
-            <Autocomplete
-              required
-              fullWidth
-              id="shape"
-              name="shape"
-              value={newObjectAttributes.shape}
-              onChange={(value) =>
-                handleInputChange("shape", value.target.textContent)
-              }
-              options={shapeOptions}
-              getOptionLabel={(option) => option}
-              filterSelectedOptions
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder="Seleccionar la forma de la pieza"
-                />
-              )}
-            />
-            <FormLabel component="legend">Cultura *</FormLabel>
-            <Autocomplete
-              required
-              fullWidth
-              id="culture"
-              name="culture"
-              value={newObjectAttributes.culture}
-              onChange={(value) =>
-                handleInputChange("culture", value.target.textContent)
-              }
-              options={cultureOptions}
-              getOptionLabel={(option) => option}
-              filterSelectedOptions
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder="Seleccionar la cultura de origen"
-                />
-              )}
-            />
-            <FormLabel component="legend">Etiquetas (opcional)</FormLabel>
-            <Autocomplete
-              multiple
-              limitTags={3}
-              fullWidth
-              id="tags"
-              name="tags"
-              value={newObjectAttributes.tags}
-              onChange={(event, value) =>
-                handleInputChange(
-                  "tags",
-                  value.map((tag) => tag)
-                )
-              }
-              options={tagOptions}
-              getOptionLabel={(option) => option}
-              filterSelectedOptions
-              renderInput={(params) => (
-                <TextField {...params} placeholder="Seleccionar etiquetas" />
-              )}
-            />
-          </ColumnGrid>
+      <Box component="form" autoComplete="off" onSubmit={handleSubmit}>
+        <Grid container rowGap={4}>
+          <CustomTypography variant="h1">Agregar nuevo objeto</CustomTypography>
+          <Grid container spacing={2}>
+            <ColumnGrid item xs={6} rowGap={2}>
+              <UploadButton
+                label="Modelo *"
+                name="model"
+                isRequired
+                setStateFn={setNewObjectAttributes}
+              />
+              <UploadButton
+                label="Textura *"
+                name="texture"
+                isRequired
+                setStateFn={setNewObjectAttributes}
+              />
+              <UploadButton
+                label="Material *"
+                name="material"
+                isRequired
+                setStateFn={setNewObjectAttributes}
+              />
+              <UploadButton
+                label="Miniatura (opcional)"
+                name="thumbnail"
+                setStateFn={setNewObjectAttributes}
+              />
+              <UploadButton
+                label="Imágenes (opcional)"
+                name="images"
+                isMultiple
+                setStateFn={setNewObjectAttributes}
+              />
+            </ColumnGrid>
+            <ColumnGrid item xs={6} rowGap={1}>
+              <FormLabel component="legend">Descripción *</FormLabel>
+              <TextField
+                required
+                id="description"
+                name="description"
+                placeholder="Descripción del objeto"
+                multiline
+                rows={4}
+                fullWidth
+                value={newObjectAttributes.description}
+                onChange={(e) =>
+                  handleInputChange(e.target.name, e.target.value)
+                }
+              />
+              <FormLabel component="legend">Forma *</FormLabel>
+              <AutocompleteExtended
+                id="shape"
+                name="shape"
+                value={newObjectAttributes.shape}
+                setValue={handleInputChange}
+                options={shapeOptions}
+                placeholder="Seleccionar la forma del objeto"
+                isRequired
+                fullWidth
+                filterSelectedOptions
+              />
+              <FormLabel component="legend">Cultura *</FormLabel>
+              <AutocompleteExtended
+                id="culture"
+                name="culture"
+                value={newObjectAttributes.culture}
+                setValue={handleInputChange}
+                options={cultureOptions}
+                placeholder="Seleccionar la cultura del objeto"
+                isRequired
+                fullWidth
+                filterSelectedOptions
+              />
+              <FormLabel component="legend">Etiquetas (opcional)</FormLabel>
+              <AutocompleteExtended
+                multiple
+                limitTags={3}
+                fullWidth
+                id="tags"
+                name="tags"
+                value={newObjectAttributes.tags}
+                setValue={handleInputChange}
+                options={tagOptions}
+                placeholder="Seleccionar las etiquetas del objeto"
+                getOptionLabel={(option) => option}
+                filterSelectedOptions
+              />
+            </ColumnGrid>
+          </Grid>
+          <Grid container justifyContent="flex-end" columnGap={2}>
+            <Button variant="text" color="secondary" onClick={handleCancel}>
+              Cancelar
+            </Button>
+            <Button variant="contained" color="primary" type="submit">
+              Publicar
+            </Button>
+          </Grid>
         </Grid>
-        <Grid container justifyContent="flex-end" columnGap={2}>
-          <Button variant="text" color="secondary" onClick={handleCancel}>
-            Cancelar
-          </Button>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            Publicar
-          </Button>
-        </Grid>
-      </Grid>
+      </Box>
     </Container>
   );
 };
