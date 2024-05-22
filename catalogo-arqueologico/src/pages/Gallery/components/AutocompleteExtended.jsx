@@ -24,7 +24,7 @@ const AutocompleteExtended = ({
     setOpenMenu(false);
   };
 
-  const optionAvailable = !options.includes(inputValue);
+  const optionAvailable = !value.includes(inputValue);
 
   const createOption = optionAvailable ? (
     <NewOption component="li" key={inputValue} onClick={handleCreateNewOption}>
