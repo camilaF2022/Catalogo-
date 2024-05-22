@@ -17,8 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from catalogo_arqueologico.views import LoginView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('metadata/', include('piezas.urls')),
     path('media/', include('piezas.urls')),
+    path('login/', LoginView.as_view(), name='login'),
 ]
