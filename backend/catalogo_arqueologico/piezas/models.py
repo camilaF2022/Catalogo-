@@ -1,53 +1,69 @@
 from django.db import models
 
 # Create your models here.
-class Metadata(models.Model):
-    LABEL = 1
-    CULTURE = 2
-    FORM = 3
-
-    TIPO_METADATA = [
-        (LABEL, "Tag"),
-        (CULTURE, "Culture"),
-        (FORM, "Form"),
-    ]
-
+class Shape(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
-    type = models.IntegerField(choices=TIPO_METADATA)
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
-        return self.name + ", " + str(self.type)
+        return self.name + ": " + str(self.id)
 
-
-class Media(models.Model):
-    MODEL = 1
-    PHOTO = 2
-
-    TIPO_MEDIA = [
-        (MODEL, "Model"),
-        (PHOTO, "Photo"),
-    ]
-
+class Culture(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
-    path = models.CharField(max_length=100, unique=True)
-    type = models.IntegerField(choices=TIPO_MEDIA)
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name + ": " + str(self.id)
     
+class Tag(models.Model):
+    id = models.BigAutoField(primary_key=True, unique=True)
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name + ": " + str(self.id)
 
 
-class PiezaArq(models.Model):
-    
+
+class Thumbnail(models.Model):
+    id = models.BigAutoField(primary_key=True, unique=True)
+    path = models.ImageField(upload_to='thumbnails/', unique=True)
+
+class Model(models.Model):
+    id = models.BigAutoField(primary_key=True, unique=True)
+    texture = models.ImageField(upload_to='textures/', unique=True)
+    object = models.FileField(upload_to='objects/', unique=True)
+    material = models.FileField(upload_to='materials/', unique=True)
+
+class Image(models.Model):
+    id = models.BigAutoField(primary_key=True, unique=True)
+    id_artifact = models.ForeignKey('Artifact', on_delete=models.CASCADE, related_name='artifact')
+    path = models.ImageField(upload_to='images/',unique=True)
+
+class Artifact(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
     description = models.CharField(max_length=300)
-    preview = models.CharField(max_length=100)
-    model = models.ForeignKey("Metadata", on_delete=models.CASCADE, related_name='models_3d')
-    photos = models.ForeignKey("Media", on_delete=models.CASCADE)
-    culture = models.ForeignKey("Metadata", on_delete=models.CASCADE, related_name='cultures')
-    form = models.ForeignKey("Metadata", on_delete=models.CASCADE, related_name='forms') 
-    tags = models.ForeignKey("Metadata", on_delete=models.CASCADE, related_name='labels')
+    id_thumbnail = models.ForeignKey(Thumbnail, on_delete=models.CASCADE, related_name='thumbnail')
+    id_model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name='model3d', default=0)
+    id_shape = models.ForeignKey(Shape, on_delete=models.CASCADE, related_name='shape')
+    id_culture = models.ForeignKey(Culture, on_delete=models.CASCADE, related_name='culture')
+    id_tags = models.ManyToManyField(Tag) 
+    
 
 
+class TagsIds(models.Model):
+    id = models.BigAutoField(primary_key=True, unique=True)
+    tag = models.IntegerField(default=0)
+    artifactid = models.IntegerField(default=0)
 
+class CultureIds(models.Model):
+    id = models.BigAutoField(primary_key=True, unique=True)
+    culture = models.IntegerField(default=0)
+    artifactid = models.IntegerField(default=0)
+
+class ShapeIds(models.Model):
+    id = models.BigAutoField(primary_key=True, unique=True)
+    shape = models.IntegerField(default=0)
+    artifactid = models.IntegerField(default=0)
 
 """
 class Solicitud(models.Model):
