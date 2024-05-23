@@ -1,13 +1,18 @@
 from rest_framework import viewsets
-from .serializer import MetadataSerializer, MediaSerializer
-from .models import Metadata, Media
+from .serializer import TagSerializer, ShapeSerializer, CultureSerializer
+from .models import Tag, Shape
 
 
 # Create your views here.
 class MetadataView(viewsets.ModelViewSet):
-    serializer_class = MetadataSerializer
-    queryset = Metadata.objects.all()
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()
 
 class MediaView(viewsets.ModelViewSet):
-    serializer_class = MediaSerializer
-    queryset = Media.objects.all()
+    serializer_class = ShapeSerializer
+    queryset = Shape.objects.all()
+
+
+#class MediaView(viewsets.ModelViewSet):
+#    serializer_class = Model3dSerializer
+#    queryset = Media.objects.get(name__icontains=('%s' % ))

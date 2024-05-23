@@ -1,13 +1,23 @@
 from rest_framework import serializers
-from .models import Metadata, Media
+from .models import Tag, Shape, Culture, Artifact
 
-class MetadataSerializer(serializers.ModelSerializer):
+class TagSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Metadata
+        model = Tag
         fields = '__all__'
 
 
-class MediaSerializer(serializers.ModelSerializer):
+class ShapeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Media
+        model = Shape
+        fields = '__all__'
+
+class CultureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Culture
+        fields = ['type']
+
+class PiezaArqSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Artifact
         fields = '__all__'
