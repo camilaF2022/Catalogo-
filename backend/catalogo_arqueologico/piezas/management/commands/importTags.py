@@ -1,7 +1,9 @@
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import IntegrityError
-from piezas.models import Metadata
+from django.conf import settings
+from piezas.models import Tag, TagsIds
 import csv
+import os
 
 class Command(BaseCommand):
     help = 'add new data from csv to Metadata Table'
@@ -17,9 +19,19 @@ class Command(BaseCommand):
                 tags = fila[1].split(', ')
                 for tag in tags:
                     try:
-                        Metadata.objects.create(
-                            type=1,
+                        Tag.objects.create(
                             name=tag
                         )
                     except IntegrityError:
                         print("Error: No se puede insertar un objeto con el mismo valor para 'nombre'.")
+                    
+                    
+                    print("aqui sigue")
+                    recentlyAdded= Tag.objects.get(
+                        name=tag
+                    )
+                    TagsIds.objects.create(
+                        tag=recentlyAdded.id,
+                        artifactid=int(fila[0])
+                    )
+                    
