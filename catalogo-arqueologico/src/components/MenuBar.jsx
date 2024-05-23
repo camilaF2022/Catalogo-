@@ -19,7 +19,7 @@ const MenuBar = ({ loggedIn, setToken }) => {
   return (
     <AppBar position="static">
       <CustomToolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu">
+        <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => navigate('/')}>
           <img src={logo} alt="logo" style={{ height: '40px',marginLeft: 24 }} />
         </IconButton>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>

@@ -57,7 +57,7 @@ const CustomStack = styled(Stack)(({ theme }) => ({
     marginBottom: theme.spacing(2),
     
     textAlign: 'left', // Alinear el texto a la izquierda
-    fontSize: '1.35rem', // Hacer el texto más grande
+    fontSize: '1.2rem', // Hacer el texto más grande
   }));
   
   
