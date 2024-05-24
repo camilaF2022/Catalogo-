@@ -1,3 +1,11 @@
 venv/
 .vscode
 *.pyc
+/backend/catalogo_arqueologico/modelFiles/
+/backend/catalogo_arqueologico/multimedia/
+/backend/catalogo_arqueologico/thumbnails/
+/backend/catalogo_arqueologico/piezas/images/
+/backend/catalogo_arqueologico/piezas/materials/
+/backend/catalogo_arqueologico/piezas/objects/
+/backend/catalogo_arqueologico/piezas/textures/
+/backend/catalogo_arqueologico/piezas/thumbnails/

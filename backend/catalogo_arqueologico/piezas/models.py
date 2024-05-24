@@ -68,7 +68,7 @@ class ShapeIds(models.Model):
 """
 class Solicitud(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
-    arq_piece = models.ForeignKey("PiezaArq", on_delete=models.CASCADE)
+    arq_piece = models.ForeignKey("Artifact", on_delete=models.CASCADE)
     date = models.DateField()
     approved = models.BooleanField()
     name = models.CharField(max_length=50)

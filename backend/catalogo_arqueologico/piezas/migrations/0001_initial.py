@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='PiezaArq',
+            name='Artifact',
             fields=[
                 ('id', models.BigAutoField(primary_key=True, serialize=False, unique=True)),
                 ('description', models.CharField(max_length=300)),
