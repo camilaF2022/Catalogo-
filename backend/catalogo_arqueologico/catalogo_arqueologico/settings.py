@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'coreapi',
     'import_export',
     'piezas',
-    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
