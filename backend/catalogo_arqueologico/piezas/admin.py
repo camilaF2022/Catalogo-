@@ -6,3 +6,4 @@ admin.site.register(Tag)
 
 admin.site.register(Shape)
 admin.site.register(Culture)
+admin.site.register(Artifact)
