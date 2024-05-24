@@ -179,7 +179,6 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
         }}
         label="Buscar"
         variant="outlined"
-        size="small"
         fullWidth
         name="query"
         value={filter.query}
@@ -230,9 +229,6 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
           multiple
           limitTags={2}
           fullWidth
-          sx={{
-            maxHeight: "56px",
-          }}
           id="tags"
           name="tags"
           value={filter.tags}
