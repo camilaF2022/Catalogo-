@@ -1,19 +1,30 @@
 from rest_framework import viewsets, generics, permissions, authentication
-from .serializers import TagSerializer, ShapeSerializer, CultureSerializer, ArtifactSerializer
+from .serializers import TagSerializer, ShapeSerializer, CultureSerializer, ArtifactSerializer, NewArtifactSerializer
 from .models import Tag, Shape, Artifact
 from .authentication import TokenAuthentication
 from .permissions import IsFuncionarioPermission
+
 class ArtifactDetailAPIView(generics.RetrieveAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
     #aca entregar todo, las urls y todo
 
-class ArtifactListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Artifact.objects.all()
+class ArtifactListAPIView(generics.ListAPIView):
+    queryset = Artifact.objects.all().select_related(
+        'id_shape', 'id_culture', 'id_thumbnail', 'id_model'
+    ).prefetch_related('id_tags')
     serializer_class = ArtifactSerializer
-    authentication_classes = [authentication.SessionAuthentication, TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser, IsFuncionarioPermission]
+
+#class ArtifactListAPIView(generics.ListAPIView):
+#    queryset = Artifact.objects.all()
+#    serializer_class = ArtifactSerializer
+    #authentication_classes = [authentication.SessionAuthentication, TokenAuthentication]
+    #permission_classes = [permissions.IsAdminUser, IsFuncionarioPermission]
     #En el list, se deberia entregar por lo menos el thumbnail
+
+class ArtifactCreateAPIView(generics.CreateAPIView):
+    queryset = Artifact.objects.all()
+    serializer_class = NewArtifactSerializer
 
 class ArtifactDestroyAPIView(generics.DestroyAPIView):
     queryset = Artifact.objects.all()
