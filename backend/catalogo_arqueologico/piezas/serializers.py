@@ -46,7 +46,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
         return wholeDict
 
     def get_preview(self, instance):
-        return instance.id_thumbnail.path
+        return "no hay preview"
 
     def get_model(self, instance):
         realModel = instance.id_model
@@ -55,10 +55,14 @@ class ArtifactSerializer(serializers.ModelSerializer):
             'material': realModel.material,
             'texture': realModel.texture
         }
-        return modelDict
+        return {}
 
     def get_images(self, instance):
-        return [image.path for image in instance.images.all()]
+        #everyImage = Image.objects.filter(id_artifact=instance.id)
+        #Images = []
+        #for image in everyImage:
+        #    Images.append(image.path)
+        return []
 
 #class ArtifactSerializer(serializers.ModelSerializer):
 #    attributes = serializers.SerializerMethodField(read_only = True)
