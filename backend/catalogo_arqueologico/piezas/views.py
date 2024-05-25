@@ -10,9 +10,7 @@ class ArtifactDetailAPIView(generics.RetrieveAPIView):
     #aca entregar todo, las urls y todo
 
 class ArtifactListAPIView(generics.ListAPIView):
-    queryset = Artifact.objects.all().select_related(
-        'id_shape', 'id_culture', 'id_thumbnail', 'id_model'
-    ).prefetch_related('id_tags')
+    queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
 
 #class ArtifactListAPIView(generics.ListAPIView):
