@@ -121,11 +121,11 @@ class CatalogSerializer(serializers.ModelSerializer):
             'attributes',
             ]
     def get_attributes(self, instance):
-        shapeInstance = Shape.objects.get(id=instance.id_shape)
+        shapeInstance = Shape.objects.get(id=instance.id_shape.id)
         tagsInstances = Tag.objects.filter(id__in=instance.id_tags.all())
-        cultureInstance = Culture.objects.get(id=instance.id_culture)
+        cultureInstance = Culture.objects.get(id=instance.id_culture.id)
         description = instance.description
-        preview = Thumbnail.objects.get(id=instance.id_thumbnail).path
+        preview = Thumbnail.objects.get(id=instance.id_thumbnail.id).path.url
 
         tags = []
         for tag in tagsInstances:
