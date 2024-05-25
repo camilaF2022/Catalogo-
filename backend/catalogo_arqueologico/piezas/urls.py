@@ -16,4 +16,5 @@ urlpatterns = [
     path('oneArtifact/<int:pk>/', views.ArtifactDetailAPIView.as_view()),
     path('listArtifacts/', views.ArtifactListAPIView.as_view()),
     path('create/', views.ArtifactCreateAPIView.as_view()),
+    path('catalog/', views.CatalogAPIView.as_view()),
 ]
