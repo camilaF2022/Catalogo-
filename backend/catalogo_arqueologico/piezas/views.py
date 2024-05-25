@@ -3,6 +3,7 @@ from .serializers import TagSerializer, ShapeSerializer, CultureSerializer, Arti
 from .models import Tag, Shape, Artifact
 from .authentication import TokenAuthentication
 from .permissions import IsFuncionarioPermission
+from .serializers import CatalogSerializer
 
 class ArtifactDetailAPIView(generics.RetrieveAPIView):
     queryset = Artifact.objects.all()
@@ -31,6 +32,10 @@ class ArtifactDestroyAPIView(generics.DestroyAPIView):
     serializer_class = ArtifactSerializer
     lookup_field = 'pk'
 
+class CatalogAPIView(generics.ListAPIView):
+    queryset = Artifact.objects.all()
+    serializer_class = CatalogSerializer
+ 
 
 #class MediaView(viewsets.ModelViewSet):
 #    serializer_class = Model3dSerializer
