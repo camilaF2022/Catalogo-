@@ -46,23 +46,23 @@ class ArtifactSerializer(serializers.ModelSerializer):
         return wholeDict
 
     def get_preview(self, instance):
-        return "no hay preview"
+        return instance.id_thumbnail.path.url
 
     def get_model(self, instance):
         realModel = instance.id_model
         modelDict = {
-            'object': realModel.object,
-            'material': realModel.material,
-            'texture': realModel.texture
+            'object': realModel.object.url,
+            'material': realModel.material.url,
+            'texture': realModel.texture.url
         }
-        return {}
+        return modelDict
 
     def get_images(self, instance):
-        #everyImage = Image.objects.filter(id_artifact=instance.id)
-        #Images = []
-        #for image in everyImage:
-        #    Images.append(image.path)
-        return []
+        everyImage = Image.objects.filter(id_artifact=instance.id)
+        Images = []
+        for image in everyImage:
+            Images.append(image.path.url)
+        return Images
 
 #class ArtifactSerializer(serializers.ModelSerializer):
 #    attributes = serializers.SerializerMethodField(read_only = True)
@@ -121,11 +121,11 @@ class CatalogSerializer(serializers.ModelSerializer):
             'attributes',
             ]
     def get_attributes(self, instance):
-        shapeInstance = Shape.objects.get(id=instance.id_shape)
+        shapeInstance = Shape.objects.get(id=instance.id_shape.id)
         tagsInstances = Tag.objects.filter(id__in=instance.id_tags.all())
-        cultureInstance = Culture.objects.get(id=instance.id_culture)
+        cultureInstance = Culture.objects.get(id=instance.id_culture.id)
         description = instance.description
-        preview = Thumbnail.objects.get(id=instance.id_thumbnail).path
+        preview = Thumbnail.objects.get(id=instance.id_thumbnail.id).path.url
 
         tags = []
         for tag in tagsInstances:
