@@ -14,5 +14,6 @@ urlpatterns = [
     path('docs/', include_docs_urls(title="Metadata API")),
     path('oneArtifact/<int:pk>/delete', views.ArtifactDestroyAPIView.as_view()),
     path('oneArtifact/<int:pk>/', views.ArtifactDetailAPIView.as_view()),
-    path('listArtifacts/', views.ArtifactListCreateAPIView.as_view()),
+    path('listArtifacts/', views.ArtifactListAPIView.as_view()),
+    path('create/', views.ArtifactCreateAPIView.as_view()),
 ]
