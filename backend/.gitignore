@@ -11,4 +11,4 @@ venv/
 /catalogo_arqueologico/piezas/thumbnails/
 **/__pycache__/
 /catalogo_arqueologico/db.sqlite3
-/catalogo_arqueologico/data 
+/catalogo_arqueologico/media/*
