@@ -14,16 +14,16 @@ class Command(BaseCommand):
         parser.add_argument('folderFiles', type=str)
 
     def handle(self, *args, **kwargs):
-        media_path = os.path.join(settings.MEDIA_ROOT)
+        # media_path = os.path.join(settings.MEDIA_ROOT)
     
-        textures_path = os.path.join(media_path, 'textures')
-        objects_path = os.path.join(media_path, 'objects')
-        materials_path = os.path.join(media_path, 'materials')
+        # textures_path = os.path.join(media_path, 'textures')
+        # objects_path = os.path.join(media_path, 'objects')
+        # materials_path = os.path.join(media_path, 'materials')
 
-        # Crear directorios si no existen
-        os.makedirs(textures_path, exist_ok=True)
-        os.makedirs(objects_path, exist_ok=True)
-        os.makedirs(materials_path, exist_ok=True)
+        # # Crear directorios si no existen
+        # os.makedirs(textures_path, exist_ok=True)
+        # os.makedirs(objects_path, exist_ok=True)
+        # os.makedirs(materials_path, exist_ok=True)
 
         #Obtener archivos la carpeta
         argument_path = os.listdir( kwargs.get('folderFiles'))
@@ -66,21 +66,21 @@ class Command(BaseCommand):
                 object_path = os.path.join( kwargs.get('folderFiles'),object_file)
                 material_path = os.path.join( kwargs.get('folderFiles'),material_file)
 
-                new_texture_path = os.path.join(textures_path, texture_file)
-                new_object_path = os.path.join(objects_path, object_file)
-                new_material_path = os.path.join(materials_path, material_file)
+                # new_texture_path = os.path.join(textures_path, texture_file)
+                # new_object_path = os.path.join(objects_path, object_file)
+                # new_material_path = os.path.join(materials_path, material_file)
 
-                shutil.move(texture_path, new_texture_path)
-                shutil.move(object_path, new_object_path)
-                shutil.move(material_path, new_material_path)
+                # shutil.move(texture_path, new_texture_path)
+                # shutil.move(object_path, new_object_path)
+                # shutil.move(material_path, new_material_path)
 
                 # Guardar en el modelo
-                with open(new_texture_path, 'rb') as tex_file, open(new_object_path, 'rb') as obj_file, open(new_material_path, 'rb') as mat_file:
+                with open(texture_path, 'rb') as tex_file, open(object_path, 'rb') as obj_file, open(material_path, 'rb') as mat_file:
                     new_model = Model(
                         id=int(base_name_id),
-                        texture=File(tex_file, name=texture_file),
-                        object=File(obj_file, name=object_file),
-                        material=File(mat_file, name=material_file)
+                        texture=File(tex_file, name=os.path.basename(texture_path) ),
+                        object=File(obj_file, name=os.path.basename(object_path) ),
+                        material=File(mat_file, name=os.path.basename(material_path) )
                     )
                     new_model.save()
                     self.stdout.write(self.style.SUCCESS(f'Successfully imported {texture_file}, {object_file}, {material_file}'))

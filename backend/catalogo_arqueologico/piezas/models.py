@@ -1,5 +1,12 @@
 from django.db import models
+from django.core.files.storage import FileSystemStorage
 
+class CustomStorage(FileSystemStorage):
+    def get_available_name(self, name, max_length=None):
+        if self.exists(name):
+            self.delete(name)
+        return name
+    
 # Create your models here.
 class Shape(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
@@ -30,9 +37,9 @@ class Thumbnail(models.Model):
 
 class Model(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
-    texture = models.ImageField(upload_to='textures/', unique=True)
-    object = models.FileField(upload_to='objects/', unique=True)
-    material = models.FileField(upload_to='materials/', unique=True)
+    texture = models.ImageField(upload_to='materials/', unique=True, storage=CustomStorage())
+    object = models.FileField(upload_to='objects/', unique=True, storage=CustomStorage())
+    material = models.FileField(upload_to='materials/', unique=True, storage=CustomStorage())
 
 class Image(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
