@@ -46,14 +46,14 @@ class ArtifactSerializer(serializers.ModelSerializer):
         return wholeDict
 
     def get_preview(self, instance):
-        return instance.id_thumbnail.path.url
-
+        return self.context["request"].build_absolute_uri(instance.id_thumbnail.path.url)
+    
     def get_model(self, instance):
         realModel = instance.id_model
         modelDict = {
-            'object': realModel.object.url,
-            'material': realModel.material.url,
-            'texture': realModel.texture.url
+            'object': self.context["request"].build_absolute_uri(realModel.object.url),
+            'material': self.context["request"].build_absolute_uri(realModel.material.url),
+            'texture': self.context["request"].build_absolute_uri(realModel.texture.url)
         }
         return modelDict
 
@@ -61,7 +61,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
         everyImage = Image.objects.filter(id_artifact=instance.id)
         Images = []
         for image in everyImage:
-            Images.append(image.path.url)
+            Images.append(self.context["request"].build_absolute_uri(image.path.url))
         return Images
 
 #class ArtifactSerializer(serializers.ModelSerializer):

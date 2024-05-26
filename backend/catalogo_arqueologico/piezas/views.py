@@ -11,8 +11,13 @@ class ArtifactDetailAPIView(generics.RetrieveAPIView):
     #aca entregar todo, las urls y todo
 
 class ArtifactListAPIView(generics.ListAPIView):
-    queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
+
+    def get_queryset(self):
+        return Artifact.objects.all()
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 #class ArtifactListAPIView(generics.ListAPIView):
 #    queryset = Artifact.objects.all()
