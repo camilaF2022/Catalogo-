@@ -125,8 +125,7 @@ class CatalogSerializer(serializers.ModelSerializer):
         tagsInstances = Tag.objects.filter(id__in=instance.id_tags.all())
         cultureInstance = Culture.objects.get(id=instance.id_culture.id)
         description = instance.description
-        preview = Thumbnail.objects.get(id=instance.id_thumbnail.id).path.url
-
+        preview=self.context["request"].build_absolute_uri(instance.id_thumbnail.path.url)
         tags = []
         for tag in tagsInstances:
             tags.append((tag.id, tag.name))

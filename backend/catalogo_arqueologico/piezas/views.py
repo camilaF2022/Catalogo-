@@ -4,6 +4,7 @@ from .models import Tag, Shape, Artifact
 from .authentication import TokenAuthentication
 from .permissions import IsFuncionarioPermission
 from .serializers import CatalogSerializer
+from rest_framework.response import Response
 
 class ArtifactDetailAPIView(generics.RetrieveAPIView):
     queryset = Artifact.objects.all()
@@ -18,6 +19,18 @@ class ArtifactListAPIView(generics.ListAPIView):
 
     def get_serializer_context(self):
         return {'request': self.request}
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({"status":"succes", "data":serializer.data})
+
 
 #class ArtifactListAPIView(generics.ListAPIView):
 #    queryset = Artifact.objects.all()
@@ -36,9 +49,23 @@ class ArtifactDestroyAPIView(generics.DestroyAPIView):
     lookup_field = 'pk'
 
 class CatalogAPIView(generics.ListAPIView):
-    queryset = Artifact.objects.all()
     serializer_class = CatalogSerializer
- 
+    def get_queryset(self):
+        return Artifact.objects.all()
+    
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({"status":"succes", "data":serializer.data})
 
 #class MediaView(viewsets.ModelViewSet):
 #    serializer_class = Model3dSerializer
