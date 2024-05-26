@@ -21,7 +21,7 @@ const ObjectDetail = ({ loggedIn }) => {
   const { pieceId } = useParams();
 
   useEffect(() => {
-    fetch("/pieces_models/response.json")
+    fetch("http://localhost:8000/piezas/listArtifacts/")
       .then((response) => response.json())
       .then((response) => {
         //with the api  should retrieve a  single object
@@ -32,7 +32,6 @@ const ObjectDetail = ({ loggedIn }) => {
       })
       .catch((error) => console.error(error));
   }, [pieceId]);
-
   return (
     <ContainerGrid container>
       <CenterGrid item lg={7}>

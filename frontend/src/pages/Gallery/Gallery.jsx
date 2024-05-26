@@ -17,13 +17,13 @@ const Gallery = ({ loggedIn }) => {
   // Sliced artifacts to display on the current page
   const [artifactsToDisplay, setArtifactsToDisplay] = useState([]);
 
+
   // Fetch data from the API
   useEffect(() => {
-    fetch("/pieces_models/response.json")
+    fetch("http://localhost:8000/piezas/catalog/")
       .then((response) => response.json())
       .then((response) => {
         let artifacts = response.data;
-
         let artifactsSimplified = artifacts.map((artifact) => {
           let { id, attributes, preview } = artifact;
           return {
@@ -36,7 +36,7 @@ const Gallery = ({ loggedIn }) => {
       })
       .catch((error) => console.error(error));
   }, []);
-
+  
   const handleRedirect = () => {
     navigate("/gallery/new");
   };
