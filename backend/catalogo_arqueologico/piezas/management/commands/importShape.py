@@ -9,12 +9,10 @@ class Command(BaseCommand):
     help = 'add new data from csv to Metadata Table'
 
     def add_arguments(self, parser):
-        parser.add_argument('text', type=str)
+        parser.add_argument('file', type=str)
 
     def handle(self, *args, **kwargs):
-        file = "./" + kwargs.get('text') + ".txt"
-        print(kwargs.get('text'))
-        print(file)
+        file = "./" + kwargs.get('file')
         try:
             with open(file, 'r') as textshape:
 
@@ -24,13 +22,13 @@ class Command(BaseCommand):
             print(processed_content)
             try:
                 Shape.objects.create(
-                    name=kwargs.get('text')
+                    name=os.path.splitext(os.path.basename(kwargs.get('file')))[0]
                 )
             except IntegrityError:
                     print("Error: No se puede insertar un objeto con el mismo valor para 'nombre'.")
             
             recentlyAdded = Shape.objects.get(
-                name=kwargs.get('text')
+                name=os.path.splitext(os.path.basename(kwargs.get('file')))[0]
             )
             for id in processed_content:
                  ShapeIds.objects.create(
