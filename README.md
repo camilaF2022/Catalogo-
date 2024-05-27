@@ -13,8 +13,8 @@ Luego, para ejecutar el frontend, se debe ejecutar el siguiente comando en la ca
 npm start
 ```
 ### Backend
+#### Enviroment setup
 Es necesario crearse un ambiente virtual con los paquetes que estan en "backend/requirements.txt". Crear un ambiente virtual es disintos por sistema operativo:
-
 Windows:
 ```
 py -m venv myworld
@@ -42,7 +42,52 @@ Finalmente, para instalar las dependencias utilizar el siguiente comando, estand
 ```
 pip install -r requirements.txt
 ```
-
+### Subir  data a backend
+Para subir datos al backend, se debe correr los siguientes comandos en la carpeta `backend/catalogo-arquelogico`:  
+```python 
+#  Para  generar  el esquema de la base de datos: 
+python manage.py migrate
+```
+Para subir los datos de prueba al backend, generar un archivo con la misma estructura que los datos entregados en el drive. A modo de ejemplo a nivel de repositorio  agregar la carpeta "data" con la siguiente estructura: 
+```
+Repo/
+    /Catalogo
+    /data
+        /clasificacion-forma
+        /complete-dataset
+        /thumbnails
+        /CH_tags.csv
+        /coleccion-cultura.csv
+        /metadata-descripcion.csv
+```
+Añadir la carpeta multimedia en backend/catalogo-arqueologico/ , con los archivos  como se encuentran en el drive:
+```
+Repo/
+    /Catalogo
+    /backend
+        /catalogo-arqueologico
+            /multimedia
+                /0027
+                /0028
+                ...
+```
+Ejecutar los  commandos en el siguiente orden:
+```python
+python manage.py  importCulture  ../../../data/coleccion-cultura.csv 
+python manage.py  importModel3D  ../../../data/complete-dataset/
+python manage.py  importShape  ../../../data/clasificacion-forma/botella.txt
+python manage.py  importShape  ../../../data/clasificacion-forma/cantaro.txt
+python manage.py  importShape  ../../../data/clasificacion-forma/cuenco.txt
+python manage.py  importShape  ../../../data/clasificacion-forma/figurina.txt
+python manage.py  importShape  ../../../data/clasificacion-forma/lebrillo.txt
+python manage.py  importShape  ../../../data/clasificacion-forma/olla.txt
+python manage.py  importShape  ../../../data/clasificacion-forma/plato.txt
+python manage.py  importShape  ../../../data/clasificacion-forma/vaso.txt
+python manage.py  importTags  ../../../data/CH_tags.csv 
+python manage.py  importThumbs  ../../../data/thumbnails 
+python manage.py  importDescriptions  ../../../data/metadata-descripcion.csv 
+```
+#### Run server
 Para correr el backend, correr esto (estando al mismo nivel que manage.py):
 ```
 python manage.py runserver
