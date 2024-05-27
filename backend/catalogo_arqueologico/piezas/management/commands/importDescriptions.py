@@ -8,24 +8,24 @@ import csv
 import os
 import re
 
-def addImages(self, artifact):
+def addImages(self, artifact,realId):
     multimedia_path = os.path.join(settings.BASE_DIR, 'multimedia')
-
     if not os.path.exists(multimedia_path):
         self.stdout.write(self.style.ERROR(f'Directory {multimedia_path} does not exist'))
         return
-    image_files = os.listdir(multimedia_path)
-    print(image_files)
-    for image_name in image_files:
-        image_path = os.path.join(multimedia_path, image_name)
-        parts = re.split(r'[._]', image_name)
-        if any(('pat' in string or 'thumb' in string or 'flat' in string) for string in parts):
-            with open(image_path, 'rb') as image:
-                new_image = Image.objects.create(
-                    id_artifact = artifact,
-                    path = File(image, name=image_name)
-                )
-                new_image.save()
+    image_dirs = os.listdir(multimedia_path)
+    if realId in image_dirs:
+        image_files = os.listdir(os.path.join(multimedia_path, realId))
+        for image_name in image_files:
+            parts = re.split(r'[._]', image_name)
+            if any(('pat' in string or 'thumb' in string or 'flat' in string) for string in parts):
+                image_path = os.path.join(multimedia_path, realId,image_name)
+                with open(image_path, 'rb') as image:
+                    new_image = Image.objects.create(
+                        id_artifact = artifact,
+                        path = File(image, name=image_name)
+                    )
+                    new_image.save()
 
 
 class Command(BaseCommand):
@@ -41,7 +41,6 @@ class Command(BaseCommand):
         with open(descriptions, newline='') as archivo_csv:
             lector_csv = csv.reader(archivo_csv, delimiter=',')
             for fila in lector_csv:
-                
                 realId = fila[0]
                 print(realId)
                 descriptionArtifact = fila[1] #tenemos su descripcion
@@ -72,7 +71,7 @@ class Command(BaseCommand):
                 if idTags is not None:
                     for tags in idTags:
                         newArtifact.id_tags.add(tags.tag)
-                addImages(self, newArtifact)
+                addImages(self, newArtifact,realId)
 
                 
                 
