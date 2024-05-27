@@ -14,15 +14,15 @@ const ArtifactCard = ({ artifact }) => {
   const navigate = useNavigate();
   const { id, attributes, preview: previewPath } = artifact;
   const { shape, tags, culture, description } = attributes;
-
   const artifactNumber = String(id).padStart(4, "0");
   const fullTitle = `#${artifactNumber} ${description}`;
-  const fullDescription = tags.join(", ");
-
+  
+  const fullDescription = tags.map(tag=>tag[1]).join(", ");
   const handleRedirect = () => {
     navigate(`/gallery/${id}`);
   };
-
+  
+  console.log( shape,attributes, previewPath)
   return (
     <Card>
       <CustomCardMedia
@@ -40,8 +40,8 @@ const ArtifactCard = ({ artifact }) => {
           <CardDescription variant="p">{fullDescription}</CardDescription>
         </CustomBox>
         <MetadataContainer>
-          <CustomShapeTag label={shape} size="small" />
-          <CustomCultureTag label={culture} size="small" />
+          <CustomShapeTag label={shape[1]} size="small" />
+          <CustomCultureTag label={culture[1]} size="small" />
         </MetadataContainer>
       </CustomCardContent>
     </Card>

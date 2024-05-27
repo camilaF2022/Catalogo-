@@ -69,11 +69,11 @@ const ObjectDetail = ({ loggedIn }) => {
         <RightBox>
           <HorizontalStack>
             <Typography variant="h5">Cultura:</Typography>{" "}
-            <CustomCultureTag label={piece && piece.attributes.culture} />
+            <CustomCultureTag label={piece && piece.attributes.culture[1]} />
           </HorizontalStack>
           <HorizontalStack>
             <Typography variant="h5"> Forma: </Typography>{" "}
-            <CustomShapeTag label={piece && piece.attributes.shape} />{" "}
+            <CustomShapeTag label={piece && piece.attributes.shape[1]} />{" "}
           </HorizontalStack>
           <Typography>{piece && piece.attributes.description}</Typography>
           {
@@ -82,7 +82,7 @@ const ObjectDetail = ({ loggedIn }) => {
               <TagContainer>
                 {piece &&
                   piece.attributes.tags.map((tag, index) => (
-                    <Chip key={index} label={tag} />
+                    <Chip key={index} label={tag[1]} />
                   ))}
               </TagContainer>
             </HorizontalStack>
