@@ -64,52 +64,6 @@ class ArtifactSerializer(serializers.ModelSerializer):
             Images.append(self.context["request"].build_absolute_uri(image.path.url))
         return Images
 
-#class ArtifactSerializer(serializers.ModelSerializer):
-#    attributes = serializers.SerializerMethodField(read_only = True)
-#    preview = serializers.SerializerMethodField(read_only = True)
-#    model = serializers.SerializerMethodField(read_only = True)
-#    images = serializers.SerializerMethodField(read_only = True)
-#    print("algo")
-#    class Meta:
-#        model = Artifact
-#        fields = ['id',
-#                'attributes',
-#                'preview',
-#                'model',
-#                'images',
-#                ]
-#    
-#    def get_attributes(self, instance):
-#        realShape = Shape.objects.get(id=instance.id_shape)
-#        realCulture  = Culture.objects.get(id=instance.id_culture)
-#        everyTag = instance.id_tags.all()
-#        Tags = []
-#        for tag in everyTag:
-#            Tags.append((tag.id, tag.name))
-#        
-#        wholeDict = {"shape": (realShape.id, realShape.name), "tags": Tags, "culture": (realCulture.id, realCulture.name), "description": instance.description}            
-#
-#        return wholeDict
-#
-#    def get_preview(self, instance):
-#        realThumbnail = Thumbnail.objects.get(id=instance.id_thumbnail)
-#        return realThumbnail.path
-#    
-#    def get_model(self, instance):
-#        realModel = Model.objects.get(id=instance.id_model)
-#        modelDict = {'object': realModel.object, 'material': realModel.material, 'texture': realModel.texture}
-#        return modelDict
-#    
-#    def get_images(self, instance):
-#        someImages = Image.objects.filter(id_artifact=instance.id)
-#        Images = []
-#        if someImages:
-#             for image in someImages:
-#                Images.append(image.path)
-#        return Images
-#
-
-
 # Obtains the json object with the attributes of the artifacts for the catalog
 class CatalogSerializer(serializers.ModelSerializer):
     attributes = serializers.SerializerMethodField(read_only = True)

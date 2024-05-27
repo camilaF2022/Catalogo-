@@ -67,6 +67,3 @@ class CatalogAPIView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response({"status":"succes", "data":serializer.data})
 
-#class MediaView(viewsets.ModelViewSet):
-#    serializer_class = Model3dSerializer
-#    queryset = Media.objects.get(name__icontains=('%s' % ))
