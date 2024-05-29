@@ -29,15 +29,7 @@ class ArtifactListAPIView(generics.ListAPIView):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response({"status":"succes", "data":serializer.data})
-
-
-#class ArtifactListAPIView(generics.ListAPIView):
-#    queryset = Artifact.objects.all()
-#    serializer_class = ArtifactSerializer
-    #authentication_classes = [authentication.SessionAuthentication, TokenAuthentication]
-    #permission_classes = [permissions.IsAdminUser, IsFuncionarioPermission]
-    #En el list, se deberia entregar por lo menos el thumbnail
+        return Response({"status":"success", "data":serializer.data})
 
 class ArtifactCreateAPIView(generics.CreateAPIView):
     queryset = Artifact.objects.all()
@@ -65,5 +57,5 @@ class CatalogAPIView(generics.ListAPIView):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response({"status":"succes", "data":serializer.data})
+        return Response({"status":"success", "data":serializer.data})
 

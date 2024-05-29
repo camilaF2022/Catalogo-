@@ -29,17 +29,15 @@ class Tag(models.Model):
     def __str__(self):
         return self.name + ": " + str(self.id)
 
-
-
 class Thumbnail(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
     path = models.ImageField(upload_to='thumbnails/', unique=True)
 
 class Model(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
-    texture = models.ImageField(upload_to='materials/', unique=True, storage=CustomStorage())
-    object = models.FileField(upload_to='objects/', unique=True, storage=CustomStorage())
-    material = models.FileField(upload_to='materials/', unique=True, storage=CustomStorage())
+    texture = models.ImageField(upload_to='materials/', unique=True)
+    object = models.FileField(upload_to='objects/', unique=True)
+    material = models.FileField(upload_to='materials/', unique=True)
 
 class Image(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
