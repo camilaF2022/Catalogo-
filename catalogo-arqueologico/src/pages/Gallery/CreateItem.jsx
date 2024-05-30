@@ -9,7 +9,7 @@ import {
   Box,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import useSnackBars from "../../hooks/useSnackbars";
 import UploadButton from "./components/UploadButton";
 import AutocompleteExtended from "./components/AutocompleteExtended";
@@ -24,6 +24,7 @@ export const allowedFileTypes = {
 
 const CreateItem = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { addAlert } = useSnackBars();
 
   const [newObjectAttributes, setNewObjectAttributes] = useState({
@@ -83,7 +84,8 @@ const CreateItem = () => {
   };
 
   const handleCancel = () => {
-    navigate("/gallery");
+    const from = location.state?.from || "/gallery";
+    navigate(from, { replace: true });
   };
 
   return (
