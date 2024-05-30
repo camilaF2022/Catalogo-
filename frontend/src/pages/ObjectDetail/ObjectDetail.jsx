@@ -7,6 +7,7 @@ import {
   Container,
   Stack,
   Box,
+  Skeleton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ModalFormButton from "./components/ModalFormButton";
@@ -17,7 +18,22 @@ import { useParams } from "react-router-dom";
 import DownloadForm from "./components/DownloadForm";
 
 const ObjectDetail = ({ loggedIn }) => {
-  const [piece, setPiece] = useState();
+  //set a dummy piece object for initial  rendering
+  const [piece, setPiece] = useState({
+    attributes: {
+      culture: [],
+      shape: [],
+      tags: [],
+      description: "",
+    },
+    images: [],
+    model: {
+      object: "",
+      material: "",
+    },
+
+
+  });
   const { pieceId } = useParams();
 
   useEffect(() => {
@@ -25,10 +41,14 @@ const ObjectDetail = ({ loggedIn }) => {
       .then((response) => response.json())
       .then((response) => {
         //with the api  should retrieve a  single object
-        const object = response.data.find(
-          (obj) => obj.id === parseInt(pieceId)
-        );
-        setPiece(object);
+        setTimeout(() => {
+          const object = response.data.find((obj) => obj.id === parseInt(pieceId));
+          setPiece(object);
+        }, 3000);
+        // const object = response.data.find(
+        //   (obj) => obj.id === parseInt(pieceId)
+        // );
+        // setPiece(object);
       })
       .catch((error) => console.error(error));
   }, [pieceId]);
@@ -38,7 +58,7 @@ const ObjectDetail = ({ loggedIn }) => {
         <LeftBox>
           <CustomContainer>
             <Typography variant="h3">
-              <b>#{piece && String(pieceId).padStart(4, "0")}</b>{" "}
+              <b>#{String(pieceId).padStart(4, "0")}</b>
             </Typography>
             {loggedIn ? (
               <HorizontalStack>
@@ -50,40 +70,45 @@ const ObjectDetail = ({ loggedIn }) => {
               </HorizontalStack>
             ) : (
               <ModalFormButton text={"Solicitar datos"}>
-                {piece && <DownloadForm pieceInfo={piece}></DownloadForm>}
+                <DownloadForm pieceInfo={piece}></DownloadForm>
               </ModalFormButton>
             )}
           </CustomContainer>
-          {piece && (
-            <>
-              <PieceVisualization
-                objPath={piece.model.object}
-                mtlPath={piece.model.material}
-              />
-              <ImagesCarousel images={piece.images}></ImagesCarousel>
-            </>
-          )}
+
+          <PieceVisualization
+            objPath={piece.model.object}
+            mtlPath={piece.model.material}
+          />
+          <ImagesCarousel images={piece.images}></ImagesCarousel>
+
         </LeftBox>
       </CenterGrid>
       <Grid item lg>
         <RightBox>
           <HorizontalStack>
-            <Typography variant="h5">Cultura:</Typography>{" "}
-            <CustomCultureTag label={piece && piece.attributes.culture[1]} />
+            <Typography variant="h5">Cultura:</Typography>
+            {piece.attributes.culture.length === 0 ? <Skeleton variant='rounded' width={100} height={40} /> :
+              <CustomCultureTag label={piece.attributes.culture[1]} />
+            }
           </HorizontalStack>
           <HorizontalStack>
-            <Typography variant="h5"> Forma: </Typography>{" "}
-            <CustomShapeTag label={piece && piece.attributes.shape[1]} />{" "}
+            <Typography variant="h5"> Forma: </Typography>
+            {piece.attributes.shape.length === 0 ? <Skeleton variant='rounded' width={100} height={40} /> :
+              <CustomShapeTag label={piece.attributes.shape[1]} />
+            }
           </HorizontalStack>
-          <Typography>{piece && piece.attributes.description}</Typography>
+          <Typography>{piece.attributes.description.length===0 ?
+            <Skeleton variant='text' width={500} height={80} />:
+            piece.attributes.description 
+          }</Typography>
           {
             <HorizontalStack>
               <Typography variant="h5">Etiquetas:</Typography>
               <TagContainer>
-                {piece &&
-                  piece.attributes.tags.map((tag, index) => (
-                    <Chip key={index} label={tag[1]} />
-                  ))}
+                {piece.attributes.tags.length === 0 ? <Skeleton variant='rounded' width={100} height={40} /> :
+                piece.attributes.tags.map((tag, index) => (
+                  <Chip key={index} label={tag[1]} />
+                ))}
               </TagContainer>
             </HorizontalStack>
           }

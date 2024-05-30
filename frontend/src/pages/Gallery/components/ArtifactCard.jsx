@@ -22,7 +22,6 @@ const ArtifactCard = ({ artifact }) => {
     navigate(`/gallery/${id}`);
   };
   
-  console.log( shape,attributes, previewPath)
   return (
     <Card>
       <CustomCardMedia
