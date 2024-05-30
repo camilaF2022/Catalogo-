@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArtifactCard from "./components/ArtifactCard";
@@ -8,6 +8,7 @@ import CustomFilter from "./components/CustomFilter";
 
 const Gallery = ({ loggedIn }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Retrieved data from the API
   const [artifactList, setArtifactList] = useState([]);
@@ -38,7 +39,7 @@ const Gallery = ({ loggedIn }) => {
   }, []);
 
   const handleRedirect = () => {
-    navigate("/gallery/new");
+    navigate("/gallery/new", { state: { from: location.pathname } });
   };
 
   return (

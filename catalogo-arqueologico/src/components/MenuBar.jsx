@@ -2,7 +2,7 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import { Link , useLocation, useNavigate} from "react-router-dom";
 import { AppBar, Toolbar, IconButton, Button, Typography } from "@mui/material";
-import logo from '../logo-removebg-preview.svg';
+
 
 const MenuBar = ({ loggedIn, setToken }) => {
   const navigate = useNavigate();
@@ -16,11 +16,15 @@ const MenuBar = ({ loggedIn, setToken }) => {
     navigate('/login', { state: { from: location.pathname } });
   };
 
+  const handleNewObjectClick = () => {
+    navigate('/gallery/new', { state: { from: location.pathname } });
+  };
+
   return (
     <AppBar position="static">
       <CustomToolbar>
         <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => navigate('/')}>
-          <img src={logo} alt="logo" style={{ height: '40px',marginLeft: 24 }} />
+          <img src={`${process.env.PUBLIC_URL}/logo-removebg-preview.svg`} alt="logo" style={{ height: '40px',marginLeft: 24 }} />
         </IconButton>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           <Link to="/gallery" style={{ textDecoration: 'none', color: 'white', marginLeft: 55 }}>
@@ -28,7 +32,7 @@ const MenuBar = ({ loggedIn, setToken }) => {
           </Link>
         </Typography>
         {loggedIn && (
-            <Button component={Link} to="/gallery/new" color="inherit" style={{ marginRight: 55 }}>
+            <Button onClick={handleNewObjectClick} color="inherit" style={{ marginRight: 55 }}>
               Agregar objeto
             </Button>
           )}
