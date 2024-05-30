@@ -16,9 +16,11 @@ import PieceVisualization from "./components/PieceVisualization";
 import ImagesCarousel from "./components/ImagesCarousel";
 import { useParams } from "react-router-dom";
 import DownloadForm from "./components/DownloadForm";
-
+import NotFound from "../../components/NotFound";
 const ObjectDetail = ({ loggedIn }) => {
   //set a dummy piece object for initial  rendering
+  const { pieceId } = useParams();
+  const [notFound, setNotFound] = useState(false);
   const [piece, setPiece] = useState({
     attributes: {
       culture: [],
@@ -30,85 +32,90 @@ const ObjectDetail = ({ loggedIn }) => {
     model: {
       object: "",
       material: "",
-    },
-
-
+    }
   });
-  const { pieceId } = useParams();
 
   useEffect(() => {
-      fetch(`http://localhost:8000/piezas/oneArtifact/${pieceId}`)
-      .then((response) => response.json())
+    fetch(`http://localhost:8000/piezas/oneArtifact/${pieceId}`)
       .then((response) => {
-          setPiece(response);
-      })
-      .catch((error) => console.error(error));
-  }, [pieceId]);
-  return (
-    <ContainerGrid container>
-      <CenterGrid item lg={7}>
-        <LeftBox>
-          <CustomContainer>
-            <Typography variant="h3">
-              <b>#{String(pieceId).padStart(4, "0")}</b>
-            </Typography>
-            {loggedIn ? (
-              <HorizontalStack>
-                <Button variant="contained">Descargar Pieza</Button>
-
-                <ModalFormButton text={"Editar Pieza"}>
-                  <EditForm />
-                </ModalFormButton>
-              </HorizontalStack>
-            ) : (
-              <ModalFormButton text={"Solicitar datos"}>
-                <DownloadForm pieceInfo={piece}></DownloadForm>
-              </ModalFormButton>
-            )}
-          </CustomContainer>
-
-          <PieceVisualization
-            objPath={piece.model.object}
-            mtlPath={piece.model.material}
-          />  
-          <ImagesCarousel images={piece.images}></ImagesCarousel>
-
-        </LeftBox>
-      </CenterGrid>
-      <Grid item lg>
-        <RightBox>
-          <HorizontalStack>
-            <Typography variant="h5">Cultura:</Typography>
-            {piece.attributes.culture.length === 0 ? <CustomSkeletonTag/> :
-              <CustomCultureTag label={piece.attributes.culture[1]} />
-            }
-          </HorizontalStack>
-          <HorizontalStack>
-            <Typography variant="h5"> Forma: </Typography>
-            {piece.attributes.shape.length === 0 ? <CustomSkeletonTag/> :
-              <CustomShapeTag label={piece.attributes.shape[1]} />
-            }
-          </HorizontalStack>
-          <Typography>{piece.attributes.description.length===0 ?
-            <CustomSkeletonText/>:
-            piece.attributes.description 
-          }</Typography>
-          {
-            <HorizontalStack>
-              <Typography variant="h5">Etiquetas:</Typography>
-              <TagContainer>
-                {piece.attributes.tags.length === 0 ? <CustomSkeletonTag /> :
-                piece.attributes.tags.map((tag, index) => (
-                  <Chip key={index} label={tag[1]} />
-                ))}
-              </TagContainer>
-            </HorizontalStack>
+        if (!response.ok) {
+          if (response.status === 404) {
+            setNotFound(true);
+            return;
           }
-        </RightBox>
-      </Grid>
-    </ContainerGrid>
-  );
-};
+        }
+        return response.json()
+      }
+      ).then((response) => {
+        setPiece(response)
+      }).catch((error) => console.error(error));
+  }, [pieceId]);
+  return (<>
+    {notFound ? <NotFound /> :
+      <ContainerGrid container>
+        <CenterGrid item lg={7}>
+          <LeftBox>
+            <CustomContainer>
+              <Typography variant="h3">
+                <b>#{piece.id && String(piece.id).padStart(4, "0")}</b>
+              </Typography>
+              {loggedIn ? (
+                <HorizontalStack>
+                  <Button variant="contained">Descargar Pieza</Button>
+
+                  <ModalFormButton text={"Editar Pieza"}>
+                    <EditForm />
+                  </ModalFormButton>
+                </HorizontalStack>
+              ) : (
+                <ModalFormButton text={"Solicitar datos"}>
+                  <DownloadForm pieceInfo={piece}></DownloadForm>
+                </ModalFormButton>
+              )}
+            </CustomContainer>
+
+            <PieceVisualization
+              objPath={piece.model.object}
+              mtlPath={piece.model.material}
+            />
+            <ImagesCarousel images={piece.images}></ImagesCarousel>
+
+          </LeftBox>
+        </CenterGrid>
+        <Grid item lg>
+          <RightBox>
+            <HorizontalStack>
+              <Typography variant="h5">Cultura:</Typography>
+              {piece.attributes.culture.length === 0 ? <CustomSkeletonTag /> :
+                <CustomCultureTag label={piece.attributes.culture[1]} />
+              }
+            </HorizontalStack>
+            <HorizontalStack>
+              <Typography variant="h5"> Forma: </Typography>
+              {piece.attributes.shape.length === 0 ? <CustomSkeletonTag /> :
+                <CustomShapeTag label={piece.attributes.shape[1]} />
+              }
+            </HorizontalStack>
+            <Typography>{piece.attributes.description.length === 0 ?
+              <CustomSkeletonText /> :
+              piece.attributes.description
+            }</Typography>
+            {
+              <HorizontalStack>
+                <Typography variant="h5">Etiquetas:</Typography>
+                <TagContainer>
+                  {piece.attributes.tags.length === 0 ? <CustomSkeletonTag /> :
+                    piece.attributes.tags.map((tag, index) => (
+                      <Chip key={index} label={tag[1]} />
+                    ))}
+                </TagContainer>
+              </HorizontalStack>
+            }
+          </RightBox>
+        </Grid>
+      </ContainerGrid>
+    } </>);
+}
 
 const CustomContainer = styled(Container)(() => ({
   display: "flex",
