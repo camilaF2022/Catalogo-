@@ -37,7 +37,7 @@ const ObjectDetail = ({ loggedIn }) => {
   const { pieceId } = useParams();
 
   useEffect(() => {
-    fetch(`http://localhost:8000/piezas/oneArtifact/${pieceId}`)
+      fetch(`http://localhost:8000/piezas/oneArtifact/${pieceId}`)
       .then((response) => response.json())
       .then((response) => {
           setPiece(response);
@@ -70,7 +70,7 @@ const ObjectDetail = ({ loggedIn }) => {
           <PieceVisualization
             objPath={piece.model.object}
             mtlPath={piece.model.material}
-          />
+          />  
           <ImagesCarousel images={piece.images}></ImagesCarousel>
 
         </LeftBox>
@@ -79,25 +79,25 @@ const ObjectDetail = ({ loggedIn }) => {
         <RightBox>
           <HorizontalStack>
             <Typography variant="h5">Cultura:</Typography>
-            {piece.attributes.culture.length === 0 ? <Skeleton variant='rounded' width={100} height={40} /> :
+            {piece.attributes.culture.length === 0 ? <CustomSkeletonTag/> :
               <CustomCultureTag label={piece.attributes.culture[1]} />
             }
           </HorizontalStack>
           <HorizontalStack>
             <Typography variant="h5"> Forma: </Typography>
-            {piece.attributes.shape.length === 0 ? <Skeleton variant='rounded' width={100} height={40} /> :
+            {piece.attributes.shape.length === 0 ? <CustomSkeletonTag/> :
               <CustomShapeTag label={piece.attributes.shape[1]} />
             }
           </HorizontalStack>
           <Typography>{piece.attributes.description.length===0 ?
-            <Skeleton variant='text' width={500} height={80} />:
+            <CustomSkeletonText/>:
             piece.attributes.description 
           }</Typography>
           {
             <HorizontalStack>
               <Typography variant="h5">Etiquetas:</Typography>
               <TagContainer>
-                {piece.attributes.tags.length === 0 ? <Skeleton variant='rounded' width={100} height={40} /> :
+                {piece.attributes.tags.length === 0 ? <CustomSkeletonTag /> :
                 piece.attributes.tags.map((tag, index) => (
                   <Chip key={index} label={tag[1]} />
                 ))}
@@ -179,4 +179,15 @@ const CustomCultureTag = styled(Chip)(({ theme }) => ({
   backgroundColor: theme.palette.tags.culture,
 }));
 
+const CustomSkeletonTag = styled(Skeleton)(({ theme }) => ({
+  width: theme.spacing(13),
+  height: theme.spacing(8),
+  variant: "rounded",
+}));
+
+const CustomSkeletonText = styled(Skeleton)(({ theme }) => ({
+  width: theme.spacing(62.5),
+  height: theme.spacing(10),
+  variant: "text",
+}));
 export default ObjectDetail;
