@@ -37,18 +37,10 @@ const ObjectDetail = ({ loggedIn }) => {
   const { pieceId } = useParams();
 
   useEffect(() => {
-    fetch("http://localhost:8000/piezas/listArtifacts/")
+    fetch(`http://localhost:8000/piezas/oneArtifact/${pieceId}`)
       .then((response) => response.json())
       .then((response) => {
-        //with the api  should retrieve a  single object
-        setTimeout(() => {
-          const object = response.data.find((obj) => obj.id === parseInt(pieceId));
-          setPiece(object);
-        }, 3000);
-        // const object = response.data.find(
-        //   (obj) => obj.id === parseInt(pieceId)
-        // );
-        // setPiece(object);
+          setPiece(response);
       })
       .catch((error) => console.error(error));
   }, [pieceId]);
