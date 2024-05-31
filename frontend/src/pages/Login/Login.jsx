@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -7,12 +7,15 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Stack } from "@mui/material";
 
-const Login = ({ setToken, navigateTo = "/" }) => {
-  const navigate = useNavigate();
+const Login = ({ setToken }) => {
+
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +31,8 @@ const Login = ({ setToken, navigateTo = "/" }) => {
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Emulate POST delay
     const token = "testToken"; // Get token from the server
     setToken(token);
-    navigate(navigateTo); // Redirect
+    const from = location.state?.from || "/";
+    navigate(from, { replace: true });
   };
 
   return (
