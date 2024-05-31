@@ -8,6 +8,7 @@ import {
   Stack,
   Box,
   Skeleton,
+  CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ModalFormButton from "./components/ModalFormButton";
@@ -17,6 +18,7 @@ import ImagesCarousel from "./components/ImagesCarousel";
 import { useParams } from "react-router-dom";
 import DownloadForm from "./components/DownloadForm";
 import NotFound from "../../components/NotFound";
+
 const ObjectDetail = ({ loggedIn }) => {
   //set a dummy piece object for initial  rendering
   const { pieceId } = useParams();
@@ -74,11 +76,15 @@ const ObjectDetail = ({ loggedIn }) => {
               )}
             </CustomContainer>
 
-            <PieceVisualization
+            {!piece.model.object || !piece.model.material ? 
+            <CustomDiv>
+              <CircularProgress color='primary'/> 
+            </CustomDiv>
+            :<PieceVisualization
               objPath={piece.model.object}
               mtlPath={piece.model.material}
-            />
-            <ImagesCarousel images={piece.images}></ImagesCarousel>
+              />}
+            <ImagesCarousel images={piece.images}></ImagesCarousel> 
 
           </LeftBox>
         </CenterGrid>
@@ -197,4 +203,15 @@ const CustomSkeletonText = styled(Skeleton)(({ theme }) => ({
   height: theme.spacing(10),
   variant: "text",
 }));
+
+const CustomDiv = styled('div')(() => ({
+  width: '100%',
+  height: '500px',
+  backgroundColor:'#2e2d2c',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+}));
+
 export default ObjectDetail;
