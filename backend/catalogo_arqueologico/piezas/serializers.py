@@ -2,12 +2,10 @@ from rest_framework import serializers
 from .models import Tag, Shape, Culture, Artifact, Model, Thumbnail, Image
 
 
-
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
-
 
 class ShapeSerializer(serializers.ModelSerializer):
     class Meta:

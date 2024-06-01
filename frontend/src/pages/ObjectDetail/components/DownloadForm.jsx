@@ -7,8 +7,8 @@ import Button from "@mui/material/Button";
 import { Stack, Paper, InputLabel, Select } from "@mui/material";
 import useSnackBars from "../../../hooks/useSnackbars";
 
-const DownloadForm = ({ pieceInfo }) => {
-    const {addAlert} = useSnackBars();
+const DownloadForm = ({ pieceInfo, handleClose }) => {
+  const { addAlert } = useSnackBars();
   const [formValues, setFormValues] = useState({
     fullName: "",
     rut: "",
@@ -25,54 +25,53 @@ const DownloadForm = ({ pieceInfo }) => {
     });
   };
 
+  const downloadFile = (resourceBlob, downloadName) => {
+    const url = URL.createObjectURL(resourceBlob);
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = downloadName;
+    link.click()
+  }
+
   const handleDownload = () => {
     // metadata
     const jsonObj = {
       attributes: pieceInfo.attributes,
     };
     const jsonStr = JSON.stringify(jsonObj);
-    const blob = new Blob([jsonStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    var link = document.createElement("a");
-    link.href = url;
-    link.download = "data.json";
-    link.click();
+    const jsonBlob = new Blob([jsonStr], { type: "application/json" });
+    downloadFile(jsonBlob, "metadata.json");
+
     // model
-    const objUrl = pieceInfo.model.object;
-    var objlink = document.createElement("a");
-    objlink.href = objUrl;
-    objlink.download = "object.obj";
-    objlink.click();
+    fetch(pieceInfo.model.object)
+      .then((response) => response.blob()).then((response) =>
+        downloadFile(response, pieceInfo.model.object.split("/").pop())
+      )
+    fetch(pieceInfo.model.material)
+      .then((response) => response.blob())
+      .then((response) => downloadFile(response, pieceInfo.model.material.split("/").pop()));
 
-    const mtlUrl = pieceInfo.model.material;
-    var mtllink = document.createElement("a");
-    mtllink.href = mtlUrl;
-    mtllink.download = "material.mtl";
-    mtllink.click();
-
-    const jpgUrl = pieceInfo.model.object + ".jpg";
-    var jpglink = document.createElement("a");
-    jpglink.href = jpgUrl;
-    jpglink.download = "texture.jpg";
-    jpglink.click();
+    fetch(pieceInfo.model.texture)
+      .then((response) => response.blob())
+      .then((response) => downloadFile(response, pieceInfo.model.texture.split("/").pop()));
 
     //images
     pieceInfo.images.map((image, index) => {
-      var imglink = document.createElement("a");
-      imglink.href = image;
-      imglink.download = `image${index}.jpg`;
-      imglink.click();
+      fetch(image).then((response) => response.blob())
+        .then((response) =>
+          downloadFile(response, image.split("/").pop())
+        )
       return null;
     });
+
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formValues); // Send credentials to the server
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Emulate POST delay
-    console.log("Request sent to the server");
+    console.log("Request sent to the server", formValues);
     addAlert("¡Solicitud enviada con éxito! La descarga comenzará pronto.");
     handleDownload();
+    handleClose();
   };
 
   return (
@@ -155,11 +154,11 @@ const DownloadForm = ({ pieceInfo }) => {
             />
           </Stack>
           <OptionBox>
-            <CustomButton variant="outlined" color="primary">
+            <CustomButton variant="outlined" color="primary" onClick={handleClose}>
               Cancelar
             </CustomButton>
 
-            <CustomButton variant="contained" color="primary" type="submit">
+            <CustomButton variant="contained" color="primary" type="submit" onClick={handleSubmit}>
               Enviar
             </CustomButton>
           </OptionBox>
