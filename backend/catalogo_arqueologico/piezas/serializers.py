@@ -18,10 +18,10 @@ class CultureSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ArtifactSerializer(serializers.ModelSerializer):
-    attributes = serializers.SerializerMethodField(read_only=True)
-    preview = serializers.SerializerMethodField(read_only=True)
-    model = serializers.SerializerMethodField(read_only=True)
-    images = serializers.SerializerMethodField(read_only=True)
+    attributes = serializers.SerializerMethodField()
+    preview = serializers.SerializerMethodField()
+    model = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = Artifact
@@ -64,7 +64,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
 
 # Obtains the json object with the attributes of the artifacts for the catalog
 class CatalogSerializer(serializers.ModelSerializer):
-    attributes = serializers.SerializerMethodField(read_only = True)
+    attributes = serializers.SerializerMethodField(read_only=True)
     preview = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Artifact
