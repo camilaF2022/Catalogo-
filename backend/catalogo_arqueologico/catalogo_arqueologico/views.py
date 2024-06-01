@@ -17,4 +17,7 @@ class LoginView(APIView):
         data = UserSerializer(instance=user).data
         return Response({"token": token.key, "user": data}, 
                         status=status.HTTP_200_OK)
+    
 
+class HomeView(APIView):
+    pass
