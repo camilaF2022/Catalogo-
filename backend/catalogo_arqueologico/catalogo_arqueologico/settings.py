@@ -140,3 +140,32 @@ REST_FRAMEWORK = {
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# Root folders for the different types of uploaded files
+MATERIALS_ROOT= 'materials/'
+OBJECTS_ROOT= 'objects/'
+THUMBNAILS_ROOT= 'thumbnails/'
+IMAGES_ROOT= 'images/'
+
+# Paths of the different types of files to be imported
+DATA_ROOT = os.path.join(BASE_DIR, "..", "..", 'data')
+CULTURE_CSV_PATH = os.path.join(DATA_ROOT, 'coleccion-cultura.csv')
+MODEL_FOLDER_PATH = os.path.join(DATA_ROOT, 'complete-dataset/')
+SHAPE_FOLDER_PATH = os.path.join(DATA_ROOT, 'clasificacion-forma/')
+TAGS_CSV_PATH = os.path.join(DATA_ROOT, 'CH_tags.csv')
+THUMBNAILS_FOLDER_PATH = os.path.join(DATA_ROOT, 'thumbnails/')
+DESCRIPTIONS_CSV_PATH = os.path.join(DATA_ROOT, 'metadata - descripcion.csv')
+MULTIMEDIA_FOLDER_PATH = os.path.join(BASE_DIR, 'multimedia/')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}

@@ -5,66 +5,89 @@ from django.db import IntegrityError
 from piezas.models import Model
 
 import os
-import shutil
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel("INFO")
+
 
 class Command(BaseCommand):
-    help = 'add 3d models files to Media Table from media folder'
-
-    def add_arguments(self, parser):
-        parser.add_argument('folderFiles', type=str)
+    help = "Import 3D models from a folder. The folder must contain .obj, .mtl and .png files with the same name."
 
     def handle(self, *args, **kwargs):
+        model_folder = settings.MODEL_FOLDER_PATH
+        if not os.path.exists(model_folder):
+            logger.error(f"Folder {model_folder} not found. Stop")
+            return
         
-        #Obtener archivos la carpeta
-        argument_path = os.listdir( kwargs.get('folderFiles'))
+        folder_files = os.listdir(model_folder)
 
-        textures = [f for f in argument_path if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
-        objects = [f for f in argument_path if f.lower().endswith('.obj')]
-        materials = [f for f in argument_path if f.lower().endswith('.mtl')]
+        # List files in the folder
+        textures = [
+            file
+            for file in folder_files
+            if file.lower().endswith((".png", ".jpg", ".jpeg"))
+        ]
+        objects = [file for file in folder_files if file.lower().endswith(".obj")]
+        materials = [file for file in folder_files if file.lower().endswith(".mtl")]
 
-        # Crear un diccionario para emparejar archivos
+        # Pair files by their base name
         file_pairs = {}
-        
+
         for texture in textures:
-            base_name = os.path.splitext(texture)[0]  # 'texture1' de 'texture1.png'
-            base_name_id = base_name.split(".")[0]
-            file_pairs[base_name_id] = {'texture': texture}
-        
+            base_name = os.path.splitext(texture)[0]
+            base_name_id = base_name.split(".")[
+                0
+            ]  # get 'texture1' from 'texture1.png'
+            file_pairs[base_name_id] = {"texture": texture}
+
         for obj in objects:
             base_name = os.path.splitext(obj)[0]
-            base_name_id = base_name.split(".")[0]
+            base_name_id = base_name.split(".")[0]  # get 'object1' from 'object1.obj'
             if base_name_id in file_pairs:
-                file_pairs[base_name_id]['object'] = obj
-        
+                file_pairs[base_name_id]["object"] = obj
+
         for material in materials:
             base_name = os.path.splitext(material)[0]
-            base_name_id = base_name.split(".")[0]
+            base_name_id = base_name.split(".")[
+                0
+            ]  # get 'material1' from 'material1.mtl'
             if base_name_id in file_pairs:
-                file_pairs[base_name_id]['material'] = material
-        
-        
-        # Mover archivos y crear registros en la base de datos
+                file_pairs[base_name_id]["material"] = material
+
+        # Upload files and create 3D model
         for base_name_id, files in file_pairs.items():
-            texture_file = files.get('texture')
-            object_file = files.get('object')
-            material_file = files.get('material')
-            # print(texture_file, object_file, material_file)
+            texture_file = files.get("texture")
+            object_file = files.get("object")
+            material_file = files.get("material")
 
             if texture_file and object_file and material_file:
-                # # Mover archivos
-                texture_path = os.path.join( kwargs.get('folderFiles'),texture_file)
-                object_path = os.path.join( kwargs.get('folderFiles'),object_file)
-                material_path = os.path.join( kwargs.get('folderFiles'),material_file)
+                texture_path = os.path.join(model_folder, texture_file)
+                object_path = os.path.join(model_folder, object_file)
+                material_path = os.path.join(model_folder, material_file)
 
-                # Guardar en el modelo
-                with open(texture_path, 'rb') as tex_file, open(object_path, 'rb') as obj_file, open(material_path, 'rb') as mat_file:
-                    new_model = Model(
-                        id=int(base_name_id),
-                        texture=File(tex_file, name=os.path.basename(texture_path) ),
-                        object=File(obj_file, name=os.path.basename(object_path) ),
-                        material=File(mat_file, name=os.path.basename(material_path) )
-                    )
-                    new_model.save()
-                    self.stdout.write(self.style.SUCCESS(f'Successfully imported {texture_file}, {object_file}, {material_file}'))
+                # Create model object
+                with open(texture_path, "rb") as tex_file, open(
+                    object_path, "rb"
+                ) as obj_file, open(material_path, "rb") as mat_file:
+                    try:
+                        new_model = Model(
+                            id=int(base_name_id),
+                            texture=File(tex_file, name=os.path.basename(texture_path)),
+                            object=File(obj_file, name=os.path.basename(object_path)),
+                            material=File(
+                                mat_file, name=os.path.basename(material_path)
+                            ),
+                        )
+                        new_model.save()
+                        logger.info(
+                            f"Successfully imported {texture_file}, {object_file}, {material_file}"
+                        )
+                    except IntegrityError:
+                        logger.warning(
+                            f"Model {base_name_id} already exists. Skipping its creation"
+                        )
             else:
-                self.stdout.write(self.style.WARNING(f'Skipping {base_name_id} as corresponding object or material file does not exist'))
+                logger.warning(
+                    f"Skipping importation of {base_name_id} model due to the missing object or corresponding material file"
+                )
