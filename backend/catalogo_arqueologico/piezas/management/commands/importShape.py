@@ -45,7 +45,7 @@ class Command(BaseCommand):
                 ShapeIds(shape=recentlyAdded.id, artifactid=int(id))
                 for id in shape_artifact_relationships
             ]
-            ShapeIds.objects.bulk_create(shape_ids_objects)
+            ShapeIds.objects.bulk_create(shape_ids_objects, ignore_conflicts=True)
             relationships_current_count = ShapeIds.objects.filter().count()
             new_relationships_count = (
                 relationships_current_count - relationships_previous_count
@@ -59,7 +59,7 @@ class Command(BaseCommand):
                 relationships_current_count - relationships_previous_count
             )
             logger.error(
-                "Only {} shapeIds relationships could be created. Some pairs of {} shape already exists. Stop".format(
+                "Only {} shapeIds relationships for {} could be created. Stop".format(
                     new_relationships_count, shape_name
                 )
             )

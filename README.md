@@ -45,7 +45,7 @@ pip install -r requirements.txt
 
 #### Subir contenido al backend
 
-Antes de subir el contenido de prueba proveniente de Google Drive, se debe generar el esquema de la base de datos. Esto se realiza ejecutando el siguiente comando desde la carpeta que contiene `manage.py`, es decir, en la ruta `backend/catalogo-arqueologico`:
+Antes de subir el contenido de prueba proveniente de Google Drive, se debe generar el esquema de la base de datos. Esto se realiza ejecutando el siguiente comando desde la carpeta que contiene `manage.py`, es decir, en la ruta `backend/catalogo_arqueologico`:
 
 ```bash
 python manage.py migrate
@@ -68,7 +68,7 @@ CATALOGO
 ```
 Notar que la carpeta `multimedia` debe estar en una ubicación distinta.
 
-Finalmente, desde la carpeta `backend/catalogo-arqueologico`, se deben ejecutar los siguientes comandos en el orden especificado:
+Finalmente, desde la carpeta `backend/catalogo_arqueologico`, se deben ejecutar los siguientes comandos en el orden especificado:
 
 ```bash
 python manage.py importCulture
@@ -86,10 +86,10 @@ python manage.py importThumbs
 python manage.py importDescriptions
 ```
 
-Si se desea volver a cargar la base de datos, se deben eliminar los archivos `db.sqlite3` de la carpeta `backend/catalogo-arqueologico` y `0001_initial.py` de la carpeta `backend/catalogo-arqueologico/piezas/migrations`. Luego, ubicado en la carpeta contenedora de `manage.py`, se debe ejecutar el comando `python manage.py makemigrations` seguido de `python manage.py migrate` y los comandos de importación de datos.
+Si se desea volver a cargar la base de datos, se deben eliminar los archivos `db.sqlite3` de la carpeta `backend/catalogo_arqueologico`, `0001_initial.py` de la carpeta `backend/catalogo_arqueologico/piezas/migrations` y el contenido de la carpeta media ubicada en `backend/catalogo_arqueologico/media`. Luego, ubicado en la carpeta contenedora de `manage.py`, se debe ejecutar el comando `python manage.py makemigrations` seguido de `python manage.py migrate` y los comandos de importación de datos.
 
 #### Creación de superusuario
-Para crear un superusuario, se debe ejecutar el siguiente comando desde la carpeta que contiene `manage.py`, es decir, en la ruta `backend/catalogo-arqueologico`:
+Para crear un superusuario, se debe ejecutar el siguiente comando desde la carpeta que contiene `manage.py`, es decir, en la ruta `backend/catalogo_arqueologico`:
 
 ```bash
 python manage.py createsuperuser
@@ -98,7 +98,7 @@ python manage.py createsuperuser
 Luego, se deben seguir las instrucciones que se presentan en la terminal.
 
 #### Ejecución del backend
-Desde la carpeta `backend/catalogo-arqueologico`, ejecutar el siguiente comando:
+Desde la carpeta `backend/catalogo_arqueologico`, ejecutar el siguiente comando:
 
 ```bash
 python manage.py runserver

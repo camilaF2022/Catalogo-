@@ -2,7 +2,6 @@
 *.pyc
 .DS_Store
 venv/
-back-venv/
 __pycache__/
 catalogo_arqueologico/media/
 catalogo_arqueologico/multimedia/
