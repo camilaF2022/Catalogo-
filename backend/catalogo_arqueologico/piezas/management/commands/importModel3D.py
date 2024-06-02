@@ -19,7 +19,7 @@ class Command(BaseCommand):
         if not os.path.exists(model_folder):
             logger.error(f"Folder {model_folder} not found. Stop")
             return
-        
+
         folder_files = os.listdir(model_folder)
 
         # List files in the folder
@@ -36,9 +36,7 @@ class Command(BaseCommand):
 
         for texture in textures:
             base_name = os.path.splitext(texture)[0]
-            base_name_id = base_name.split(".")[
-                0
-            ]  # get 'texture1' from 'texture1.png'
+            base_name_id = base_name.split(".")[0]  # get 'texture1' from 'texture1.png'
             file_pairs[base_name_id] = {"texture": texture}
 
         for obj in objects:
@@ -62,14 +60,25 @@ class Command(BaseCommand):
             material_file = files.get("material")
 
             if texture_file and object_file and material_file:
+                # If any of the files already exists, skip the creation of the model
+                if (
+                    os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.MATERIALS_ROOT, texture_file))
+                    or os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.OBJECTS_ROOT, object_file))
+                    or os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.MATERIALS_ROOT, material_file))
+                ):
+                    logger.warning(
+                        f"Skipping importation of {base_name_id} model due to the existing texture, object or material file"
+                    )
+                    continue
+                
                 texture_path = os.path.join(model_folder, texture_file)
                 object_path = os.path.join(model_folder, object_file)
                 material_path = os.path.join(model_folder, material_file)
 
-                # Create model object
                 with open(texture_path, "rb") as tex_file, open(
                     object_path, "rb"
                 ) as obj_file, open(material_path, "rb") as mat_file:
+                    # Create model object and upload files
                     try:
                         new_model = Model(
                             id=int(base_name_id),

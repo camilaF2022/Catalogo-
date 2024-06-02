@@ -20,6 +20,11 @@ class Command(BaseCommand):
 
         thumb_files = os.listdir(thumb_folder)
         for thumb_name in thumb_files:
+            # If the file already exists, skip the creation of the model
+            if os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.THUMBNAILS_ROOT, thumb_name)):
+                logger.warning(f"Skipping thumbnail {thumb_name} model creation. Its file already exists.")
+                continue
+
             thumb_path = os.path.join(thumb_folder, thumb_name)
             with open(thumb_path, 'rb') as thumbnail:
                 try:
