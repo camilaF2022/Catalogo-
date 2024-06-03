@@ -9,8 +9,9 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel("INFO")
 
+
 class Command(BaseCommand):
-    help = 'Import thumbnails from a folder. The folder must contain photo type files.'
+    help = "Import thumbnails from a folder. The folder must contain photo type files."
 
     def handle(self, *args, **kwargs):
         thumb_folder = settings.THUMBNAILS_FOLDER_PATH
@@ -20,19 +21,27 @@ class Command(BaseCommand):
 
         thumb_files = os.listdir(thumb_folder)
         for thumb_name in thumb_files:
+            artifactId = thumb_name.split(".")[0]
             # If the file already exists, skip the creation of the model
-            if os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.THUMBNAILS_ROOT, thumb_name)):
-                logger.warning(f"Skipping thumbnail {thumb_name} model creation. Its file already exists.")
+            # This avoids the upload of the same thumbnail multiple times
+            if os.path.exists(
+                os.path.join(settings.MEDIA_ROOT, settings.THUMBNAILS_ROOT, thumb_name)
+            ):
+                logger.warning(
+                    f"Skipping creation of {artifactId} thumbnail model due to existing file"
+                )
                 continue
 
             thumb_path = os.path.join(thumb_folder, thumb_name)
-            with open(thumb_path, 'rb') as thumbnail:
+            with open(thumb_path, "rb") as thumbnail:
                 try:
-                    new_thumb = Thumbnail(
-                        path=File(thumbnail, name=thumb_name),   
+                    Thumbnail.objects.create(
+                        id=int(artifactId),
+                        path=File(thumbnail, name=thumb_name),
                     )
-                    new_thumb.save()
-                    logger.info(f"Thumbnail {thumb_name} added successfully")
+                    logger.info(f"Thumbnail {artifactId} added successfully")
                 except IntegrityError:
-                    logger.warning(f"Thumbnail {thumb_name} already exists. Skipping its creation")
+                    logger.warning(
+                        f"Thumbnail {artifactId} already exists. Skipping its creation"
+                    )
                     continue
