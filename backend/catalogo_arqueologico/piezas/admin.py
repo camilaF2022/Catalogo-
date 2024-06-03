@@ -1,11 +1,32 @@
 from django.contrib import admin
-from .models import Metadata, Media, PiezaArq
-from import_export.admin import ImportExportModelAdmin
-# Register your models here.
-class RecordMetadataAdmin(ImportExportModelAdmin):
-    list_display = ['type', 'name'] #type = 1 is Tag, type = 2 is Culture, type = 3 is Form
+from .models import Tag, Shape, Culture, Artifact
 
-admin.site.register(Metadata,RecordMetadataAdmin)
 
-admin.site.register(Media)
-admin.site.register(PiezaArq)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ("id", "name")
+    list_filter = ("name",)
+    search_fields = ("name",)
+
+
+class ShapeAdmin(admin.ModelAdmin):
+    list_display = ("id", "name")
+    list_filter = ("name",)
+    search_fields = ("name",)
+
+
+class CultureAdmin(admin.ModelAdmin):
+    list_display = ("id", "name")
+    list_filter = ("name",)
+    search_fields = ("name",)
+
+
+class ArtifactAdmin(admin.ModelAdmin):
+    list_display = ("id", "description")
+    list_filter = ("id",)
+    search_fields = ("description",)
+
+
+admin.site.register(Tag, TagAdmin)
+admin.site.register(Shape, ShapeAdmin)
+admin.site.register(Culture, CultureAdmin)
+admin.site.register(Artifact, ArtifactAdmin)

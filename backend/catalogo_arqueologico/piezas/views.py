@@ -1,13 +1,61 @@
-from rest_framework import viewsets
-from .serializer import MetadataSerializer, MediaSerializer
-from .models import Metadata, Media
+from rest_framework import viewsets, generics, permissions, authentication
+from .serializers import TagSerializer, ShapeSerializer, CultureSerializer, ArtifactSerializer, NewArtifactSerializer
+from .models import Tag, Shape, Artifact
+from .authentication import TokenAuthentication
+from .permissions import IsFuncionarioPermission
+from .serializers import CatalogSerializer
+from rest_framework.response import Response
 
+class ArtifactDetailAPIView(generics.RetrieveAPIView):
+    queryset = Artifact.objects.all()
+    serializer_class = ArtifactSerializer
+    #aca entregar todo, las urls y todo
 
-# Create your views here.
-class MetadataView(viewsets.ModelViewSet):
-    serializer_class = MetadataSerializer
-    queryset = Metadata.objects.all()
+class ArtifactListAPIView(generics.ListAPIView):
+    serializer_class = ArtifactSerializer
 
-class MediaView(viewsets.ModelViewSet):
-    serializer_class = MediaSerializer
-    queryset = Media.objects.all()
+    def get_queryset(self):
+        return Artifact.objects.all()
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({"status":"success", "data":serializer.data})
+
+class ArtifactCreateAPIView(generics.CreateAPIView):
+    queryset = Artifact.objects.all()
+    serializer_class = NewArtifactSerializer
+
+class ArtifactDestroyAPIView(generics.DestroyAPIView):
+    queryset = Artifact.objects.all()
+    serializer_class = ArtifactSerializer
+    lookup_field = 'pk'
+
+class CatalogAPIView(generics.ListAPIView):
+    serializer_class = CatalogSerializer
+    def get_queryset(self):
+        return Artifact.objects.all()
+    
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({"status":"success", "data":serializer.data})
+

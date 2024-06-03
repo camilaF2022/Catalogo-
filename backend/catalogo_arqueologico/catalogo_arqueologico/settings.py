@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
     'coreapi',
-    'import_export',
     'piezas',
 ]
 
@@ -128,8 +129,43 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS = []
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000',]
 
 REST_FRAMEWORK = {
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# Root folders for the different types of uploaded files
+MATERIALS_ROOT= 'materials/'
+OBJECTS_ROOT= 'objects/'
+THUMBNAILS_ROOT= 'thumbnails/'
+IMAGES_ROOT= 'images/'
+
+# Paths of the different types of files to be imported
+DATA_ROOT = os.path.join(BASE_DIR, "..", "..", 'data')
+CULTURE_CSV_PATH = os.path.join(DATA_ROOT, 'coleccion-cultura.csv')
+MODEL_FOLDER_PATH = os.path.join(DATA_ROOT, 'complete-dataset/')
+SHAPE_FOLDER_PATH = os.path.join(DATA_ROOT, 'clasificacion-forma/')
+TAGS_CSV_PATH = os.path.join(DATA_ROOT, 'CH_tags.csv')
+THUMBNAILS_FOLDER_PATH = os.path.join(DATA_ROOT, 'thumbnails/')
+DESCRIPTIONS_CSV_PATH = os.path.join(DATA_ROOT, 'metadata - descripcion.csv')
+MULTIMEDIA_FOLDER_PATH = os.path.join(BASE_DIR, 'multimedia/')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
 }
