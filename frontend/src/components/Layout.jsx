@@ -44,7 +44,7 @@ const Layout = () => {
 
 const CustomGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.main,
-  minHeight: theme.spacing(103),
+  minHeight: '100vh',
 }));
 
 export default Layout;
