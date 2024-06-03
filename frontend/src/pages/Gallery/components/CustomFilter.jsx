@@ -208,6 +208,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
           }
           options={shapeOptions}
           getOptionLabel={(option) => option}
+          noOptionsText="No hay formas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (
             <TextField
@@ -228,6 +229,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
           }
           options={cultureOptions}
           getOptionLabel={(option) => option}
+          noOptionsText="No hay culturas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (
             <TextField
@@ -253,6 +255,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
           }
           options={tagOptions}
           getOptionLabel={(option) => option}
+          noOptionsText="No hay etiquetas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (
             <TextField
