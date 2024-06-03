@@ -19,5 +19,3 @@ class LoginView(APIView):
                         status=status.HTTP_200_OK)
     
 
-class HomeView(APIView):
-    pass

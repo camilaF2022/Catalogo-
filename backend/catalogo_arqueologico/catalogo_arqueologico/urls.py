@@ -19,12 +19,10 @@ from django.urls import path, include
 from rest_framework.authtoken.views import obtain_auth_token
 from django.conf import settings
 from django.conf.urls.static import static
-from catalogo_arqueologico.views import LoginView, HomeView
+from catalogo_arqueologico.views import LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', obtain_auth_token),
-    # path('', HomeView.as_view(), name='home'), # FIXME: Implement a home view
-    path('home/', HomeView.as_view(), name='home'),
     path('catalog/', include('piezas.urls')),  # FIXME: Change `piezas` app to `catalog`
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
