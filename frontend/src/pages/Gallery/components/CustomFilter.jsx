@@ -11,14 +11,19 @@ import SearchIcon from "@mui/icons-material/Search";
 import Clear from "@mui/icons-material/Clear";
 import { styled } from "@mui/system";
 import { useSearchParams } from "react-router-dom";
+import useSnackBars from "../../../hooks/useSnackbars";
+import { API_URLS } from "../../../api";
 
 const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
+  const { addAlert } = useSnackBars();
   // Search params from the URL
   const [searchParams, setSearchParams] = useSearchParams();
   // Avoid updating the search params when the component mounts and there are search params
   const [updateParamsFlag, setUpdateParamsFlag] = useState(false);
 
   // Retrieved data from the API
+  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState(false);
   const [shapeOptions, setShapeOptions] = useState([]);
   const [cultureOptions, setCultureOptions] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
@@ -56,7 +61,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch("/pieces_models/response.json")
+    fetch(API_URLS.ALL_ARTIFACTS)
       .then((response) => response.json())
       .then((response) => {
         let artifacts = response.data;
@@ -68,16 +73,20 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
         artifacts.forEach((artifact) => {
           let { attributes } = artifact;
           let { shape, culture, tags: artifactTags } = attributes;
-          shapes.add(shape);
-          cultures.add(culture);
-          artifactTags.forEach((tag) => tags.add(tag));
+          shapes.add(JSON.stringify(shape));
+          cultures.add(JSON.stringify(culture));
+          artifactTags.forEach((tag) => tags.add(JSON.stringify(tag)));
         });
 
-        setShapeOptions(Array.from(shapes));
-        setCultureOptions(Array.from(cultures));
-        setTagOptions(Array.from(tags));
+        setShapeOptions(Array.from(shapes).map(JSON.parse));
+        setCultureOptions(Array.from(cultures).map(JSON.parse));
+        setTagOptions(Array.from(tags).map(JSON.parse));
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        setErrors(true);
+        addAlert(error.message);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   // Filter artifacts based on the filter state
@@ -205,6 +214,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
               placeholder="Filtrar por forma"
             />
           )}
+          disabled={loading || errors}
         />
         <Autocomplete
           fullWidth
@@ -224,6 +234,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
               placeholder="Filtrar por cultura"
             />
           )}
+          disabled={loading || errors}
         />
         <Autocomplete
           multiple
@@ -248,6 +259,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
               placeholder="Filtrar por etiquetas"
             />
           )}
+          disabled={loading || errors}
         />
       </CustomStack>
     </CustomBox>

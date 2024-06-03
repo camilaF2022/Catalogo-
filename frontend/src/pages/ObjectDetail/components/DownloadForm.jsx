@@ -30,7 +30,8 @@ const DownloadForm = ({ pieceInfo, handleClose }) => {
     var link = document.createElement("a");
     link.href = url;
     link.download = downloadName;
-    link.click()
+    link.click();
+    link.remove();
   }
 
   const handleDownload = () => {

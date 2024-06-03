@@ -18,9 +18,10 @@ import ImagesCarousel from "./components/ImagesCarousel";
 import { useParams } from "react-router-dom";
 import DownloadForm from "./components/DownloadForm";
 import NotFound from "../../components/NotFound";
+import { API_URLS } from "../../api";
 
 const ObjectDetail = ({ loggedIn }) => {
-  //set a dummy piece object for initial  rendering
+  // set a dummy piece object for initial  rendering
   const { pieceId } = useParams();
   const [notFound, setNotFound] = useState(false);
   const [piece, setPiece] = useState({
@@ -34,11 +35,11 @@ const ObjectDetail = ({ loggedIn }) => {
     model: {
       object: "",
       material: "",
-    }
+    },
   });
 
   useEffect(() => {
-    fetch(`http://localhost:8000/piezas/oneArtifact/${pieceId}`)
+    fetch(`${API_URLS.DETAILED_ARTIFACT}${pieceId}`)
       .then((response) => {
         if (!response.ok) {
           if (response.status === 404) {
@@ -46,82 +47,99 @@ const ObjectDetail = ({ loggedIn }) => {
             return;
           }
         }
-        return response.json()
-      }
-      ).then((response) => {
-        setPiece(response)
-      }).catch((error) => console.error(error));
+        return response.json();
+      })
+      .then((response) => {
+        setPiece(response);
+      })
+      .catch((error) => console.error(error));
   }, [pieceId]);
-  return (<>
-    {notFound ? <NotFound /> :
-      <ContainerGrid container>
-        <CenterGrid item lg={7}>
-          <LeftBox>
-            <CustomContainer>
-              <Typography variant="h3">
-                <b>#{piece.id && String(piece.id).padStart(4, "0")}</b>
-              </Typography>
-              {loggedIn ? (
-                <HorizontalStack>
-                  <Button variant="contained">Descargar Pieza</Button>
+  return (
+    <>
+      {notFound ? (
+        <NotFound />
+      ) : (
+        <ContainerGrid container>
+          <CenterGrid item lg={7}>
+            <LeftBox>
+              <CustomContainer>
+                <Typography variant="h3">
+                  <b>#{piece.id && String(piece.id).padStart(4, "0")}</b>
+                </Typography>
+                {loggedIn ? (
+                  <HorizontalStack>
+                    <Button variant="contained">Descargar Pieza</Button>
 
-                  <ModalFormButton text={"Editar Pieza"}>
-                    <EditForm />
+                    <ModalFormButton text={"Editar Pieza"}>
+                      <EditForm />
+                    </ModalFormButton>
+                  </HorizontalStack>
+                ) : (
+                  <ModalFormButton text={"Solicitar datos"}>
+                    <DownloadForm pieceInfo={piece}></DownloadForm>
                   </ModalFormButton>
-                </HorizontalStack>
+                )}
+              </CustomContainer>
+
+              {!piece.model.object || !piece.model.material ? (
+                <CustomDiv>
+                  <CircularProgress color="primary" />
+                </CustomDiv>
               ) : (
-                <ModalFormButton text={"Solicitar datos"}>
-                  <DownloadForm pieceInfo={piece}></DownloadForm>
-                </ModalFormButton>
+                <PieceVisualization
+                  objPath={piece.model.object}
+                  mtlPath={piece.model.material}
+                />
               )}
-            </CustomContainer>
-
-            {!piece.model.object || !piece.model.material ? 
-            <CustomDiv>
-              <CircularProgress color='primary'/> 
-            </CustomDiv>
-            :<PieceVisualization
-              objPath={piece.model.object}
-              mtlPath={piece.model.material}
-              />}
-            <ImagesCarousel images={piece.images}></ImagesCarousel> 
-
-          </LeftBox>
-        </CenterGrid>
-        <Grid item lg>
-          <RightBox>
-            <HorizontalStack>
-              <Typography variant="h5">Cultura:</Typography>
-              {piece.attributes.culture.length === 0 ? <CustomSkeletonTag /> :
-                <CustomCultureTag label={piece.attributes.culture[1]} />
-              }
-            </HorizontalStack>
-            <HorizontalStack>
-              <Typography variant="h5"> Forma: </Typography>
-              {piece.attributes.shape.length === 0 ? <CustomSkeletonTag /> :
-                <CustomShapeTag label={piece.attributes.shape[1]} />
-              }
-            </HorizontalStack>
-            <Typography>{piece.attributes.description.length === 0 ?
-              <CustomSkeletonText /> :
-              piece.attributes.description
-            }</Typography>
-            {
+              <ImagesCarousel images={piece.images}></ImagesCarousel>
+            </LeftBox>
+          </CenterGrid>
+          <Grid item lg>
+            <RightBox>
               <HorizontalStack>
-                <Typography variant="h5">Etiquetas:</Typography>
-                <TagContainer>
-                  {piece.attributes.tags.length === 0 ? <CustomSkeletonTag /> :
-                    piece.attributes.tags.map((tag, index) => (
-                      <Chip key={index} label={tag[1]} />
-                    ))}
-                </TagContainer>
+                <Typography variant="h5">Cultura:</Typography>
+                {piece.attributes.culture.length === 0 ? (
+                  <CustomSkeletonTag />
+                ) : (
+                  <CustomCultureTag label={piece.attributes.culture[1]} />
+                )}
               </HorizontalStack>
-            }
-          </RightBox>
-        </Grid>
-      </ContainerGrid>
-    } </>);
-}
+              <HorizontalStack>
+                <Typography variant="h5"> Forma: </Typography>
+                {piece.attributes.shape.length === 0 ? (
+                  <CustomSkeletonTag />
+                ) : (
+                  <CustomShapeTag label={piece.attributes.shape[1]} />
+                )}
+              </HorizontalStack>
+              <Typography>
+                {piece.attributes.description.length === 0 ? (
+                  <CustomSkeletonText />
+                ) : (
+                  piece.attributes.description
+                )}
+              </Typography>
+              {
+                <HorizontalStack>
+                  <Typography variant="h5">Etiquetas:</Typography>
+                  <TagContainer>
+                    {piece.attributes.tags.length === 0 ? (
+                      <CustomSkeletonTag />
+                    ) : (
+                      piece.attributes.tags.map((tag, index) => (
+                        <Chip key={index} label={tag[1]} />
+                      ))
+                    )}
+                  </TagContainer>
+                </HorizontalStack>
+              }
+            </RightBox>
+          </Grid>
+        </ContainerGrid>
+      )}{" "}
+    </>
+  );
+};
 
 const CustomContainer = styled(Container)(() => ({
   display: "flex",
@@ -204,14 +222,13 @@ const CustomSkeletonText = styled(Skeleton)(({ theme }) => ({
   variant: "text",
 }));
 
-const CustomDiv = styled('div')(() => ({
-  width: '100%',
-  height: '500px',
-  backgroundColor:'#2e2d2c',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-
+const CustomDiv = styled("div")(() => ({
+  width: "100%",
+  height: "500px",
+  backgroundColor: "#2e2d2c",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
 }));
 
 export default ObjectDetail;

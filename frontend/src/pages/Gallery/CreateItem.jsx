@@ -13,6 +13,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import useSnackBars from "../../hooks/useSnackbars";
 import UploadButton from "./components/UploadButton";
 import AutocompleteExtended from "./components/AutocompleteExtended";
+import { API_URLS } from "../../api";
 
 export const allowedFileTypes = {
   model: ["obj"],
@@ -39,6 +40,9 @@ const CreateItem = () => {
     tags: [],
   });
 
+  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState(false);
+
   // Retrieved data from the API
   const [shapeOptions, setShapeOptions] = useState([]);
   const [cultureOptions, setCultureOptions] = useState([]);
@@ -46,7 +50,7 @@ const CreateItem = () => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch("/pieces_models/response.json")
+    fetch(API_URLS.ALL_ARTIFACTS)
       .then((response) => response.json())
       .then((response) => {
         let artifacts = response.data;
@@ -58,16 +62,20 @@ const CreateItem = () => {
         artifacts.forEach((artifact) => {
           let { attributes } = artifact;
           let { shape, culture, tags: artifactTags } = attributes;
-          shapes.add(shape);
-          cultures.add(culture);
-          artifactTags.forEach((tag) => tags.add(tag));
+          shapes.add(JSON.stringify(shape));
+          cultures.add(JSON.stringify(culture));
+          artifactTags.forEach((tag) => tags.add(JSON.stringify(tag)));
         });
 
-        setShapeOptions(Array.from(shapes));
-        setCultureOptions(Array.from(cultures));
-        setTagOptions(Array.from(tags));
+        setShapeOptions(Array.from(shapes).map(JSON.parse));
+        setCultureOptions(Array.from(cultures).map(JSON.parse));
+        setTagOptions(Array.from(tags).map(JSON.parse));
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        setErrors(true);
+        addAlert(error.message);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const handleInputChange = (name, value) => {
@@ -151,6 +159,7 @@ const CreateItem = () => {
                 isRequired
                 fullWidth
                 filterSelectedOptions
+                disabled={loading || errors}
               />
               <FormLabel component="legend">Cultura *</FormLabel>
               <AutocompleteExtended
@@ -163,6 +172,7 @@ const CreateItem = () => {
                 isRequired
                 fullWidth
                 filterSelectedOptions
+                disabled={loading || errors}
               />
               <FormLabel component="legend">Etiquetas (opcional)</FormLabel>
               <AutocompleteExtended
@@ -177,6 +187,7 @@ const CreateItem = () => {
                 placeholder="Seleccionar las etiquetas del objeto"
                 getOptionLabel={(option) => option}
                 filterSelectedOptions
+                disabled={loading || errors}
               />
             </ColumnGrid>
           </Grid>

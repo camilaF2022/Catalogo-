@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Box, Button, Container, Grid, Typography } from "@mui/material";
+import { Box, Button, Container, Grid, Typography, Skeleton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArtifactCard from "./components/ArtifactCard";
 import CustomPagination from "./components/CustomPagination";
 import CustomFilter from "./components/CustomFilter";
+import useSnackBars from "../../hooks/useSnackbars";
+import { API_URLS } from "../../api";
 
 const Gallery = ({ loggedIn }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { addAlert } = useSnackBars();
+
+  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState(false);
 
   // Retrieved data from the API
   const [artifactList, setArtifactList] = useState([]);
@@ -18,10 +24,9 @@ const Gallery = ({ loggedIn }) => {
   // Sliced artifacts to display on the current page
   const [artifactsToDisplay, setArtifactsToDisplay] = useState([]);
 
-
   // Fetch data from the API
   useEffect(() => {
-    fetch("http://localhost:8000/piezas/catalog/")
+    fetch(API_URLS.ALL_ARTIFACTS)
       .then((response) => response.json())
       .then((response) => {
         let artifacts = response.data;
@@ -35,9 +40,13 @@ const Gallery = ({ loggedIn }) => {
         });
         setArtifactList(artifactsSimplified);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        setErrors(true);
+        addAlert(error.message);
+      })
+      .finally(() => setLoading(false));
   }, []);
-  
+
   const handleRedirect = () => {
     navigate("/gallery/new", { state: { from: location.pathname } });
   };
@@ -61,7 +70,17 @@ const Gallery = ({ loggedIn }) => {
           </Button>
         </CustomBox>
       )}
-      {filteredArtifacts.length > 0 ? (
+      {loading ? (
+        <Box>
+          <Grid container spacing={2}>
+            {Array.from({ length: 6 }, (_, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Skeleton variant="rectangular" width="100%" height={200} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      ) : filteredArtifacts.length > 0 ? (
         <Box>
           <Grid container spacing={2}>
             {artifactsToDisplay.map((artifact) => (
