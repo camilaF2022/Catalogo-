@@ -17,6 +17,7 @@ class Shape(models.Model):
     Shape model to store the shapes of the artifacts
     Name must be unique
     """
+
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
 
@@ -29,6 +30,7 @@ class Culture(models.Model):
     Culture model to store the cultures of the artifacts
     Name must be unique
     """
+
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
 
@@ -41,6 +43,7 @@ class Tag(models.Model):
     Tag model to store the tags of the artifacts
     Name must be unique
     """
+
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
 
@@ -53,15 +56,17 @@ class Thumbnail(models.Model):
     Thumbnail model to store the thumbnails of the artifacts
     Images must be unique
     """
+
     id = models.BigAutoField(primary_key=True)
     path = models.ImageField(upload_to=settings.THUMBNAILS_ROOT, unique=True)
 
 
 class Model(models.Model):
-    """"
+    """
     Model to store the 3D models of the artifacts
     Each attribute must be unique
     """
+
     id = models.BigAutoField(primary_key=True)
     texture = models.ImageField(upload_to=settings.MATERIALS_ROOT, unique=True)
     object = models.FileField(upload_to=settings.OBJECTS_ROOT, unique=True)
@@ -73,6 +78,7 @@ class Image(models.Model):
     Image model to store the images of the artifacts
     Images must be unique
     """
+
     id = models.BigAutoField(primary_key=True)
     id_artifact = models.ForeignKey(
         "Artifact", on_delete=models.CASCADE, related_name="artifact"
@@ -88,14 +94,16 @@ class Artifact(models.Model):
     id = models.BigAutoField(primary_key=True)
     description = models.CharField(max_length=300)
     id_thumbnail = models.ForeignKey(
-        Thumbnail, on_delete=models.CASCADE, related_name="thumbnail"
+        Thumbnail, on_delete=models.SET_NULL, null=True, related_name="thumbnail"
     )
     id_model = models.ForeignKey(
         Model, on_delete=models.CASCADE, related_name="model3d", default=0
     )
-    id_shape = models.ForeignKey(Shape, on_delete=models.CASCADE, related_name="shape")
+    id_shape = models.ForeignKey(
+        Shape, on_delete=models.SET_NULL, null=True, related_name="shape"
+    )
     id_culture = models.ForeignKey(
-        Culture, on_delete=models.CASCADE, related_name="culture"
+        Culture, on_delete=models.SET_NULL, null=True, related_name="culture"
     )
     id_tags = models.ManyToManyField(Tag)
 
@@ -105,6 +113,7 @@ class TagsIds(models.Model):
     Auxiliary table to store the relationship between the tag and the artifact
     Tag and ArtifactId must be unique together
     """
+
     id = models.BigAutoField(primary_key=True)
     tag = models.IntegerField(default=0)
     artifactid = models.IntegerField(default=0)
@@ -122,6 +131,7 @@ class CultureIds(models.Model):
     Auxiliary table to store the relationship between the culture and the artifact
     Culture and ArtifactId must be unique together
     """
+
     id = models.BigAutoField(primary_key=True)
     culture = models.IntegerField(default=0)
     artifactid = models.IntegerField(default=0)
@@ -139,6 +149,7 @@ class ShapeIds(models.Model):
     Auxiliary table to store the relationship between the shape and the artifact
     Shape and ArtifactId must be unique together
     """
+
     id = models.BigAutoField(primary_key=True)
     shape = models.IntegerField(default=0)
     artifactid = models.IntegerField(default=0)
