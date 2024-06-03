@@ -73,9 +73,9 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
         artifacts.forEach((artifact) => {
           let { attributes } = artifact;
           let { shape, culture, tags: artifactTags } = attributes;
-          shapes.add(JSON.stringify(shape));
-          cultures.add(JSON.stringify(culture));
-          artifactTags.forEach((tag) => tags.add(JSON.stringify(tag)));
+          shapes.add(JSON.stringify(shape.value));
+          cultures.add(JSON.stringify(culture.value));
+          artifactTags.forEach((tag) => tags.add(JSON.stringify(tag.value)));
         });
 
         setShapeOptions(Array.from(shapes).map(JSON.parse));
@@ -92,7 +92,9 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
   // Filter artifacts based on the filter state
   useEffect(() => {
     let filtered = artifactList.filter((artifact) => {
-      const { shape, culture, tags } = artifact.attributes;
+      const { shape: artifactShape, culture: artifactCulture, tags:artifactTags, description: artifactDescription } = artifact.attributes;
+      const artifactTagsInLowerCase = artifactTags.map((tag) => tag.value.toLowerCase());
+      
       const {
         query,
         shape: filterShape,
@@ -104,7 +106,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
 
       if (
         query &&
-        !artifact.attributes.description
+        !artifactDescription
           .toLowerCase()
           .includes(query.toLowerCase()) &&
         !query.includes(String(artifact.id))
@@ -112,20 +114,20 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
         return false;
       }
 
-      if (filterShape && shape.toLowerCase() !== filterShape.toLowerCase()) {
+      if (filterShape && artifactShape.value.toLowerCase() !== filterShape.toLowerCase()) {
         return false;
       }
 
       if (
         filterCulture &&
-        culture.toLowerCase() !== filterCulture.toLowerCase()
+        artifactCulture.value.toLowerCase() !== filterCulture.toLowerCase()
       ) {
         return false;
       }
 
       if (
         filterTagsInLowerCase.length > 0 &&
-        !filterTagsInLowerCase.every((tag) => tags.includes(tag.toLowerCase()))
+        !filterTagsInLowerCase.every((tagInFilter) => artifactTagsInLowerCase.includes(tagInFilter))
       ) {
         return false;
       }

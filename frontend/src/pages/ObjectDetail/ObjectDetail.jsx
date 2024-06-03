@@ -26,8 +26,8 @@ const ObjectDetail = ({ loggedIn }) => {
   const [notFound, setNotFound] = useState(false);
   const [piece, setPiece] = useState({
     attributes: {
-      culture: [],
-      shape: [],
+      culture: {id: "", value: ""},
+      shape: {id: "", value: ""},
       tags: [],
       description: "",
     },
@@ -98,22 +98,22 @@ const ObjectDetail = ({ loggedIn }) => {
             <RightBox>
               <HorizontalStack>
                 <Typography variant="h5">Cultura:</Typography>
-                {piece.attributes.culture.length === 0 ? (
+                {piece.attributes.culture.value === "" ? (
                   <CustomSkeletonTag />
                 ) : (
-                  <CustomCultureTag label={piece.attributes.culture[1]} />
+                  <CustomCultureTag label={piece.attributes.culture.value} />
                 )}
               </HorizontalStack>
               <HorizontalStack>
                 <Typography variant="h5"> Forma: </Typography>
-                {piece.attributes.shape.length === 0 ? (
+                {piece.attributes.shape.value === ""  ? (
                   <CustomSkeletonTag />
                 ) : (
-                  <CustomShapeTag label={piece.attributes.shape[1]} />
+                  <CustomShapeTag label={piece.attributes.shape.value} />
                 )}
               </HorizontalStack>
               <Typography>
-                {piece.attributes.description.length === 0 ? (
+                {piece.attributes.description === "" ? (
                   <CustomSkeletonText />
                 ) : (
                   piece.attributes.description
@@ -126,8 +126,8 @@ const ObjectDetail = ({ loggedIn }) => {
                     {piece.attributes.tags.length === 0 ? (
                       <CustomSkeletonTag />
                     ) : (
-                      piece.attributes.tags.map((tag, index) => (
-                        <Chip key={index} label={tag[1]} />
+                      piece.attributes.tags.map((tag) => (
+                        <Chip key={tag.id} label={tag.value} />
                       ))
                     )}
                   </TagContainer>

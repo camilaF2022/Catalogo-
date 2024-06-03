@@ -17,7 +17,7 @@ const ArtifactCard = ({ artifact }) => {
   const artifactNumber = String(id).padStart(4, "0");
   const fullTitle = `#${artifactNumber} ${description}`;
   
-  const fullDescription = tags.map(tag=>tag[1]).join(", ");
+  const fullDescription = tags.map(tag=>tag.value).join(", ");
   const handleRedirect = () => {
     navigate(`/gallery/${id}`);
   };
@@ -39,8 +39,8 @@ const ArtifactCard = ({ artifact }) => {
           <CardDescription variant="p">{fullDescription}</CardDescription>
         </CustomBox>
         <MetadataContainer>
-          <CustomShapeTag label={shape[1]} size="small" />
-          <CustomCultureTag label={culture[1]} size="small" />
+          <CustomShapeTag label={shape.value} size="small" />
+          <CustomCultureTag label={culture.value} size="small" />
         </MetadataContainer>
       </CustomCardContent>
     </Card>

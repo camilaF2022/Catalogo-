@@ -7,7 +7,7 @@ const AutocompleteExtended = ({
   name,
   value,
   setValue,
-  options=[],
+  options = [],
   placeholder,
   isRequired,
   ...props
@@ -16,15 +16,23 @@ const AutocompleteExtended = ({
   const [openMenu, setOpenMenu] = useState(false);
 
   const handleCreateNewOption = () => {
+    const newObject = {
+      id: -1,
+      value: inputValue,
+    };
     if (props.multiple) {
-      setValue(name, [...value, inputValue]);
+      setValue(name, [...value, newObject]);
     } else {
-      setValue(name, inputValue);
+      setValue(name, newObject);
     }
     setOpenMenu(false);
   };
 
-  const optionAvailable = !value.includes(inputValue);
+  const optionAvailable = props.multiple
+    ? !value
+        .map((selectedOptions) => selectedOptions.value)
+        .includes(inputValue)
+    : true;
 
   const createOption = optionAvailable ? (
     <NewOption component="li" key={inputValue} onClick={handleCreateNewOption}>
@@ -46,11 +54,14 @@ const AutocompleteExtended = ({
       onClose={() => setOpenMenu(false)}
       onInputChange={(e, value) => setInputValue(value)}
       onChange={(e, value, reason) => {
+        if (value == null) {
+          setValue(name, { id: "", value: "" });
+        }
         setValue(name, value);
         setOpenMenu(false);
       }}
       options={options}
-      getOptionLabel={(option) => option}
+      getOptionLabel={(option) => option.value}
       noOptionsText={createOption}
       renderInput={(params) => (
         <TextField
@@ -60,13 +71,15 @@ const AutocompleteExtended = ({
           placeholder={placeholder}
         />
       )}
-      renderTags={(value, getTagProps) =>
-        value.map((option, index) => (
+      renderTags={(selectedOptions, getTagProps) =>
+        selectedOptions.map((option, index) => (
           <Chip
             {...getTagProps({ index })}
-            label={option}
+            label={option.value}
             sx={(theme) => ({
-              backgroundColor: options.includes(option)
+              backgroundColor: options
+                .map((option) => option.value)
+                .includes(option.value)
                 ? ""
                 : theme.palette.primary.light,
             })}

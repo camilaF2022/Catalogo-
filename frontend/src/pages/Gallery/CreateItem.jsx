@@ -35,8 +35,14 @@ const CreateItem = () => {
     thumbnail: "",
     images: [],
     description: "",
-    shape: "",
-    culture: "",
+    shape: {
+      id: "",
+      value: "",
+    },
+    culture: {
+      id: "",
+      value: "",
+    },
     tags: [],
   });
 
@@ -185,7 +191,6 @@ const CreateItem = () => {
                 setValue={handleInputChange}
                 options={tagOptions}
                 placeholder="Seleccionar las etiquetas del objeto"
-                getOptionLabel={(option) => option}
                 filterSelectedOptions
                 disabled={loading || errors}
               />
