@@ -1,5 +1,5 @@
 import os
-from django.core.management.base import BaseCommand, CommandParser
+from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from django.conf import settings
 from piezas.models import Tag, TagsIds

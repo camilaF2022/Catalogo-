@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, CommandParser
+from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from django.core.files import File
 from django.conf import settings

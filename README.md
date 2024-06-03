@@ -68,22 +68,10 @@ CATALOGO
 ```
 Notar que la carpeta `multimedia` debe estar en una ubicación distinta.
 
-Finalmente, desde la carpeta `backend/catalogo_arqueologico`, se deben ejecutar los siguientes comandos en el orden especificado:
+Finalmente, desde la carpeta `backend/catalogo_arqueologico`, se debe ejecutar el siguiente comando:
 
 ```bash
-python manage.py importCulture
-python manage.py importModel3D
-python manage.py importShape botella.txt
-python manage.py importShape cantaro.txt
-python manage.py importShape cuenco.txt
-python manage.py importShape figurina.txt
-python manage.py importShape lebrillo.txt
-python manage.py importShape olla.txt
-python manage.py importShape plato.txt
-python manage.py importShape vaso.txt
-python manage.py importTags
-python manage.py importThumbs
-python manage.py importDescriptions
+python manage.py importAllData
 ```
 
 Si se desea volver a cargar la base de datos, se deben eliminar los archivos `db.sqlite3` de la carpeta `backend/catalogo_arqueologico`, `0001_initial.py` de la carpeta `backend/catalogo_arqueologico/piezas/migrations` y el contenido de la carpeta media ubicada en `backend/catalogo_arqueologico/media`. Luego, ubicado en la carpeta contenedora de `manage.py`, se debe ejecutar el comando `python manage.py makemigrations` seguido de `python manage.py migrate` y los comandos de importación de datos.

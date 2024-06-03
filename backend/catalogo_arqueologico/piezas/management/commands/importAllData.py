@@ -1,9 +1,7 @@
-from django.core.management.base import BaseCommand, CommandParser
-from django.core.files import File
+from django.core.management.base import BaseCommand
 from django.core import management
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from django.db import IntegrityError
 from piezas.models import Model
 
 import os
@@ -24,7 +22,7 @@ class Command(BaseCommand):
         management.call_command('importTags')
         
         for shape in shapes_txt:
-            management.call_command('importShape',file=shape)
+            management.call_command('importShape', shape)
 
         management.call_command('importCulture')
 
