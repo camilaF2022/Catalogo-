@@ -33,10 +33,9 @@ def addImages(self, artifact, realId):
                 image_path = os.path.join(multimedia_path, realId, image_name)
                 with open(image_path, "rb") as image:
                     try:
-                        new_image = Image.objects.create(
+                        Image.objects.create(
                             id_artifact=artifact, path=File(image, name=image_name)
                         )
-                        new_image.save()
                         logger.info(f"Image {image_name} added successfully")
                     except IntegrityError:
                         logger.warning(
@@ -76,9 +75,10 @@ class Command(BaseCommand):
 
                 realShape = Shape.objects.get(id=idShape.shape)
                 realCulture = Culture.objects.get(id=idCulture.culture)
+                
                 try:
                     # Create artifact object
-                    newArtifact = Artifact(
+                    newArtifact = Artifact.objects.create(
                         id=int(realId),
                         description=descriptionArtifact,
                         id_thumbnail=idThumbnail,
@@ -86,7 +86,6 @@ class Command(BaseCommand):
                         id_shape=realShape,
                         id_culture=realCulture,
                     )
-                    newArtifact.save()
                     logger.info(f"Artifact {realId} added successfully")
 
                     # Add relationships

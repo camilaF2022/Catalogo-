@@ -61,13 +61,14 @@ class Command(BaseCommand):
 
             if texture_file and object_file and material_file:
                 # If any of the files already exists, skip the creation of the model
+                # This avoids the upload of the same texture, object or material multiple times
                 if (
                     os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.MATERIALS_ROOT, texture_file))
                     or os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.OBJECTS_ROOT, object_file))
                     or os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.MATERIALS_ROOT, material_file))
                 ):
                     logger.warning(
-                        f"Skipping importation of {base_name_id} model due to the existing texture, object or material file"
+                        f"Skipping creation of {base_name_id} model due to the existing texture, object or material file"
                     )
                     continue
                 
@@ -80,7 +81,7 @@ class Command(BaseCommand):
                 ) as obj_file, open(material_path, "rb") as mat_file:
                     # Create model object and upload files
                     try:
-                        new_model = Model(
+                        Model.objects.create(
                             id=int(base_name_id),
                             texture=File(tex_file, name=os.path.basename(texture_path)),
                             object=File(obj_file, name=os.path.basename(object_path)),
@@ -88,7 +89,6 @@ class Command(BaseCommand):
                                 mat_file, name=os.path.basename(material_path)
                             ),
                         )
-                        new_model.save()
                         logger.info(
                             f"Successfully imported {texture_file}, {object_file}, {material_file}"
                         )
@@ -98,5 +98,5 @@ class Command(BaseCommand):
                         )
             else:
                 logger.warning(
-                    f"Skipping importation of {base_name_id} model due to the missing object or corresponding material file"
+                    f"Skipping creation of {base_name_id} model due to the missing object or corresponding material file"
                 )
