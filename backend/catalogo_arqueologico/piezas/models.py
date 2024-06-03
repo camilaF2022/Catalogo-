@@ -21,9 +21,6 @@ class Shape(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
 
-    def __str__(self):
-        return self.name + ": " + str(self.id)
-
 
 class Culture(models.Model):
     """
@@ -34,9 +31,6 @@ class Culture(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
 
-    def __str__(self):
-        return self.name + ": " + str(self.id)
-
 
 class Tag(models.Model):
     """
@@ -46,9 +40,6 @@ class Tag(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
-
-    def __str__(self):
-        return self.name + ": " + str(self.id)
 
 
 class Thumbnail(models.Model):
