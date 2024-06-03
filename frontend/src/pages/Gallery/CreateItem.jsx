@@ -94,11 +94,11 @@ const CreateItem = () => {
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Emulate POST delay
     const newId = 1;
     addAlert("¡Objeto creado con éxito!");
-    navigate(`/gallery/${newId}`);
+    navigate(`/catalog/${newId}`);
   };
 
   const handleCancel = () => {
-    const from = location.state?.from || "/gallery";
+    const from = location.state?.from || "/catalog";
     navigate(from, { replace: true });
   };
 

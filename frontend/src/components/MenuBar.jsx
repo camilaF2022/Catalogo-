@@ -17,7 +17,7 @@ const MenuBar = ({ loggedIn, setToken }) => {
   };
 
   const handleNewObjectClick = () => {
-    navigate('/gallery/new', { state: { from: location.pathname } });
+    navigate('/catalog/new', { state: { from: location.pathname } });
   };
 
   return (
@@ -27,8 +27,8 @@ const MenuBar = ({ loggedIn, setToken }) => {
           <img src={`${process.env.PUBLIC_URL}/logo-removebg-preview.svg`} alt="logo" style={{ height: '40px',marginLeft: 24 }} />
         </IconButton>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          <Link to="/gallery" style={{ textDecoration: 'none', color: 'white', marginLeft: 55 }}>
-            <Button color="inherit">Galería</Button>
+          <Link to="/catalog" style={{ textDecoration: 'none', color: 'white', marginLeft: 55 }}>
+            <Button color="inherit">Catálogo</Button>
           </Link>
         </Typography>
         {loggedIn && (

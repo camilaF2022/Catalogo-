@@ -48,12 +48,12 @@ const Gallery = ({ loggedIn }) => {
   }, []);
 
   const handleRedirect = () => {
-    navigate("/gallery/new", { state: { from: location.pathname } });
+    navigate("/catalog/new", { state: { from: location.pathname } });
   };
 
   return (
     <Container>
-      <CustomTypography variant="h1">Galería</CustomTypography>
+      <CustomTypography variant="h1">Catálogo</CustomTypography>
       <CustomFilter
         artifactList={artifactList}
         setFilteredArtifacts={setFilteredArtifacts}

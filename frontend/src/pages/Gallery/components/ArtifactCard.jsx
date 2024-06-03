@@ -19,7 +19,7 @@ const ArtifactCard = ({ artifact }) => {
   
   const fullDescription = tags.map(tag=>tag.value).join(", ");
   const handleRedirect = () => {
-    navigate(`/gallery/${id}`);
+    navigate(`/catalog/${id}`);
   };
   
   return (

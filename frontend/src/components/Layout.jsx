@@ -18,21 +18,21 @@ const Layout = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login setToken={setToken} />} />
         <Route
-          path="/gallery"
+          path="/catalog"
           element={<Gallery loggedIn={isAuthenticated} />}
         />
         <Route
-          path="/gallery/:pieceId"
+          path="/catalog/:pieceId"
           element={<ObjectDetail loggedIn={isAuthenticated} />}
         />
         {/* Private routes */}
         <Route
-          path="/gallery/new"
+          path="/catalog/new"
           element={
             isAuthenticated ? (
               <CreateItem />
             ) : (
-              <Login setToken={setToken} navigateTo="/gallery/new" />
+              <Login setToken={setToken} navigateTo="/catalog/new" />
             )
           }
         />

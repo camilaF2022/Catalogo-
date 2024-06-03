@@ -15,9 +15,9 @@ const Home = () => {
                 ¡Bienvenido al fascinante mundo del Museo de Arte Popular Americano Tomás Moro!
                  Sumérgete en la riqueza cultural y la historia a través de nuestra colección de modelos 3D, fotografías e información detallada de piezas arqueológicas. Explora las maravillas de civilizaciones pasadas mientras te maravillas con la artesanía y la maestría de nuestros antepasados. Desde majestuosas esculturas hasta intrincados artefactos, nuestro sitio web ofrece una ventana única hacia el legado de la humanidad. Únete a nosotros en este viaje cautivador a través del tiempo y el espacio, donde cada pieza cuenta una historia extraordinaria.
                 </CustomText>
-                <Link to="/gallery">
+                <Link to="/catalog">
                     <CustomButton variant="contained" color="primary">
-                    Ver galería
+                    Ver catálogo
                     </CustomButton>
                 </Link>
             </CustomBox>
