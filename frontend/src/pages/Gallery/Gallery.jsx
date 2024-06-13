@@ -14,7 +14,7 @@ const Gallery = ({ loggedIn }) => {
   const { addAlert } = useSnackBars();
 
   const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState(false);
+  const [_, setErrors] = useState(false);
 
   // Retrieved data from the API
   const [artifactList, setArtifactList] = useState([]);
@@ -30,15 +30,7 @@ const Gallery = ({ loggedIn }) => {
       .then((response) => response.json())
       .then((response) => {
         let artifacts = response.data;
-        let artifactsSimplified = artifacts.map((artifact) => {
-          let { id, attributes, preview } = artifact;
-          return {
-            id,
-            attributes,
-            preview,
-          };
-        });
-        setArtifactList(artifactsSimplified);
+        setArtifactList(artifacts);
       })
       .catch((error) => {
         setErrors(true);
@@ -55,7 +47,6 @@ const Gallery = ({ loggedIn }) => {
     <Container>
       <CustomTypography variant="h1">Catálogo</CustomTypography>
       <CustomFilter
-        artifactList={artifactList}
         setFilteredArtifacts={setFilteredArtifacts}
       />
       {loggedIn && (

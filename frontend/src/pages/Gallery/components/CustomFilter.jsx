@@ -14,7 +14,7 @@ import { useSearchParams } from "react-router-dom";
 import useSnackBars from "../../../hooks/useSnackbars";
 import { API_URLS } from "../../../api";
 
-const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
+const CustomFilter = ({ setFilteredArtifacts }) => {
   const { addAlert } = useSnackBars();
   // Search params from the URL
   const [searchParams, setSearchParams] = useSearchParams();
@@ -61,7 +61,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch(API_URLS.ALL_ARTIFACTS)
+    fetch(API_URLS.DEPRECATED_ALL_ARTIFACTS)
       .then((response) => response.json())
       .then((response) => {
         let artifacts = response.data;
@@ -91,51 +91,32 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
 
   // Filter artifacts based on the filter state
   useEffect(() => {
-    let filtered = artifactList.filter((artifact) => {
-      const { shape: artifactShape, culture: artifactCulture, tags:artifactTags, description: artifactDescription } = artifact.attributes;
-      const artifactTagsInLowerCase = artifactTags.map((tag) => tag.value.toLowerCase());
-      
-      const {
-        query,
-        shape: filterShape,
-        culture: filterCulture,
-        tags: filterTags,
-      } = filter;
+    // Use setTimeout as debounce to avoid making a request on every keystroke
+    const timeoutId = setTimeout(() => {
+      let url = new URL(API_URLS.ALL_ARTIFACTS);
+      let params = {
+        query: filter.query,
+        shape: filter.shape,
+        culture: filter.culture,
+        tags: filter.tags.join(","),
+      };
+      Object.keys(params).forEach(
+        (key) => params[key] && url.searchParams.append(key, params[key])
+      );
+      fetch(url)
+        .then((response) => response.json())
+        .then((response) => {
+          let artifacts = response.data;
+          setFilteredArtifacts(artifacts);
+        })
+        .catch((error) => {
+          setErrors(true);
+          addAlert(error.message);
+        });
+    }, 500); // delay of 500ms
 
-      const filterTagsInLowerCase = filterTags.map((tag) => tag.toLowerCase());
-
-      if (
-        query &&
-        !artifactDescription
-          .toLowerCase()
-          .includes(query.toLowerCase()) &&
-        !query.includes(String(artifact.id))
-      ) {
-        return false;
-      }
-
-      if (filterShape && artifactShape.value.toLowerCase() !== filterShape.toLowerCase()) {
-        return false;
-      }
-
-      if (
-        filterCulture &&
-        artifactCulture.value.toLowerCase() !== filterCulture.toLowerCase()
-      ) {
-        return false;
-      }
-
-      if (
-        filterTagsInLowerCase.length > 0 &&
-        !filterTagsInLowerCase.every((tagInFilter) => artifactTagsInLowerCase.includes(tagInFilter))
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-    setFilteredArtifacts(filtered);
-  }, [filter, artifactList]); // eslint-disable-line react-hooks/exhaustive-deps
+    return () => clearTimeout(timeoutId); // cleanup on unmount or filter change
+  }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update the URL search params when the user applies a filter
   useEffect(() => {
