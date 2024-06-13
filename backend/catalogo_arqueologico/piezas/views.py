@@ -1,4 +1,5 @@
-from rest_framework import viewsets, generics, permissions, authentication
+from rest_framework import generics
+from rest_framework.pagination import PageNumberPagination
 from .serializers import (
     ArtifactSerializer,
     NewArtifactSerializer,
@@ -7,6 +8,7 @@ from .models import Artifact
 from .serializers import CatalogSerializer
 from rest_framework.response import Response
 from django.db.models import Q
+import math
 
 
 class ArtifactDetailAPIView(generics.RetrieveAPIView):
@@ -46,8 +48,24 @@ class ArtifactDestroyAPIView(generics.DestroyAPIView):
     lookup_field = "pk"
 
 
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size = 9
+
+    def get_paginated_response(self, data):
+        return Response(
+            {
+                "current_page": int(self.request.query_params.get("page", 1)),
+                "total": self.page.paginator.count,
+                "per_page": self.page_size,
+                "total_pages": math.ceil(self.page.paginator.count / self.page_size),
+                "data": data,
+            }
+        )
+
+
 class CatalogAPIView(generics.ListAPIView):
     serializer_class = CatalogSerializer
+    pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
         queryset = Artifact.objects.all()
