@@ -14,11 +14,11 @@ import { useSearchParams } from "react-router-dom";
 import useSnackBars from "../../../hooks/useSnackbars";
 import { API_URLS } from "../../../api";
 
-const CustomFilter = ({ setFilteredArtifacts }) => {
+const CustomFilter = ({ filter, setFilter }) => {
   const { addAlert } = useSnackBars();
   // Search params from the URL
   const [searchParams, setSearchParams] = useSearchParams();
-  // Avoid updating the search params when the component mounts and there are search params
+  // Avoid updating the URL when the component mounts and there are search params already
   const [updateParamsFlag, setUpdateParamsFlag] = useState(false);
 
   // Retrieved data from the API
@@ -27,14 +27,6 @@ const CustomFilter = ({ setFilteredArtifacts }) => {
   const [shapeOptions, setShapeOptions] = useState([]);
   const [cultureOptions, setCultureOptions] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
-
-  // Filter state
-  const [filter, setFilter] = useState({
-    query: "",
-    shape: "",
-    culture: "",
-    tags: [],
-  });
 
   const handleFilterChange = (name, value) => {
     setFilter({ ...filter, [name]: value });
@@ -88,35 +80,6 @@ const CustomFilter = ({ setFilteredArtifacts }) => {
       })
       .finally(() => setLoading(false));
   }, []);
-
-  // Filter artifacts based on the filter state
-  useEffect(() => {
-    // Use setTimeout as debounce to avoid making a request on every keystroke
-    const timeoutId = setTimeout(() => {
-      let url = new URL(API_URLS.ALL_ARTIFACTS);
-      let params = {
-        query: filter.query,
-        shape: filter.shape,
-        culture: filter.culture,
-        tags: filter.tags.join(","),
-      };
-      Object.keys(params).forEach(
-        (key) => params[key] && url.searchParams.append(key, params[key])
-      );
-      fetch(url)
-        .then((response) => response.json())
-        .then((response) => {
-          let artifacts = response.data;
-          setFilteredArtifacts(artifacts);
-        })
-        .catch((error) => {
-          setErrors(true);
-          addAlert(error.message);
-        });
-    }, 500); // delay of 500ms
-
-    return () => clearTimeout(timeoutId); // cleanup on unmount or filter change
-  }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update the URL search params when the user applies a filter
   useEffect(() => {
