@@ -91,12 +91,12 @@ class CatalogSerializer(serializers.ModelSerializer):
         description = instance.description
         tags = []
         for tag in tagsInstances:
-            tags.append((tag.id, tag.name))
+            tags.append({"id": tag.id, "value": tag.name})
 
         attributes = {
-            "shape": (shapeInstance.id, shapeInstance.name),
+            "shape": {"id": shapeInstance.id, "value": shapeInstance.name},
             "tags": tags,
-            "culture": (cultureInstance.id, cultureInstance.name),
+            "culture": {"id": cultureInstance.id, "value": cultureInstance.name},
             "description": description,
         }
         return attributes
