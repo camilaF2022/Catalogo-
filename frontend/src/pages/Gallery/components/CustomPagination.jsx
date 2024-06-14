@@ -1,30 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { Box, Pagination } from "@mui/material";
+import { useSearchParams } from "react-router-dom";
 
-const CustomPagination = ({ items, setDisplayedItems }) => {
-  const itemsPerPage = 6; // Set the number of items per page
-  const totalItems = items.length; // Get the total number of items
-  const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate the total number of pages
+const CustomPagination = ({ pagination, setPagination }) => {
+  const { currentPage, totalPages } = pagination;
 
-  const [currentPage, setCurrentPage] = useState(1); // Set the current page initially to 1
+  // Search params from the URL
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const startIndex = (currentPage - 1) * itemsPerPage; // Calculate the start index of the items to display
-  const endIndex = startIndex + itemsPerPage; // Calculate the end index of the items to display
-  const displayedItems = items.slice(startIndex, endIndex); // Get the items to display on the current page
+  // Avoid updating the URL when the component mounts and there are search params already
+  const [updateParamsFlag, setUpdateParamsFlag] = useState(false);
 
-  const handlePageChange = (event, page) => {
-    setCurrentPage(page);
+  const handlePageChange = (_, page) => {
+    setPagination({ ...pagination, currentPage: page });
   };
 
-  // Update the displayed items when the list or currentPage changes
+  // Initialize the pagination state with the search params
   useEffect(() => {
-    setDisplayedItems(displayedItems);
-  }, [items, currentPage]); // eslint-disable-line react-hooks/exhaustive-deps
+    const page = searchParams.get("page")
+      ? parseInt(decodeURIComponent(searchParams.get("page")))
+      : 1;
+    setPagination({ ...pagination, currentPage: page });
+    setUpdateParamsFlag(true);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Reset the current page to 1 when the list changes
+  // Update the URL when the current page changes
   useEffect(() => {
-    setCurrentPage(1);
-  }, [items]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!updateParamsFlag) {
+      return;
+    }
+    searchParams.set("page", currentPage);
+    setSearchParams(searchParams);
+  }, [currentPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Box display="flex" justifyContent="center" p={2}>

@@ -1,51 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Box, Button, Container, Grid, Typography, Skeleton } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  Typography,
+  Skeleton,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArtifactCard from "./components/ArtifactCard";
 import CustomPagination from "./components/CustomPagination";
 import CustomFilter from "./components/CustomFilter";
-import useSnackBars from "../../hooks/useSnackbars";
 import { API_URLS } from "../../api";
+import useFetchItems from "../../hooks/useFetchItems";
 
 const Gallery = ({ loggedIn }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { addAlert } = useSnackBars();
 
-  const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState(false);
-
-  // Retrieved data from the API
-  const [artifactList, setArtifactList] = useState([]);
-
-  // Filtered artifacts
-  const [filteredArtifacts, setFilteredArtifacts] = useState([]);
-  // Sliced artifacts to display on the current page
-  const [artifactsToDisplay, setArtifactsToDisplay] = useState([]);
-
-  // Fetch data from the API
-  useEffect(() => {
-    fetch(API_URLS.ALL_ARTIFACTS)
-      .then((response) => response.json())
-      .then((response) => {
-        let artifacts = response.data;
-        let artifactsSimplified = artifacts.map((artifact) => {
-          let { id, attributes, preview } = artifact;
-          return {
-            id,
-            attributes,
-            preview,
-          };
-        });
-        setArtifactList(artifactsSimplified);
-      })
-      .catch((error) => {
-        setErrors(true);
-        addAlert(error.message);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const {
+    items: artifactList,
+    loading,
+    filter,
+    setFilter,
+    pagination,
+    setPagination,
+  } = useFetchItems(API_URLS.ALL_ARTIFACTS);
 
   const handleRedirect = () => {
     navigate("/catalog/new", { state: { from: location.pathname } });
@@ -54,10 +35,7 @@ const Gallery = ({ loggedIn }) => {
   return (
     <Container>
       <CustomTypography variant="h1">Catálogo</CustomTypography>
-      <CustomFilter
-        artifactList={artifactList}
-        setFilteredArtifacts={setFilteredArtifacts}
-      />
+      <CustomFilter filter={filter} setFilter={setFilter} />
       {loggedIn && (
         <CustomBox>
           <Button
@@ -80,10 +58,10 @@ const Gallery = ({ loggedIn }) => {
             ))}
           </Grid>
         </Box>
-      ) : filteredArtifacts.length > 0 ? (
+      ) : artifactList.length > 0 ? (
         <Box>
           <Grid container spacing={2}>
-            {artifactsToDisplay.map((artifact) => (
+            {artifactList.map((artifact) => (
               <Grid item xs={12} sm={6} md={4} key={artifact.id}>
                 <ArtifactCard artifact={artifact} />
               </Grid>
@@ -91,8 +69,8 @@ const Gallery = ({ loggedIn }) => {
           </Grid>
 
           <CustomPagination
-            items={filteredArtifacts}
-            setDisplayedItems={setArtifactsToDisplay}
+            pagination={pagination}
+            setPagination={setPagination}
           />
         </Box>
       ) : (

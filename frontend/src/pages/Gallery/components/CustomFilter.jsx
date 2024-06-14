@@ -14,11 +14,11 @@ import { useSearchParams } from "react-router-dom";
 import useSnackBars from "../../../hooks/useSnackbars";
 import { API_URLS } from "../../../api";
 
-const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
+const CustomFilter = ({ filter, setFilter }) => {
   const { addAlert } = useSnackBars();
   // Search params from the URL
   const [searchParams, setSearchParams] = useSearchParams();
-  // Avoid updating the search params when the component mounts and there are search params
+  // Avoid updating the URL when the component mounts and there are search params already
   const [updateParamsFlag, setUpdateParamsFlag] = useState(false);
 
   // Retrieved data from the API
@@ -27,14 +27,6 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
   const [shapeOptions, setShapeOptions] = useState([]);
   const [cultureOptions, setCultureOptions] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
-
-  // Filter state
-  const [filter, setFilter] = useState({
-    query: "",
-    shape: "",
-    culture: "",
-    tags: [],
-  });
 
   const handleFilterChange = (name, value) => {
     setFilter({ ...filter, [name]: value });
@@ -61,7 +53,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch(API_URLS.ALL_ARTIFACTS)
+    fetch(API_URLS.DEPRECATED_ALL_ARTIFACTS)
       .then((response) => response.json())
       .then((response) => {
         let artifacts = response.data;
@@ -87,55 +79,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
         addAlert(error.message);
       })
       .finally(() => setLoading(false));
-  }, []);
-
-  // Filter artifacts based on the filter state
-  useEffect(() => {
-    let filtered = artifactList.filter((artifact) => {
-      const { shape: artifactShape, culture: artifactCulture, tags:artifactTags, description: artifactDescription } = artifact.attributes;
-      const artifactTagsInLowerCase = artifactTags.map((tag) => tag.value.toLowerCase());
-      
-      const {
-        query,
-        shape: filterShape,
-        culture: filterCulture,
-        tags: filterTags,
-      } = filter;
-
-      const filterTagsInLowerCase = filterTags.map((tag) => tag.toLowerCase());
-
-      if (
-        query &&
-        !artifactDescription
-          .toLowerCase()
-          .includes(query.toLowerCase()) &&
-        !query.includes(String(artifact.id))
-      ) {
-        return false;
-      }
-
-      if (filterShape && artifactShape.value.toLowerCase() !== filterShape.toLowerCase()) {
-        return false;
-      }
-
-      if (
-        filterCulture &&
-        artifactCulture.value.toLowerCase() !== filterCulture.toLowerCase()
-      ) {
-        return false;
-      }
-
-      if (
-        filterTagsInLowerCase.length > 0 &&
-        !filterTagsInLowerCase.every((tagInFilter) => artifactTagsInLowerCase.includes(tagInFilter))
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-    setFilteredArtifacts(filtered);
-  }, [filter, artifactList]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update the URL search params when the user applies a filter
   useEffect(() => {
