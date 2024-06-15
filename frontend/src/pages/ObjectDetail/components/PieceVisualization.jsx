@@ -3,9 +3,11 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { OrbitControls } from '@react-three/drei'
 import { styled } from "@mui/material/styles";
+import * as THREE from 'three';
 
 const PieceVisualization = ({ objPath, mtlPath }) => {
     const material = useLoader(MTLLoader, mtlPath)
+    material.side = THREE.DoubleSide;
     const object = useLoader(OBJLoader, objPath, loader => {
         material.preload()
         loader.setMaterials(material)
