@@ -21,7 +21,7 @@ import NotFound from "../../components/NotFound";
 import { API_URLS } from "../../api";
 
 const ObjectDetail = ({ loggedIn }) => {
-  // set a dummy piece object for initial  rendering
+
   const { pieceId } = useParams();
   const [notFound, setNotFound] = useState(false);
   const [piece, setPiece] = useState({
@@ -136,7 +136,7 @@ const ObjectDetail = ({ loggedIn }) => {
             </RightBox>
           </Grid>
         </ContainerGrid>
-      )}{" "}
+      )}
     </>
   );
 };
