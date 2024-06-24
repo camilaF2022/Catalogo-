@@ -113,7 +113,7 @@ const ObjectDetail = ({ loggedIn }) => {
               )}
             </Typography>
             {
-              <HorizontalStack>
+              <VerticalStack>
                 <Typography variant="h5">Etiquetas:</Typography>
                 <TagContainer>
                   {piece.attributes.tags.length === 0 ? (
@@ -124,7 +124,7 @@ const ObjectDetail = ({ loggedIn }) => {
                     ))
                   )}
                 </TagContainer>
-              </HorizontalStack>
+              </VerticalStack>
             }
           </RightBox>
         </ContainerGrid>
@@ -143,6 +143,11 @@ const CustomContainer = styled('div')(() => ({
 const HorizontalStack = styled('div')(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
+  gap: theme.spacing(1),
+}));
+const VerticalStack = styled('div')(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
   gap: theme.spacing(1),
 }));
 
