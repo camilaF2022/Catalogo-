@@ -3,10 +3,7 @@ import {
   Typography,
   Button,
   Chip,
-  Grid,
   Container,
-  Stack,
-  Box,
   Skeleton,
   CircularProgress,
 } from "@mui/material";
@@ -26,8 +23,8 @@ const ObjectDetail = ({ loggedIn }) => {
   const [notFound, setNotFound] = useState(false);
   const [piece, setPiece] = useState({
     attributes: {
-      culture: {id: "", value: ""},
-      shape: {id: "", value: ""},
+      culture: { id: "", value: "" },
+      shape: { id: "", value: "" },
       tags: [],
       description: "",
     },
@@ -60,145 +57,153 @@ const ObjectDetail = ({ loggedIn }) => {
         <NotFound />
       ) : (
         <ContainerGrid container>
-          <CenterGrid item lg={7}>
-            <LeftBox>
-              <CustomContainer>
-                <Typography variant="h3">
-                  <b>#{piece.id && String(piece.id).padStart(4, "0")}</b>
-                </Typography>
-                {loggedIn ? (
-                  <HorizontalStack>
-                    <Button variant="contained">Descargar Pieza</Button>
-
-                    <ModalFormButton text={"Editar Pieza"}>
-                      <EditForm />
-                    </ModalFormButton>
-                  </HorizontalStack>
-                ) : (
-                  <ModalFormButton text={"Solicitar datos"}>
-                    <DownloadForm pieceInfo={piece}></DownloadForm>
-                  </ModalFormButton>
-                )}
-              </CustomContainer>
-
-              {!piece.model.object || !piece.model.material ? (
-                <CustomDiv>
-                  <CircularProgress color="primary" />
-                </CustomDiv>
-              ) : (
-                <PieceVisualization
-                  objPath={piece.model.object}
-                  mtlPath={piece.model.material}
-                />
-              )}
-              <ImagesCarousel images={piece.images}></ImagesCarousel>
-            </LeftBox>
-          </CenterGrid>
-          <Grid item lg>
-            <RightBox>
-              <HorizontalStack>
-                <Typography variant="h5">Cultura:</Typography>
-                {piece.attributes.culture.value === "" ? (
-                  <CustomSkeletonTag />
-                ) : (
-                  <CustomCultureTag label={piece.attributes.culture.value} />
-                )}
-              </HorizontalStack>
-              <HorizontalStack>
-                <Typography variant="h5"> Forma: </Typography>
-                {piece.attributes.shape.value === ""  ? (
-                  <CustomSkeletonTag />
-                ) : (
-                  <CustomShapeTag label={piece.attributes.shape.value} />
-                )}
-              </HorizontalStack>
-              <Typography>
-                {piece.attributes.description === "" ? (
-                  <CustomSkeletonText />
-                ) : (
-                  piece.attributes.description
-                )}
+          <LeftBox>
+            <CustomContainer>
+              <Typography variant="h3">
+                <b>#{piece.id && String(piece.id).padStart(4, "0")}</b>
               </Typography>
-              {
+              {loggedIn ? (
                 <HorizontalStack>
-                  <Typography variant="h5">Etiquetas:</Typography>
-                  <TagContainer>
-                    {piece.attributes.tags.length === 0 ? (
-                      <CustomSkeletonTag />
-                    ) : (
-                      piece.attributes.tags.map((tag) => (
-                        <Chip key={tag.id} label={tag.value} />
-                      ))
-                    )}
-                  </TagContainer>
+                  <Button variant="contained">Descargar Pieza</Button>
+
+                  <ModalFormButton text={"Editar Pieza"}>
+                    <EditForm />
+                  </ModalFormButton>
                 </HorizontalStack>
-              }
-            </RightBox>
-          </Grid>
+              ) : (
+                <ModalFormButton text={"Solicitar datos"}>
+                  <DownloadForm pieceInfo={piece}></DownloadForm>
+                </ModalFormButton>
+              )}
+            </CustomContainer>
+            {!piece.model.object || !piece.model.material ? (
+              <CustomDiv>
+                <CircularProgress color="primary" />
+              </CustomDiv>
+            ) : (
+              <PieceVisualization
+                objPath={piece.model.object}
+                mtlPath={piece.model.material}
+              />
+            )}
+            <ImagesCarousel images={piece.images}></ImagesCarousel>
+          </LeftBox>
+          <RightBox>
+            <HorizontalStack>
+              <Typography variant="h5">Cultura:</Typography>
+              {piece.attributes.culture.value === "" ? (
+                <CustomSkeletonTag />
+              ) : (
+                <CustomCultureTag label={piece.attributes.culture.value} />
+              )}
+            </HorizontalStack>
+            <HorizontalStack>
+              <Typography variant="h5"> Forma: </Typography>
+              {piece.attributes.shape.value === "" ? (
+                <CustomSkeletonTag />
+              ) : (
+                <CustomShapeTag label={piece.attributes.shape.value} />
+              )}
+            </HorizontalStack>
+            <Typography>
+              {piece.attributes.description === "" ? (
+                <CustomSkeletonText />
+              ) : (
+                piece.attributes.description
+              )}
+            </Typography>
+            {
+              <HorizontalStack>
+                <Typography variant="h5">Etiquetas:</Typography>
+                <TagContainer>
+                  {piece.attributes.tags.length === 0 ? (
+                    <CustomSkeletonTag />
+                  ) : (
+                    piece.attributes.tags.map((tag) => (
+                      <Chip key={tag.id} label={tag.value} />
+                    ))
+                  )}
+                </TagContainer>
+              </HorizontalStack>
+            }
+          </RightBox>
         </ContainerGrid>
       )}
     </>
   );
 };
 
-const CustomContainer = styled(Container)(() => ({
+const CustomContainer = styled('div')(() => ({
   display: "flex",
+  flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
+  width: "100%",
 }));
-const HorizontalStack = styled(Stack)(({ theme }) => ({
+const HorizontalStack = styled('div')(({ theme }) => ({
+  display: "flex",
   flexDirection: "row",
+  gap: theme.spacing(1),
+}));
+
+const LeftBox = styled('div')(({ theme }) => ({
+  width: theme.spacing(83),
+  [theme.breakpoints.up("md")]: {
+    width: theme.spacing(106.5),
+  },
+  [theme.breakpoints.up("xl")]: {
+    width: theme.spacing(140),
+  },
+  [theme.breakpoints.up("xxl")]: {
+    width: theme.spacing(175.5),
+  },
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
   alignItems: "center",
   gap: theme.spacing(1),
 }));
 
-const LeftBox = styled(Box)(({ theme }) => ({
-  width: theme.spacing(73),
-
+const RightBox = styled('div')(({ theme }) => ({
+  width: theme.spacing(83),
   [theme.breakpoints.up("md")]: {
-    width: theme.spacing(83),
+    width: theme.spacing(106.5),
+  },
+  [theme.breakpoints.up("lg")]: {
+    marginTop: theme.spacing(10),
+    width: theme.spacing(31.25),
   },
   [theme.breakpoints.up("xl")]: {
-    width: theme.spacing(106),
+    marginTop: theme.spacing(10),
+    width: theme.spacing(33.25),
+  },
+  [theme.breakpoints.up("xl")]: {
+    marginTop: theme.spacing(10),
+    width: theme.spacing(34.25),
   },
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: theme.spacing(2),
+  gap: theme.spacing(1.7),
 }));
 
-const RightBox = styled(Stack)(({ theme }) => ({
-  paddingRight: theme.spacing(7),
-  marginTop: theme.spacing(10),
 
-  [theme.breakpoints.down("lg")]: {
-    marginLeft: theme.spacing(15),
-  },
-  [theme.breakpoints.down("md")]: {
-    marginLeft: theme.spacing(8),
-    marginTop: theme.spacing(3),
-  },
-  gap: theme.spacing(4),
-}));
-
-const CenterGrid = styled(Grid)(() => ({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-}));
-
-const ContainerGrid = styled(Grid)(({ theme }) => ({
-  marginTop: theme.spacing(4),
+const ContainerGrid = styled('div')(({ theme }) => ({
+  marginTop: theme.spacing(3),
   marginBottom: theme.spacing(2),
   display: "flex",
   justifyContent: "center",
+  flexWrap: "wrap",
+  paddingRight: theme.spacing(5),
+  paddingLeft: theme.spacing(5),
+  gap: theme.spacing(3),
+
 }));
 
-const TagContainer = styled(Container)(({ theme }) => ({
+const TagContainer = styled('div')(({ theme }) => ({
   display: "flex",
   flexWrap: "wrap",
   flexDirection: "row",
+  width: "100%",  
   gap: theme.spacing(1),
 }));
 
