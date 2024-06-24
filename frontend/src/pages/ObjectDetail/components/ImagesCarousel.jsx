@@ -20,15 +20,15 @@ const ImagesCarousel = ({ images }) => {
     return (
         images.length >= 1 && (
             <CustomBox >
-                <CustomBackIcon onClick={handlePrev} />
+                {/* <CustomBackIcon onClick={handlePrev} /> */}
                 <CustomImageList    >
-                    {images.slice((currentPage - 1) * itemsPerPage, currentPage * 3).map((item, index) => (
+                    {images.map((item, index) => (
                         <CustomImageListItem  key={index} >
                             <ModalImage key={index} path={item} />
                         </CustomImageListItem>
                     ))}
                 </CustomImageList>
-                <CustomForwardIcon onClick={handleNext} />
+                {/* <CustomForwardIcon onClick={handleNext} /> */}
             </CustomBox>
         )
     );
@@ -55,8 +55,8 @@ const CustomBox = styled('div')(({theme}) => ({
     alignItems: 'center',
     justifyContent: 'flex-start',
     width: theme.spacing(45.2),
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
+    // paddingLeft: theme.spacing(2),
+    // paddingRight: theme.spacing(2),
     position: 'relative',
 }))
 

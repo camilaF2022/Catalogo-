@@ -3,7 +3,7 @@ import {
   Typography,
   Button,
   Chip,
-  Container,
+  Paper,
   Skeleton,
   CircularProgress,
 } from "@mui/material";
@@ -56,7 +56,7 @@ const ObjectDetail = ({ loggedIn }) => {
       {notFound ? (
         <NotFound />
       ) : (
-        <ContainerGrid container>
+        <ContainerGrid >
           <LeftBox>
             <CustomContainer>
               <Typography variant="h3">
@@ -160,42 +160,49 @@ const LeftBox = styled('div')(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
-  alignItems: "center",
+  alignItems: "flex-start",
   gap: theme.spacing(1),
 }));
 
-const RightBox = styled('div')(({ theme }) => ({
-  width: theme.spacing(83),
+const RightBox = styled(Paper)(({ theme }) => ({
+  padding:theme.spacing(1),
+  paddingBottom:theme.spacing(0),
+  height:theme.spacing(35),
   [theme.breakpoints.up("md")]: {
-    width: theme.spacing(106.5),
+    width: theme.spacing(104.5),
   },
   [theme.breakpoints.up("lg")]: {
-    marginTop: theme.spacing(10),
-    width: theme.spacing(31.25),
+    marginTop: theme.spacing(8),
+    width: theme.spacing(28),
+    height:theme.spacing(74),
+    gap: theme.spacing(1.7),
   },
   [theme.breakpoints.up("xl")]: {
-    marginTop: theme.spacing(10),
-    width: theme.spacing(33.25),
+    
+    width: theme.spacing(50),
   },
   [theme.breakpoints.up("xl")]: {
-    marginTop: theme.spacing(10),
-    width: theme.spacing(34.25),
+    
+    width: theme.spacing(34.25),gap: theme.spacing(1.7),
   },
   display: "flex",
   flexDirection: "column",
-  gap: theme.spacing(1.7),
+  gap: theme.spacing(3),
 }));
 
 
 const ContainerGrid = styled('div')(({ theme }) => ({
   marginTop: theme.spacing(3),
-  marginBottom: theme.spacing(2),
+  paddingBottom: theme.spacing(3),
   display: "flex",
   justifyContent: "center",
   flexWrap: "wrap",
   paddingRight: theme.spacing(5),
   paddingLeft: theme.spacing(5),
-  gap: theme.spacing(3),
+  gap: theme.spacing(1),
+  [theme.breakpoints.up("lg")]: {
+    gap: theme.spacing(3),
+  },
 
 }));
 
@@ -222,7 +229,7 @@ const CustomSkeletonTag = styled(Skeleton)(({ theme }) => ({
 }));
 
 const CustomSkeletonText = styled(Skeleton)(({ theme }) => ({
-  width: theme.spacing(62.5),
+  width: theme.spacing(30.5),
   height: theme.spacing(10),
   variant: "text",
 }));
