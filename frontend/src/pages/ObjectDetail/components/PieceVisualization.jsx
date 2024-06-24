@@ -89,9 +89,9 @@ const PieceVisualization = ({ objPath, mtlPath }) => {
 const CustomCanvas = styled(Canvas)({
     backgroundColor: '#2e2d2c',
 })
-const CustomDiv = styled('div')(() => ({
+const CustomDiv = styled('div')(({theme}) => ({
     width: '100%',
-    height: '600px',
+    height: theme.spacing(75) ,
     position: 'relative',
 }));
 

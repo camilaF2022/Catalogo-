@@ -229,7 +229,7 @@ const CustomSkeletonText = styled(Skeleton)(({ theme }) => ({
 
 const CustomDiv = styled("div")(() => ({
   width: "100%",
-  height: "500px",
+  height: "600px",
   backgroundColor: "#2e2d2c",
   display: "flex",
   justifyContent: "center",
