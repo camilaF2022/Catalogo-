@@ -3,16 +3,18 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { OrbitControls } from '@react-three/drei'
 import { styled } from "@mui/material/styles";
-import { Tooltip, IconButton, List, ListItem } from '@mui/material';
+import { Tooltip, IconButton, List, ListItem, Slider } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import OpenWithIcon from '@mui/icons-material/OpenWith';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import { useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
 
+const { DEG2RAD } = THREE.MathUtils
 
 const PieceVisualization = ({ objPath, mtlPath }) => {
     const material = useLoader(MTLLoader, mtlPath)
@@ -22,6 +24,7 @@ const PieceVisualization = ({ objPath, mtlPath }) => {
         loader.setMaterials(material)
     })
     const canvasRef = useRef(null);
+    const cameraControlsRef = useRef(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
 
     useEffect(() => {
@@ -42,12 +45,35 @@ const PieceVisualization = ({ objPath, mtlPath }) => {
         document.exitFullscreen();
     }
 
+    const handleZoomIn = (event) => {
+        const currentPosition = cameraControlsRef.current.object.position;
+        const zoomFactor = 0.9; 
+        const newX = currentPosition.x * zoomFactor;
+        const newY = currentPosition.y * zoomFactor;
+        const newZ = currentPosition.z * zoomFactor;
+    
+        cameraControlsRef.current.object.position.set(newX, newY, newZ);
+        cameraControlsRef.current.update();
+    }
+    const handleZoomOut = () => {
+        const currentPosition = cameraControlsRef.current.object.position;
+        const zoomFactor = 1.1; 
+        const newX = currentPosition.x * zoomFactor;
+        const newY = currentPosition.y * zoomFactor;
+        const newZ = currentPosition.z * zoomFactor;
+    
+        cameraControlsRef.current.object.position.set(newX, newY, newZ);
+        cameraControlsRef.current.update();
+    }
+
     return (
         <CustomDiv ref={canvasRef} id="canvas-container">
             <CustomCanvas camera={{ fov: 25, position: [0, 0, -500] }}>
                 <ambientLight intensity={4} />
                 <primitive position={[0, 0, 0]} object={object} />
-                <OrbitControls />
+                <OrbitControls
+                    ref={cameraControlsRef}
+                />
             </CustomCanvas>
             <CustomContainer  >
                 {isFullscreen ?
@@ -80,7 +106,17 @@ const PieceVisualization = ({ objPath, mtlPath }) => {
                     <CustomIconButton  >
                         <QuestionMarkIcon />
                     </CustomIconButton>
-                </Tooltip>
+                </Tooltip >
+                <Tooltip title="Ampliar Zoom" arrow PopperProps={{ container: canvasRef.current }}>
+                    <CustomIconButton onClick={handleZoomIn} >
+                        <ZoomInIcon />
+                    </CustomIconButton>
+                </ Tooltip>
+                <Tooltip title="Alejar Zoom" arrow PopperProps={{ container: canvasRef.current }}>
+                    <CustomIconButton onClick={handleZoomOut}  >
+                        <ZoomOutIcon />
+                    </CustomIconButton>
+                </ Tooltip>
             </CustomContainer>
         </CustomDiv >
     )
@@ -89,9 +125,9 @@ const PieceVisualization = ({ objPath, mtlPath }) => {
 const CustomCanvas = styled(Canvas)({
     backgroundColor: '#2e2d2c',
 })
-const CustomDiv = styled('div')(({theme}) => ({
+const CustomDiv = styled('div')(({ theme }) => ({
     width: '100%',
-    height: theme.spacing(75) ,
+    height: theme.spacing(75),
     position: 'relative',
 }));
 

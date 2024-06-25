@@ -171,24 +171,24 @@ const LeftBox = styled('div')(({ theme }) => ({
 
 const RightBox = styled(Paper)(({ theme }) => ({
   padding:theme.spacing(1),
+  paddingTop:theme.spacing(3),
   paddingBottom:theme.spacing(0),
-  height:theme.spacing(35),
+  height:theme.spacing(33),
   [theme.breakpoints.up("md")]: {
     width: theme.spacing(104.5),
   },
   [theme.breakpoints.up("lg")]: {
     marginTop: theme.spacing(8),
     width: theme.spacing(28),
-    height:theme.spacing(74),
+    height:theme.spacing(72),
     gap: theme.spacing(1.7),
   },
   [theme.breakpoints.up("xl")]: {
-    
     width: theme.spacing(50),
   },
   [theme.breakpoints.up("xl")]: {
-    
-    width: theme.spacing(34.25),gap: theme.spacing(1.7),
+    width: theme.spacing(34.25),
+    gap: theme.spacing(1.7),
   },
   display: "flex",
   flexDirection: "column",
