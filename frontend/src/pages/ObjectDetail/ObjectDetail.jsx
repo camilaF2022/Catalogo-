@@ -60,7 +60,7 @@ const ObjectDetail = ({ loggedIn }) => {
           <LeftBox>
             <CustomContainer>
               <Typography variant="h3">
-                <b>#{piece.id && String(piece.id).padStart(4, "0")}</b>
+                <b>{piece.id}</b>
               </Typography>
               {loggedIn ? (
                 <HorizontalStack>
@@ -89,6 +89,13 @@ const ObjectDetail = ({ loggedIn }) => {
             <ImagesCarousel images={piece.images}></ImagesCarousel>
           </LeftBox>
           <RightBox>
+          <Typography>
+              {piece.attributes.description === "" ? (
+                <CustomSkeletonText />
+              ) : (
+                piece.attributes.description
+              )}
+            </Typography>
             <HorizontalStack>
               <Typography variant="h5">Cultura:</Typography>
               {piece.attributes.culture.value === "" ? (
@@ -104,14 +111,7 @@ const ObjectDetail = ({ loggedIn }) => {
               ) : (
                 <CustomShapeTag label={piece.attributes.shape.value} />
               )}
-            </HorizontalStack>
-            <Typography>
-              {piece.attributes.description === "" ? (
-                <CustomSkeletonText />
-              ) : (
-                piece.attributes.description
-              )}
-            </Typography>
+            </HorizontalStack>          
             {
               <VerticalStack>
                 <Typography variant="h5">Etiquetas:</Typography>
@@ -169,26 +169,27 @@ const LeftBox = styled('div')(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-const RightBox = styled(Paper)(({ theme }) => ({
+const RightBox = styled('div')(({ theme }) => ({
+  
   padding:theme.spacing(1),
   paddingTop:theme.spacing(3),
-  paddingBottom:theme.spacing(0),
-  height:theme.spacing(33),
+  paddingBottom:theme.spacing(3),
+  backgroundColor: "#fff",
+  [theme.breakpoints.down("md")]: {
+    width: theme.spacing(83),
+    minWidth: theme.spacing(83),
+  },
   [theme.breakpoints.up("md")]: {
     width: theme.spacing(104.5),
   },
   [theme.breakpoints.up("lg")]: {
     marginTop: theme.spacing(8),
     width: theme.spacing(28),
-    height:theme.spacing(72),
+    height:theme.spacing(69),
     gap: theme.spacing(1.7),
   },
   [theme.breakpoints.up("xl")]: {
-    width: theme.spacing(50),
-  },
-  [theme.breakpoints.up("xl")]: {
-    width: theme.spacing(34.25),
-    gap: theme.spacing(1.7),
+    width: theme.spacing(34.25)
   },
   display: "flex",
   flexDirection: "column",

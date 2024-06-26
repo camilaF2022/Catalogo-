@@ -92,12 +92,11 @@ const PieceVisualization = ({ objPath, mtlPath }) => {
                 <Tooltip
                     placement='bottom-start'
                     title={<>
-                        <h3>Ayuda:</h3>
-                        <List >
-                            <ListItem><CachedIcon /> Orbitar: Click izquierdo </ListItem>
-                            <ListItem> <ZoomInIcon /> Zoom: scroll o rueda </ListItem>
-                            <ListItem> <OpenWithIcon /> Arrastrar: Click derecho</ListItem>
-                        </List>
+                        <h3>Ayuda:</h3>                        
+                            <p><CachedIcon /> Orbitar: Click izquierdo </p>
+                            <p> <ZoomInIcon /> Zoom: scroll o rueda </p>
+                            <p> <OpenWithIcon /> Arrastrar: Click derecho</p>
+
                     </>}
                     arrow
                     PopperProps={{ container: canvasRef.current }}
