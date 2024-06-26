@@ -3,9 +3,10 @@ from rest_framework.pagination import PageNumberPagination
 from .serializers import (
     ArtifactSerializer,
     NewArtifactSerializer,
+    CatalogSerializer,
+    UpdateArtifactSerializer
 )
 from .models import Artifact
-from .serializers import CatalogSerializer
 from rest_framework.response import Response
 from django.db.models import Q
 import math
@@ -104,3 +105,16 @@ class CatalogAPIView(generics.ListAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response({"status": "success", "data": serializer.data})
+
+
+class ArtifactUpdateAPIView(generics.UpdateAPIView):
+    queryset = Artifact.objects.all()
+    serializer_class = UpdateArtifactSerializer
+    lookup_field = 'pk'
+    
+    def get_serializer(self, *args, **kwargs):
+        return super().get_serializer(*args, **kwargs)
+
+    
+        
+

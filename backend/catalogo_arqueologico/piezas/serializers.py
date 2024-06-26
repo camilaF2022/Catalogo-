@@ -112,3 +112,127 @@ class NewArtifactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artifact
         fields = ["id"]
+
+class UpdateArtifactSerializer(serializers.ModelSerializer):
+    payload = serializers.SerializerMethodField()
+    preview = serializers.SerializerMethodField()
+    model = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Artifact
+        fields = ["id",
+                  "payload",
+                  "preview",
+                  "model",
+                  "images"
+        ]
+    
+
+    def to_internal_value(self, data):
+        new_data = data.get('newData')
+        if not new_data:
+            raise serializers.ValidationError({
+                'newData': 'This field is required.'
+            })
+        
+        # Map newData fields to the corresponding model fields
+        internal_value = {
+            'new_description': new_data.get('new_description'),
+            'new_shape': new_data.get('new_shape')
+        }
+        return internal_value
+    
+
+    def get_preview(self, instance):
+        return self.context["request"].build_absolute_uri(
+            instance.id_thumbnail.path.url
+        )
+
+    def get_model(self, instance):
+        realModel = instance.id_model
+        modelDict = {
+            "object": self.context["request"].build_absolute_uri(realModel.object.url),
+            "material": self.context["request"].build_absolute_uri(
+                realModel.material.url
+            ),
+            "texture": self.context["request"].build_absolute_uri(
+                realModel.texture.url
+            ),
+        }
+        return modelDict
+
+    def get_images(self, instance):
+        everyImage = Image.objects.filter(id_artifact=instance.id)
+        Images = []
+        for image in everyImage:
+            Images.append(self.context["request"].build_absolute_uri(image.path.url))
+        return Images
+    
+
+    def get_payload(self, instance):
+        oldShape = Shape.objects.get(id=instance.id_shape.id)
+        oldTags = Tag.objects.filter(id__in=instance.id_tags.all())
+        oldCulture = Culture.objects.get(id=instance.id_culture.id)
+        oldDescription = instance.description
+        tags = []
+        for tag in oldTags:
+            tags.append({"id": tag.id, "value": tag.name})
+
+        attributes = {
+            "shape": {"id": oldShape.id, "value": oldShape.name},
+            "tags": tags,
+            "culture": {"id": oldCulture.id, "value": oldCulture.name},
+            "description": oldDescription,
+        }
+
+        return attributes
+
+    def updateOrCreateAndUpdate(self, model, data, lookup_field='id'):
+        if not data:
+            return None
+        
+        #Checks if exists, if it does, 
+        obj, created = model.objects.get_or_create(**{lookup_field: data})
+        return obj
+    
+    def update(self, instance, validated_data):
+        new_data = validated_data.get('newData', {})
+        print(validated_data) 
+        print(new_data)
+
+        #Change names according to the json from frontend
+
+        if 'new_thumbnail' in validated_data:
+            print("Hay nuevo thumbnail")
+            instance.id_thumbnail = self.updateOrCreateAndUpdate(Thumbnail, validated_data['new_thumbnail'])
+        
+        if 'new_model' in validated_data:
+            print("Hay nuevo model")
+            instance.id_model = self.updateOrCreateAndUpdate(Model, validated_data['new_model'])
+        
+        if 'new_shape' in validated_data:
+            print("Hay nuevo shape")
+            instance.id_shape = self.updateOrCreateAndUpdate(Shape, validated_data['new_shape'], lookup_field='name')
+        
+        if 'new_culture' in validated_data:
+            print("Hay nuevo culture")
+            instance.id_culture = self.updateOrCreateAndUpdate(Culture, validated_data['new_culture'])
+        
+        if 'new_tags' in validated_data:
+            print("Hay nuevo tags")
+            tags = []
+            for tag_data in validated_data['id_tags']:
+                tag, created = Tag.objects.get_or_create(**tag_data)
+                tags.append(tag)
+            instance.id_tags.set(tags)
+
+        if "new_description" in validated_data:
+            print("Hay nuevo description")
+            instance.description = validated_data.get('new_description', instance.description)
+
+        instance.save()
+        return instance
+
+    #Se necesita obtener los datos nuevos del json de front y cambiarlos aqui
+    #Para cosas que se suban, hay que buscarlo en la tabla, si no existe, subirlo y poner en el artefacto
