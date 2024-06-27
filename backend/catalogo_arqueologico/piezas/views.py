@@ -113,6 +113,18 @@ class ArtifactUpdateAPIView(generics.UpdateAPIView):
     serializer_class = UpdateArtifactSerializer
     lookup_field = 'pk'
     
+    def patch(self, request, *args, **kwargs):
+        artifactModel_object = self.get_object()
+        serializer = UpdateArtifactSerializer(
+            artifactModel_object,
+            data=request.data,
+            partial=False,
+            context={"request": request},
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data})
+        return Response({"status": "error", "data": serializer.errors})
 
 class InstitutionAPIView(generics.ListCreateAPIView):
     queryset = Institution.objects.all()
@@ -122,5 +134,4 @@ class InstitutionAPIView(generics.ListCreateAPIView):
 class InstitutionDetailAPIView(generics.RetrieveAPIView):
     queryset = Institution.objects.all()
     serializer_class = InstitutionSerializer
-    lookup_field = 'pk'    
-
+    lookup_field = 'pk'        
