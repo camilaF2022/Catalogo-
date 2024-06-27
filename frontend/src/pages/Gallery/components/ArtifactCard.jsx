@@ -7,6 +7,7 @@ import {
   Chip,
   Typography,
   Box,
+  Tooltip,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
@@ -14,14 +15,19 @@ const ArtifactCard = ({ artifact }) => {
   const navigate = useNavigate();
   const { id, attributes, preview: previewPath } = artifact;
   const { shape, tags, culture, description } = attributes;
-  const artifactNumber = String(id).padStart(4, "0");
-  const fullTitle = `#${artifactNumber} ${description}`;
-  
-  const fullDescription = tags.map(tag=>tag.value).join(", ");
+
+  const flattenTags = tags.map((tag) => tag.value).join(", ");
+
+  const slicedTags = tags
+    .slice(0, 2)
+    .map((tag) => tag.value)
+    .join(", ")
+    .concat(`${tags.length > 2 ? `, (+${tags.length - 2})` : ""}`);
+
   const handleRedirect = () => {
     navigate(`/catalog/${id}`);
   };
-  
+
   return (
     <Card>
       {previewPath ? (
@@ -32,7 +38,7 @@ const ArtifactCard = ({ artifact }) => {
           alt={id}
           onClick={handleRedirect}
         />
-      ): 
+      ) : (
         <CustomCardMedia
           component="img"
           height="140"
@@ -40,18 +46,37 @@ const ArtifactCard = ({ artifact }) => {
           alt={id}
           onClick={handleRedirect}
         />
-      }  
+      )}
       <CustomCardContent>
-        <CustomBox>
-          <CardTitle variant="p">{fullTitle}</CardTitle>
-        </CustomBox>
-        <CustomBox>
-          <CardDescription variant="p">{fullDescription}</CardDescription>
-        </CustomBox>
         <MetadataContainer>
           <CustomShapeTag label={shape.value} size="small" />
           <CustomCultureTag label={culture.value} size="small" />
         </MetadataContainer>
+        <Typography variant="h5" component="div">
+          Pieza {id}
+        </Typography>
+        <Tooltip arrow title={tags.length > 2 ? flattenTags : ""}>
+          <EllipsisBox>
+            <Typography
+              color="text.secondary"
+              overflow={"hidden"}
+              textOverflow={"ellipsis"}
+            >
+              Etiquetas: {slicedTags}
+            </Typography>
+          </EllipsisBox>
+        </Tooltip>
+        <Tooltip arrow title={description.length > 50 ? description : ""}>
+          <EllipsisBox>
+            <Typography
+              variant="body2"
+              overflow={"hidden"}
+              textOverflow={"ellipsis"}
+            >
+              {description}
+            </Typography>
+          </EllipsisBox>
+        </Tooltip>
       </CustomCardContent>
     </Card>
   );
@@ -61,7 +86,7 @@ const CustomCardMedia = styled(CardMedia)(({ theme }) => ({
   cursor: "pointer",
 }));
 
-const CustomBox = styled(Box)(({ theme }) => ({
+const EllipsisBox = styled(Box)(({ theme }) => ({
   width: "100%",
   overflow: "hidden",
   textOverflow: "ellipsis",
