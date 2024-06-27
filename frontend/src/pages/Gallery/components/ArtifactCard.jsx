@@ -24,13 +24,23 @@ const ArtifactCard = ({ artifact }) => {
   
   return (
     <Card>
-      <CustomCardMedia
-        component="img"
-        height="140"
-        image={previewPath}
-        alt={id}
-        onClick={handleRedirect}
-      />
+      {previewPath ? (
+        <CustomCardMedia
+          component="img"
+          height="140"
+          image={previewPath}
+          alt={id}
+          onClick={handleRedirect}
+        />
+      ): 
+        <CustomCardMedia
+          component="img"
+          height="140"
+          image="/not_found_image.png"
+          alt={id}
+          onClick={handleRedirect}
+        />
+      }  
       <CustomCardContent>
         <CustomBox>
           <CardTitle variant="p">{fullTitle}</CardTitle>

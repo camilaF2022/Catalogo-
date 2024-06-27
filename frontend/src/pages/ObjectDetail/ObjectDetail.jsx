@@ -39,7 +39,7 @@ const ObjectDetail = ({ loggedIn }) => {
   });
 
   useEffect(() => {
-    fetch(`${API_URLS.DETAILED_ARTIFACT}${pieceId}`)
+    fetch(`${API_URLS.DETAILED_ARTIFACT}/${pieceId}`)
       .then((response) => {
         if (!response.ok) {
           if (response.status === 404) {

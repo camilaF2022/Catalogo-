@@ -16,11 +16,11 @@ import AutocompleteExtended from "./components/AutocompleteExtended";
 import { API_URLS } from "../../api";
 
 export const allowedFileTypes = {
-  model: ["obj"],
+  object: ["obj"],
   texture: ["jpg"],
   material: ["mtl"],
-  thumbnail: ["jpg"],
-  images: ["jpg"],
+  thumbnail: ["jpg", "png", "jpeg"],
+  images: ["jpg", "png", "jpeg"],
 };
 
 const CreateItem = () => {
@@ -29,10 +29,10 @@ const CreateItem = () => {
   const { addAlert } = useSnackBars();
 
   const [newObjectAttributes, setNewObjectAttributes] = useState({
-    model: "",
-    texture: "",
-    material: "",
-    thumbnail: "",
+    object: {},
+    texture: {},
+    material: {},
+    thumbnail: {},
     images: [],
     description: "",
     shape: {
@@ -90,11 +90,34 @@ const CreateItem = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(newObjectAttributes); // Send new object to the server
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Emulate POST delay
-    const newId = 1;
+    const formData = new FormData();
+    formData.append(`model[object]`, newObjectAttributes.object);
+    formData.append(`model[texture]`, newObjectAttributes.texture);
+    formData.append(`model[material]`, newObjectAttributes.material);
+    formData.append(`thumbnail`, newObjectAttributes.thumbnail);
+    newObjectAttributes.images.forEach((image) =>
+      formData.append("images", image)
+    );
+    formData.append("description", newObjectAttributes.description);
+    formData.append("id_shape", newObjectAttributes.shape.id);
+    formData.append("id_culture", newObjectAttributes.culture.id);
+    newObjectAttributes.tags.forEach((tag) =>
+      formData.append("id_tags", tag.id)
+    );
+    
+    const response = await fetch(`${API_URLS.DETAILED_ARTIFACT}/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      addAlert("¡Hubo un error al crear el objeto!");
+      return;
+    }
+    const successfully_response = await response.json();
+    const newArtifactId = successfully_response.data.id;
     addAlert("¡Objeto creado con éxito!");
-    navigate(`/catalog/${newId}`);
+    navigate(`/catalog/${newArtifactId}`);
   };
 
   const handleCancel = () => {
@@ -110,8 +133,8 @@ const CreateItem = () => {
           <Grid container spacing={2}>
             <ColumnGrid item xs={6} rowGap={2}>
               <UploadButton
-                label="Modelo *"
-                name="model"
+                label="Objeto *"
+                name="object"
                 isRequired
                 setStateFn={setNewObjectAttributes}
               />
