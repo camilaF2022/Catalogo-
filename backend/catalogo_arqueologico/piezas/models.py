@@ -153,6 +153,11 @@ class ShapeIds(models.Model):
         ]
 
 
+
+class Institution(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=100, unique=True)
+
 """
 class Solicitud(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
@@ -163,6 +168,7 @@ class Solicitud(models.Model):
     email = models.CharField(max_length=50)
     institution = models.CharField(max_length=50)
 
+    
     
 Para los usuarios, hay que crear 2 o 3 grupos, dependiendo de si existira un usuario general.
 
