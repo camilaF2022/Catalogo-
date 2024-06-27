@@ -155,6 +155,7 @@ TAGS_CSV_PATH = os.path.join(DATA_ROOT, 'CH_tags.csv')
 THUMBNAILS_FOLDER_PATH = os.path.join(DATA_ROOT, 'thumbnails/')
 DESCRIPTIONS_CSV_PATH = os.path.join(DATA_ROOT, 'metadata - descripcion.csv')
 MULTIMEDIA_FOLDER_PATH = os.path.join(BASE_DIR, 'multimedia/')
+INSTITUTIONS_CSV_PATH = os.path.join(DATA_ROOT, 'institutions.csv')
 
 LOGGING = {
     'version': 1,
