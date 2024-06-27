@@ -24,10 +24,11 @@ const ObjectDetail = ({ loggedIn }) => {
   // set a dummy piece object for initial  rendering
   const { pieceId } = useParams();
   const [notFound, setNotFound] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [piece, setPiece] = useState({
     attributes: {
-      culture: {id: "", value: ""},
-      shape: {id: "", value: ""},
+      culture: { id: "", value: "" },
+      shape: { id: "", value: "" },
       tags: [],
       description: "",
     },
@@ -52,7 +53,8 @@ const ObjectDetail = ({ loggedIn }) => {
       .then((response) => {
         setPiece(response);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
   }, [pieceId]);
   return (
     <>
@@ -98,7 +100,7 @@ const ObjectDetail = ({ loggedIn }) => {
             <RightBox>
               <HorizontalStack>
                 <Typography variant="h5">Cultura:</Typography>
-                {piece.attributes.culture.value === "" ? (
+                {loading ? (
                   <CustomSkeletonTag />
                 ) : (
                   <CustomCultureTag label={piece.attributes.culture.value} />
@@ -106,14 +108,14 @@ const ObjectDetail = ({ loggedIn }) => {
               </HorizontalStack>
               <HorizontalStack>
                 <Typography variant="h5"> Forma: </Typography>
-                {piece.attributes.shape.value === ""  ? (
+                {loading ? (
                   <CustomSkeletonTag />
                 ) : (
                   <CustomShapeTag label={piece.attributes.shape.value} />
                 )}
               </HorizontalStack>
               <Typography>
-                {piece.attributes.description === "" ? (
+                {loading ? (
                   <CustomSkeletonText />
                 ) : (
                   piece.attributes.description
@@ -123,12 +125,14 @@ const ObjectDetail = ({ loggedIn }) => {
                 <HorizontalStack>
                   <Typography variant="h5">Etiquetas:</Typography>
                   <TagContainer>
-                    {piece.attributes.tags.length === 0 ? (
+                    {loading ? (
                       <CustomSkeletonTag />
-                    ) : (
+                    ) : piece.attributes.tags.length > 0 ? (
                       piece.attributes.tags.map((tag) => (
                         <Chip key={tag.id} label={tag.value} />
                       ))
+                    ) : (
+                      <p>Sin etiquetas</p>
                     )}
                   </TagContainer>
                 </HorizontalStack>
