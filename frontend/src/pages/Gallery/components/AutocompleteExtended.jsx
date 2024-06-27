@@ -10,6 +10,7 @@ const AutocompleteExtended = ({
   options = [],
   placeholder,
   isRequired,
+  allowCreation = false,
   ...props
 }) => {
   const [inputValue, setInputValue] = useState("");
@@ -34,15 +35,24 @@ const AutocompleteExtended = ({
         .includes(inputValue)
     : true;
 
-  const createOption = optionAvailable ? (
-    <NewOption component="li" key={inputValue} onClick={handleCreateNewOption}>
-      Crear "{inputValue}"
-    </NewOption>
-  ) : (
-    <NewOption component="li" key={inputValue} disabled>
-      "{inputValue}" ya existe
-    </NewOption>
-  );
+  const createOption =
+    allowCreation && optionAvailable ? (
+      <NewOption
+        component="li"
+        key={inputValue}
+        onClick={handleCreateNewOption}
+      >
+        Crear "{inputValue}"
+      </NewOption>
+    ) : !optionAvailable ? (
+      <NewOption component="li" key={inputValue} disabled>
+        "{inputValue}" ya existe
+      </NewOption>
+    ) : (
+      <NewOption component="li" key={inputValue} disabled>
+        "{inputValue}" no encontrado
+      </NewOption>
+    );
 
   return (
     <Autocomplete

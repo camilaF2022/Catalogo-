@@ -189,6 +189,7 @@ const CreateItem = () => {
                 fullWidth
                 filterSelectedOptions
                 disabled={loading || errors}
+                allowCreation={false}
               />
               <FormLabel component="legend">Cultura *</FormLabel>
               <AutocompleteExtended
@@ -202,6 +203,7 @@ const CreateItem = () => {
                 fullWidth
                 filterSelectedOptions
                 disabled={loading || errors}
+                allowCreation={false}
               />
               <FormLabel component="legend">Etiquetas (opcional)</FormLabel>
               <AutocompleteExtended
@@ -216,6 +218,7 @@ const CreateItem = () => {
                 placeholder="Seleccionar las etiquetas del objeto"
                 filterSelectedOptions
                 disabled={loading || errors}
+                allowCreation={false}
               />
             </ColumnGrid>
           </Grid>
