@@ -1,11 +1,11 @@
+import os
+from django.conf import settings
+from django.core.files import File
 from rest_framework import serializers
 from .models import Tag, Shape, Culture, Artifact, Model, Thumbnail, Image
+import logging
 
-
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = "__all__"
+logger = logging.getLogger(__name__)
 
 
 class ShapeSerializer(serializers.ModelSerializer):
@@ -17,6 +17,18 @@ class ShapeSerializer(serializers.ModelSerializer):
 class CultureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Culture
+        fields = "__all__"
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = "__all__"
+
+
+class ThumbnailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Thumbnail
         fields = "__all__"
 
 
@@ -50,9 +62,12 @@ class ArtifactSerializer(serializers.ModelSerializer):
         return wholeDict
 
     def get_preview(self, instance):
-        return self.context["request"].build_absolute_uri(
-            instance.id_thumbnail.path.url
-        )
+        if instance.id_thumbnail:
+            return self.context["request"].build_absolute_uri(
+                instance.id_thumbnail.path.url
+            )
+        else:
+            return None
 
     def get_model(self, instance):
         realModel = instance.id_model
@@ -102,9 +117,12 @@ class CatalogSerializer(serializers.ModelSerializer):
         return attributes
 
     def get_preview(self, instance):
-        return self.context["request"].build_absolute_uri(
-            instance.id_thumbnail.path.url
-        )
+        if instance.id_thumbnail:
+            return self.context["request"].build_absolute_uri(
+                instance.id_thumbnail.path.url
+            )
+        else:
+            return None
 
 
 # Obtains the json object with the id of a new created artifact
@@ -113,65 +131,124 @@ class NewArtifactSerializer(serializers.ModelSerializer):
         model = Artifact
         fields = ["id"]
 
+
 class UpdateArtifactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artifact
-        fields = ["id"
-        ]
-    
+        fields = ["id"]
 
-    def to_internal_value(self, data):
-        new_data = data.get('newData')
-        if not new_data:
-            raise serializers.ValidationError({
-                'newData': 'This field is required.'
-            })
-        
-        # Map newData fields to the corresponding model fields
-        internal_value = {
-            'new_description': new_data.get('new_description'),
-            'new_shape': new_data.get('new_shape')
-        }
-        return internal_value
-    
-
-    def updateOrCreateAndUpdate(self, model, data, key):
-        if not data:
-            return None
-        #Checks if exists, if it does, 
-        obj, _ = model.objects.get_or_create(**{key: data})
-        return obj
-    
     def update(self, instance, validated_data):
+        """
+        Update the artifact with the new data and files.
+        All attributes are required to be updated. This is to be able to set null some attributes.
+        Files require a name attribute to be found or stored.
+        """
 
-        #Change names according to the json from frontend
+        def get_or_create_path(root, file, filename):
+            """
+            Auxiliary function to create a File model if it does not exist.
+            It uses the os.path since files are not stored like models do.
+            """
+            if os.path.exists(os.path.join(settings.MEDIA_ROOT, root, filename)):
+                # If the file already exists, skip the creation of the model
+                logger.info(f"File {filename} already exists")
+                return os.path.join(root, filename)
+            else:
+                # Create File model
+                return File(file, name=filename)
 
-        if 'new_thumbnail' in validated_data:
-            print("Hay nuevo thumbnail")
-            instance.id_thumbnail = self.updateOrCreateAndUpdate(Thumbnail, validated_data['new_thumbnail'], "id")
-        
-        if 'new_model' in validated_data:
-            print("Hay nuevo model")
-            instance.id_model = self.updateOrCreateAndUpdate(Model, validated_data['new_model'], "id")
-        
-        if 'new_shape' in validated_data:
-            print("Hay nuevo shape")
-            instance.id_shape = self.updateOrCreateAndUpdate(Shape, validated_data['new_shape'], "id")
-        
-        if 'new_culture' in validated_data:
-            print("Hay nuevo culture")
-            instance.id_culture = self.updateOrCreateAndUpdate(Culture, validated_data['new_culture'], "id")
-        
-        if 'new_tags' in validated_data:
-            print("Hay nuevo tags")
-            instance.id_tags.set(validated_data["new_tags"])
+        def update_or_create_and_update(model, data):
+            """
+            Auxiliary function to update or create a model and return the object.
+            """
+            obj, created = model.objects.get_or_create(**data)
+            logger.info(f"Object {obj} created: {created}")
+            return obj
 
-        if "new_description" in validated_data:
-            print("Hay nuevo description")
-            instance.description = validated_data.get('new_description', instance.description)
+        files = self.context["request"].FILES
+
+        texture = files.get("model[texture]")
+        object = files.get("model[object]")
+        material = files.get("model[material]")
+        if not (texture and object and material):
+            raise ValueError("Model files are required")
+
+        texture_filename = texture.name
+        object_filename = object.name
+        material_filename = material.name
+
+        texture_file_path = get_or_create_path(
+            settings.MATERIALS_ROOT, texture, texture_filename
+        )
+        object_file_path = get_or_create_path(
+            settings.OBJECTS_ROOT, object, object_filename
+        )
+        material_file_path = get_or_create_path(
+            settings.MATERIALS_ROOT, material, material_filename
+        )
+
+        model_obj = update_or_create_and_update(
+            Model,
+            {
+                "texture": texture_file_path,
+                "object": object_file_path,
+                "material": material_file_path,
+            },
+        )
+        instance.id_model = model_obj
+
+        thumbnail = files.get("thumbnail")
+        if not thumbnail:
+            instance.id_thumbnail = None
+        else:
+            thumbnail_filename = thumbnail.name
+            thumbnail_file_path = get_or_create_path(
+                settings.THUMBNAILS_ROOT, thumbnail, thumbnail_filename
+            )
+            thumbnail_obj = update_or_create_and_update(
+                Thumbnail, {"path": thumbnail_file_path}
+            )
+            instance.id_thumbnail = thumbnail_obj
+
+        new_images = files.getlist("images")
+        if new_images:
+            # There are old and new images
+            # Set null old relationships
+            old_images = Image.objects.filter(id_artifact=instance.id)
+            for old_image in old_images:
+                old_image.id_artifact = None
+                old_image.save()
+            # Update or create new images
+            for image in new_images:
+                new_image_filename = image.name
+                new_image_file_path = get_or_create_path(
+                    settings.IMAGES_ROOT, image, new_image_filename
+                )
+                update_or_create_and_update(
+                    Image, {"path": new_image_file_path, "id_artifact": instance}
+                )
+        else:
+            # It's an empty list
+            # Set null old relationships
+            old_images = Image.objects.filter(id_artifact=instance.id)
+            for old_image in old_images:
+                old_image.id_artifact = None
+                old_image.save()
+
+        if "description" in validated_data:
+            instance.description = validated_data["description"]
+
+        if "id_shape" in validated_data:
+            instance.id_shape = validated_data["id_shape"]
+
+        if "id_culture" in validated_data:
+            instance.id_culture = validated_data["id_culture"]
+
+        if "id_tags" in validated_data:
+            instance.id_tags.set(validated_data["id_tags"])
+        else:
+            # It's an empty list
+            instance.id_tags.clear()
 
         instance.save()
-        return instance
-
-    #Se necesita obtener los datos nuevos del json de front y cambiarlos aqui
-    #Para cosas que se suban, hay que buscarlo en la tabla, si no existe, subirlo y poner en el artefacto
+        return {"id": instance.id}

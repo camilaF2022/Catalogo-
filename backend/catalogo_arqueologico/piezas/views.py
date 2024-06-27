@@ -4,7 +4,7 @@ from .serializers import (
     ArtifactSerializer,
     NewArtifactSerializer,
     CatalogSerializer,
-    UpdateArtifactSerializer
+    UpdateArtifactSerializer,
 )
 from .models import Artifact
 from rest_framework.response import Response
@@ -110,9 +110,17 @@ class CatalogAPIView(generics.ListAPIView):
 class ArtifactUpdateAPIView(generics.UpdateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = UpdateArtifactSerializer
-    lookup_field = 'pk'
-    
+    lookup_field = "pk"
 
-    
-        
-
+    def patch(self, request, *args, **kwargs):
+        artifactModel_object = self.get_object()
+        serializer = UpdateArtifactSerializer(
+            artifactModel_object,
+            data=request.data,
+            partial=False,
+            context={"request": request},
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data})
+        return Response({"status": "error", "data": serializer.errors})

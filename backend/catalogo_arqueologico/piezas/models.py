@@ -72,7 +72,7 @@ class Image(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     id_artifact = models.ForeignKey(
-        "Artifact", on_delete=models.CASCADE, related_name="artifact"
+        "Artifact", on_delete=models.CASCADE, null=True, related_name="artifact"
     )
     path = models.ImageField(upload_to=settings.IMAGES_ROOT, unique=True)
 
