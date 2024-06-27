@@ -13,4 +13,5 @@ urlpatterns = [
     path('allartifacts/', views.ArtifactListAPIView.as_view()),  # This is a temporal view to list all artifacts
     path('allinstitutions/', views.InstitutionAPIView.as_view()),
     path('institution/<int:pk>', views.InstitutionDetailAPIView.as_view()),
+    path('artifact/<int:pk>/download', views.artifactDownload),
 ]

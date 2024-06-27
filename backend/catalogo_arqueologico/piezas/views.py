@@ -7,15 +7,20 @@ from .serializers import (
     UpdateArtifactSerializer,
     InstitutionSerializer
 )
-from .models import Artifact, Institution
+from .models import Artifact, Institution, Image
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from django.db.models import Q
 import math
-
+import zipfile
+from django.http import HttpResponse, FileResponse
+from io import BytesIO
 
 class ArtifactDetailAPIView(generics.RetrieveAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
+
+    
 
 
 class ArtifactListAPIView(generics.ListAPIView):
@@ -48,6 +53,40 @@ class ArtifactDestroyAPIView(generics.DestroyAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
     lookup_field = "pk"
+
+@api_view(['GET'])
+def artifactDownload(request, pk=None, *args, **kwargs):
+    method = request.method
+    if method == "GET":
+        if pk is not None:
+            try:
+                artifact = Artifact.objects.get(pk=pk)
+            except Artifact.DoesNotExist:
+                return HttpResponse(status=404)
+            
+            buffer = BytesIO()
+
+            with zipfile.ZipFile(buffer, 'w') as zipf:
+                if artifact.id_thumbnail:
+                    zipf.write(artifact.id_thumbnail.path.path, f'thumbnail/{artifact.id_thumbnail.path}')
+                if artifact.id_model:
+                    zipf.write(artifact.id_model.texture.path, f'model/{artifact.id_model.texture.name}')
+                    zipf.write(artifact.id_model.object.path, f'model/{artifact.id_model.object.name}')
+                    zipf.write(artifact.id_model.material.path, f'model/{artifact.id_model.material.name}')
+                
+                images = Image.objects.filter(id_artifact=artifact.id)
+                if images:
+                    for image in images:
+                        zipf.write(image.path.path, f'model/{image.path}' )
+            
+            buffer.seek(0)
+
+            response = HttpResponse(buffer, content_type='application/zip')
+            response['Content-Disposition'] = f'attachment; filename=artifact_{pk}.zip'
+            return response
+            
+                
+            
 
 
 class CustomPageNumberPagination(PageNumberPagination):
