@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Tag, Shape, Culture, Artifact, Model, Thumbnail, Image
+from .models import Tag, Shape, Culture, Artifact, Model, Thumbnail, Image, Institution
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -175,3 +175,12 @@ class UpdateArtifactSerializer(serializers.ModelSerializer):
 
     #Se necesita obtener los datos nuevos del json de front y cambiarlos aqui
     #Para cosas que se suban, hay que buscarlo en la tabla, si no existe, subirlo y poner en el artefacto
+
+
+class InstitutionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Institution
+        fields = [
+            "id",
+            "name"
+        ]

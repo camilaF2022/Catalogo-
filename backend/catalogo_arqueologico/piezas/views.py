@@ -4,9 +4,10 @@ from .serializers import (
     ArtifactSerializer,
     NewArtifactSerializer,
     CatalogSerializer,
-    UpdateArtifactSerializer
+    UpdateArtifactSerializer,
+    InstitutionSerializer
 )
-from .models import Artifact
+from .models import Artifact, Institution
 from rest_framework.response import Response
 from django.db.models import Q
 import math
@@ -113,6 +114,13 @@ class ArtifactUpdateAPIView(generics.UpdateAPIView):
     lookup_field = 'pk'
     
 
+class InstitutionAPIView(generics.ListCreateAPIView):
+    queryset = Institution.objects.all()
+    serializer_class = InstitutionSerializer
+    lookup_field = 'pk'
     
-        
+class InstitutionDetailAPIView(generics.RetrieveAPIView):
+    queryset = Institution.objects.all()
+    serializer_class = InstitutionSerializer
+    lookup_field = 'pk'    
 
