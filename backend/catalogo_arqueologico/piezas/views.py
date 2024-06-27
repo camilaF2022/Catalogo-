@@ -41,6 +41,16 @@ class ArtifactListAPIView(generics.ListAPIView):
 class ArtifactCreateAPIView(generics.CreateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = NewArtifactSerializer
+    lookup_field = "pk"
+
+    def post(self, request, *args, **kwargs):
+        serializer = NewArtifactSerializer(
+            data=request.data, context={"request": request}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "success", "data": serializer.data})
+        return Response({"status": "error", "data": serializer.errors})
 
 
 class ArtifactDestroyAPIView(generics.DestroyAPIView):
