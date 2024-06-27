@@ -24,8 +24,8 @@ const ModalImage = ({ path }) => {
         handleImageSize(path);
     }, [path])    
     return (
-        <div>
-            <img src={path} alt="lazy" style={{ width: '160px', height: '160px' }} onClick={handleOpen}  />
+        <div >
+            <CustomImage src={path} alt="lazy"  onClick={handleOpen}  />
             <CustomModal
                 open={open}
                 onClose={handleClose}
@@ -33,13 +33,20 @@ const ModalImage = ({ path }) => {
                 <CustomBox >
                     <CancelIcon onClick={handleClose} style={{ cursor: 'pointer', color: "white" }} />
                     <ImageContainer iswideimage={isWideImage? isWideImage.toString():undefined}>
-                        <img src={path} alt="modalImage"  onClick={handleOpen}/>
+                        <img  src={path} loading="lazy" alt="modalImage"  onClick={handleOpen}/>
                     </ImageContainer>
                 </CustomBox>
             </CustomModal>
         </div>
     );
 }
+
+const CustomImage = styled('img')(() => ({  
+    cursor: 'pointer',
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+}))
 
 const CustomBox = styled(Box)(({ theme }) => ({
     display: 'flex',
@@ -60,18 +67,18 @@ const CustomModal = styled(Modal)(() => ({
 const ImageContainer = styled(Box)(({ theme,iswideimage}) => ({
     padding: theme.spacing(4),
     display: 'flex',
-    height: "600px",
-    width: '400px',
+    height: theme.spacing(75),
+    width: theme.spacing(50),
     overflow: iswideimage?'auto':'hidden',
     justifyContent: iswideimage ? 'flex-start' : 'center',
     [theme.breakpoints.up('sm')]: {
-        width: '550px',
+        width: theme.spacing(68.5),
     },
     [theme.breakpoints.up('md')]: {
-        width: '860px',
+        width: theme.spacing(107.5),
     },
     [theme.breakpoints.up('lg')]: {
-        width: '1150px',
+        width: theme.spacing(143.75),
     },
 }))
 
