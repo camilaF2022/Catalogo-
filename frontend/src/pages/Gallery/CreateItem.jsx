@@ -104,20 +104,21 @@ const CreateItem = () => {
     newObjectAttributes.tags.forEach((tag) =>
       formData.append("id_tags", tag.id)
     );
-    
-    const response = await fetch(`${API_URLS.DETAILED_ARTIFACT}/upload`, {
+
+    await fetch(`${API_URLS.DETAILED_ARTIFACT}/upload`, {
       method: "POST",
       body: formData,
-    });
-
-    if (!response.ok) {
-      addAlert("¡Hubo un error al crear el objeto!");
-      return;
-    }
-    const successfully_response = await response.json();
-    const newArtifactId = successfully_response.data.id;
-    addAlert("¡Objeto creado con éxito!");
-    navigate(`/catalog/${newArtifactId}`);
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        const successfully_response = response.data;
+        const newArtifactId = successfully_response.id;
+        addAlert("¡Objeto creado con éxito!");
+        navigate(`/catalog/${newArtifactId}`);
+      })
+      .catch((error) => {
+        addAlert(error.message);
+      });
   };
 
   const handleCancel = () => {
