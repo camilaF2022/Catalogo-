@@ -54,31 +54,35 @@ class ArtifactDestroyAPIView(generics.DestroyAPIView):
     serializer_class = ArtifactSerializer
     lookup_field = "pk"
 
-@api_view(['GET'])
-def artifactDownload(request, pk=None, *args, **kwargs):
-    method = request.method
-    if method == "GET":
+
+class ArtifactDownloadAPIView(generics.RetrieveAPIView):
+    queryset = Artifact.objects.all()
+    serializer_class = ArtifactSerializer
+    lookup_field = "pk"
+
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
         if pk is not None:
             try:
                 artifact = Artifact.objects.get(pk=pk)
             except Artifact.DoesNotExist:
                 return HttpResponse(status=404)
-            
+                
+                
             buffer = BytesIO()
 
             with zipfile.ZipFile(buffer, 'w') as zipf:
                 if artifact.id_thumbnail:
                     zipf.write(artifact.id_thumbnail.path.path, f'thumbnail/{artifact.id_thumbnail.path}')
-                if artifact.id_model:
-                    zipf.write(artifact.id_model.texture.path, f'model/{artifact.id_model.texture.name}')
-                    zipf.write(artifact.id_model.object.path, f'model/{artifact.id_model.object.name}')
-                    zipf.write(artifact.id_model.material.path, f'model/{artifact.id_model.material.name}')
                 
+                zipf.write(artifact.id_model.texture.path, f'model/{artifact.id_model.texture.name}')
+                zipf.write(artifact.id_model.object.path, f'model/{artifact.id_model.object.name}')
+                zipf.write(artifact.id_model.material.path, f'model/{artifact.id_model.material.name}')
+                    
                 images = Image.objects.filter(id_artifact=artifact.id)
-                if images:
-                    for image in images:
-                        zipf.write(image.path.path, f'model/{image.path}' )
-            
+                for image in images:
+                    zipf.write(image.path.path, f'model/{image.path}' )
+                
             buffer.seek(0)
 
             response = HttpResponse(buffer, content_type='application/zip')
