@@ -37,6 +37,12 @@ const ObjectDetail = ({ loggedIn }) => {
       material: "",
     },
   });
+  /*
+  useEffect(() => {
+    console.log("hola")
+    console.log("piece:", piece);
+  }, [piece]);
+  */
 
   useEffect(() => {
     fetch(`${API_URLS.DETAILED_ARTIFACT}${pieceId}`)
@@ -71,7 +77,7 @@ const ObjectDetail = ({ loggedIn }) => {
                     <Button variant="contained">Descargar Pieza</Button>
 
                     <ModalFormButton text={"Editar Pieza"}>
-                      <EditForm />
+                      <EditForm piece={piece} onCancel={() => console.log('Cancel')}  />
                     </ModalFormButton>
                   </HorizontalStack>
                 ) : (

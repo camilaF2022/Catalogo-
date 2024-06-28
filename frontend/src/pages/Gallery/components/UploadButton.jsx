@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import {
   Button,
   FormLabel,
@@ -13,10 +13,15 @@ import Clear from "@mui/icons-material/Clear";
 import useSnackBars from "../../../hooks/useSnackbars";
 import { allowedFileTypes } from "../CreateItem";
 
-const UploadButton = ({ label, name, isMultiple, isRequired, setStateFn }) => {
+const UploadButton = ({ label, name, isMultiple, isRequired, setStateFn, initialFilename }) => {
+
   const { addAlert } = useSnackBars();
 
-  const [filename, setFilename] = useState("");
+  const [filename, setFilename] = useState(initialFilename || "");
+
+  useEffect(() => {
+    setFilename(initialFilename || "");
+  }, [initialFilename]);
 
   const allowedTypesLabel = allowedFileTypes[name].join(", ");
 
