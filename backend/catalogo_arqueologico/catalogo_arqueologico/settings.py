@@ -76,7 +76,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'catalogo_arqueologico.wsgi.application'
 
-
+AUTH_USER_MODEL = 'piezas.CustomUser'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 

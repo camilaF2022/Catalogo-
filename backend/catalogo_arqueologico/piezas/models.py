@@ -1,9 +1,13 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.files.storage import FileSystemStorage
 
 from django.conf import settings
 
-
+class CustomUser(AbstractUser):
+    role=models.CharField(max_length=100,blank=True)
+    institution=models.CharField(max_length=100,blank=True)
+    rut=models.CharField(max_length=9,blank=True)
 class CustomStorage(FileSystemStorage):
     def get_available_name(self, name, max_length=None):
         if self.exists(name):
