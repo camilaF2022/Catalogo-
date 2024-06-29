@@ -125,11 +125,125 @@ class CatalogSerializer(serializers.ModelSerializer):
             return None
 
 
-# Obtains the json object with the id of a new created artifact
 class NewArtifactSerializer(serializers.ModelSerializer):
+    model = serializers.DictField(child=serializers.FileField(), write_only=True)
+    thumbnail = serializers.ImageField(write_only=True, required=False, allow_null=True)
+    description = serializers.CharField()
+    id_shape = serializers.PrimaryKeyRelatedField(queryset=Shape.objects.all())
+    id_culture = serializers.PrimaryKeyRelatedField(queryset=Culture.objects.all())
+    id_tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(), many=True, required=False
+    )
+
     class Meta:
         model = Artifact
-        fields = ["id"]
+        fields = [
+            "id",
+            "description",
+            "id_shape",
+            "id_culture",
+            "id_tags",
+            "model",
+            "thumbnail",
+        ]
+
+    def create(self, validated_data):
+        """
+        Create a new artifact with the data and files.
+        Files require a name attribute to be found or stored.
+        """
+
+        def get_or_create_path(root, file, filename):
+            """
+            Auxiliary function to create a File model if it does not exist.
+            It uses the os.path since files are not stored like models do.
+            """
+            if os.path.exists(os.path.join(settings.MEDIA_ROOT, root, filename)):
+                # If the file already exists, skip the creation of the model
+                logger.info(f"File {filename} already exists")
+                return os.path.join(root, filename)
+            else:
+                # Create File model
+                return File(file, name=filename)
+
+        def update_or_create_and_update(model, data):
+            """
+            Auxiliary function to update or create a model and return the object.
+            """
+            obj, created = model.objects.get_or_create(**data)
+            logger.info(f"Object {obj} created: {created}")
+            return obj
+
+        tags_data = validated_data.pop("id_tags", [])
+        thumbnail_data = validated_data.pop("thumbnail", None)
+        images_data = self.context["request"].FILES.getlist("images")
+
+        texture = self.context["request"].FILES.get("model[texture]")
+        object_file = self.context["request"].FILES.get("model[object]")
+        material = self.context["request"].FILES.get("model[material]")
+        if not (texture and object_file and material):
+            raise serializers.ValidationError("Model files are required")
+
+        texture_filename = texture.name
+        object_filename = object_file.name
+        material_filename = material.name
+
+        texture_file_path = get_or_create_path(
+            settings.MATERIALS_ROOT, texture, texture_filename
+        )
+        object_file_path = get_or_create_path(
+            settings.OBJECTS_ROOT, object_file, object_filename
+        )
+        material_file_path = get_or_create_path(
+            settings.MATERIALS_ROOT, material, material_filename
+        )
+
+        model_instance = update_or_create_and_update(
+            Model,
+            {
+                "texture": texture_file_path,
+                "object": object_file_path,
+                "material": material_file_path,
+            },
+        )
+
+        thumbnail_instance = None
+        if thumbnail_data:
+            thumbnail_filename = thumbnail_data.name
+            thumbnail_file_path = get_or_create_path(
+                settings.THUMBNAILS_ROOT, thumbnail_data, thumbnail_filename
+            )
+            thumbnail_instance = update_or_create_and_update(
+                Thumbnail, {"path": thumbnail_file_path}
+            )
+
+        newArtifact = Artifact.objects.create(
+            description=validated_data["description"],
+            id_thumbnail=thumbnail_instance,
+            id_model=model_instance,
+            id_shape=validated_data["id_shape"],
+            id_culture=validated_data["id_culture"],
+        )
+
+        newArtifact.id_tags.set(tags_data)
+
+        if images_data:
+            # Update or create images
+            for image in images_data:
+                new_image_filename = image.name
+                new_image_file_path = get_or_create_path(
+                    settings.IMAGES_ROOT, image, new_image_filename
+                )
+                update_or_create_and_update(
+                    Image, {"path": new_image_file_path, "id_artifact": newArtifact}
+                )
+        return newArtifact
+
+    def to_representation(self, instance):
+        """
+        Return only the ID of the Artifact instance.
+        """
+        return {"id": instance.id}
 
 
 class UpdateArtifactSerializer(serializers.ModelSerializer):
