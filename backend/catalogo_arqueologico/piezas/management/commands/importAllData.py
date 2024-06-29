@@ -34,3 +34,5 @@ class Command(BaseCommand):
         management.call_command("importThumbs")
 
         management.call_command("importDescriptions")
+
+        management.call_command("importInstitutions")
