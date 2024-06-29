@@ -5,9 +5,12 @@ from .serializers import (
     NewArtifactSerializer,
     CatalogSerializer,
     UpdateArtifactSerializer,
-    InstitutionSerializer
+    InstitutionSerializer,
+    ShapeSerializer,
+    TagSerializer,
+    CultureSerializer,
 )
-from .models import Artifact, Institution, Image
+from .models import Artifact, Institution, Image, Shape, Tag, Culture
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.db.models import Q
@@ -23,25 +26,25 @@ class ArtifactDetailAPIView(generics.RetrieveAPIView):
     
 
 
-class ArtifactListAPIView(generics.ListAPIView):
-    serializer_class = ArtifactSerializer
-
-    def get_queryset(self):
-        return Artifact.objects.all()
-
-    def get_serializer_context(self):
-        return {"request": self.request}
-
+class MetadataListAPIView(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
+        shapes = Shape.objects.all()
+        tags = Tag.objects.all()
+        cultures = Culture.objects.all()
 
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+        # Serialize the data
+        shape_serializer = ShapeSerializer(shapes, many=True)
+        tag_serializer = TagSerializer(tags, many=True)
+        culture_serializer = CultureSerializer(cultures, many=True)
 
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({"status": "success", "data": serializer.data})
+        # Combine the data
+        data = {
+            "shapes": shape_serializer.data,
+            "tags": tag_serializer.data,
+            "cultures": culture_serializer.data,
+        }
+
+        return Response(data)
 
 
 class ArtifactCreateAPIView(generics.CreateAPIView):
@@ -154,8 +157,8 @@ class CatalogAPIView(generics.ListAPIView):
 class ArtifactUpdateAPIView(generics.UpdateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = UpdateArtifactSerializer
-    lookup_field = 'pk'
-    
+    lookup_field = "pk"
+
     def patch(self, request, *args, **kwargs):
         artifactModel_object = self.get_object()
         serializer = UpdateArtifactSerializer(
@@ -169,12 +172,14 @@ class ArtifactUpdateAPIView(generics.UpdateAPIView):
             return Response({"status": "success", "data": serializer.data})
         return Response({"status": "error", "data": serializer.errors})
 
+
 class InstitutionAPIView(generics.ListCreateAPIView):
     queryset = Institution.objects.all()
     serializer_class = InstitutionSerializer
-    lookup_field = 'pk'
-    
+    lookup_field = "pk"
+
+
 class InstitutionDetailAPIView(generics.RetrieveAPIView):
     queryset = Institution.objects.all()
     serializer_class = InstitutionSerializer
-    lookup_field = 'pk'        
+    lookup_field = "pk"

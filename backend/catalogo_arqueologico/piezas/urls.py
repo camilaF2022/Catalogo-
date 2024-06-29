@@ -10,7 +10,7 @@ urlpatterns = [
     path('artifact/<int:pk>/update', views.ArtifactUpdateAPIView.as_view()),
     path('artifact/<int:pk>/delete', views.ArtifactDestroyAPIView.as_view()),
     path('artifact/upload', views.ArtifactCreateAPIView.as_view()),
-    path('allartifacts/', views.ArtifactListAPIView.as_view()),  # This is a temporal view to list all artifacts
+    path('metadata/', views.MetadataListAPIView.as_view()),
     path('allinstitutions/', views.InstitutionAPIView.as_view()),
     path('institution/<int:pk>', views.InstitutionDetailAPIView.as_view()),
     path('artifact/<int:pk>/download', views.ArtifactDownloadAPIView.as_view()),
