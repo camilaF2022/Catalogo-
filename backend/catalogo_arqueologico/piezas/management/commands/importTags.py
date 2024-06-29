@@ -29,6 +29,8 @@ class Command(BaseCommand):
             for artifact_tags_tuple in artifact_tags_relationships:
                 artifactId = int(artifact_tags_tuple[0])
                 tags = artifact_tags_tuple[1].split(", ")
+                tags= [tag.strip() for tag in tags]
+
                 for tag in tags:
                     if tag not in tag_artifactIds:
                         tag_artifactIds[tag] = [artifactId]

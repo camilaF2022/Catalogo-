@@ -26,7 +26,7 @@ class Command(BaseCommand):
             # Fill the dictionary with the cultures and the artifacts that have that culture
             for artifact_culture_tuple in artifact_culture_relationships:
                 artifactId = int(artifact_culture_tuple[0])
-                culture = artifact_culture_tuple[1]
+                culture = artifact_culture_tuple[1].strip()
 
                 if culture not in culture_artifactIds:
                     culture_artifactIds[culture] = [artifactId]
