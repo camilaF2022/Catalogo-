@@ -50,10 +50,7 @@ const EditForm = () => {
     tags: piece.attributes.tags || [],
   });
   
-  useEffect(() => {
-    console.log("hola")
-    console.log("piece:", updatedPiece);
-  }, [updatedPiece]);
+  
   
 
 
@@ -98,10 +95,54 @@ const EditForm = () => {
   const handleInputChange = (name, value) => {
     setUpdatedPiece({ ...updatedPiece, [name]: value });
   }; 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(updatedPiece); // Simula el envío al servidor
-    navigate(`/catalog/${pieceId}`);
+    const formData = new FormData();
+    formData.append(`model[object]`, updatedPiece.model);
+    formData.append(`model[texture]`, updatedPiece.texture);
+    formData.append(`model[material]`, updatedPiece.material);
+    formData.append(`thumbnail`, updatedPiece.thumbnail);
+    if (!updatedPiece.initialImages) {
+      if(updatedPiece.images){
+      updatedPiece.images.forEach((image) => {
+        formData.append("images", image);
+      })}
+      if(updatedPiece.newImages){
+        updatedPiece.newImages.forEach((image) => {
+        formData.append("images", image);
+      })};
+    } else {
+      if(updatedPiece.initialImages){
+        updatedPiece.initialImages.forEach((image) => {
+          formData.append("images", image);
+        })
+      }
+      if(updatedPiece.newImages){
+        updatedPiece.newImages.forEach((image) => {
+        formData.append("images", image);
+      })};
+
+    }
+    formData.append("description", updatedPiece.description);
+    formData.append("id_shape", updatedPiece.shape.id);
+    formData.append("id_culture", updatedPiece.culture.id);
+    updatedPiece.tags.forEach((tag) =>
+      formData.append("id_tags", tag.id)
+    );
+    
+    await fetch(`${API_URLS.DETAILED_ARTIFACT}/${pieceId}/update`, {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        addAlert("¡Objeto editado con éxito!");
+        navigate(`/catalog/${pieceId}`);
+      })
+      .catch((error) => {
+        addAlert(error.message);
+      });
+    
   };
 
   const handleImagesChange = ({ initial, new: newFiles }) => {

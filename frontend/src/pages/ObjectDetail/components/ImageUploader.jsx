@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Grid, IconButton, Button, Box } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import ClearIcon from "@mui/icons-material/Clear";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { styled } from "@mui/material/styles";
 
 const ImageUploader = ({ initialImages, onImagesChange }) => {
   const [initialPreviews, setInitialPreviews] = useState(initialImages);
@@ -46,13 +47,11 @@ const ImageUploader = ({ initialImages, onImagesChange }) => {
           <Grid item key={index}>
             <Box position="relative">
               <img src={preview} alt={`image-${index}`} width="100" height="100" />
-              <IconButton
-                size="small"
-                style={{ position: "absolute", top: 0, right: 0 }}
-                onClick={() => handleInitialImageRemove(index)}
-              >
-                <ClearIcon />
-              </IconButton>
+
+              <CustomIconButton onClick={() => handleInitialImageRemove(index)}>
+                <DeleteIcon />
+              </CustomIconButton>
+              
             </Box>
           </Grid>
         ))}
@@ -60,13 +59,9 @@ const ImageUploader = ({ initialImages, onImagesChange }) => {
           <Grid item key={index + initialPreviews.length}>
             <Box position="relative">
               <img src={preview} alt={`image-${index}`} width="100" height="100" />
-              <IconButton
-                size="small"
-                style={{ position: "absolute", top: 0, right: 0 }}
-                onClick={() => handleNewImageRemove(index)}
-              >
-                <ClearIcon />
-              </IconButton>
+              <CustomIconButton onClick={() => handleNewImageRemove(index)}>
+                <DeleteIcon />
+              </CustomIconButton>
             </Box>
           </Grid>
         ))}
@@ -76,7 +71,7 @@ const ImageUploader = ({ initialImages, onImagesChange }) => {
             variant="outlined"
             startIcon={<CloudUploadIcon />}
           >
-            Cargar el archivo
+            cargar mas imagenes
             <input
               type="file"
               multiple
@@ -89,5 +84,23 @@ const ImageUploader = ({ initialImages, onImagesChange }) => {
     </Box>
   );
 };
+
+const CustomIconButton = styled(IconButton)(({ theme }) => ({
+    position: "absolute",
+    top: 4,
+    right: 4,
+    width: 24,
+    height: 24,
+    padding: 0,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    borderRadius: "50%",
+    color: "red",
+    "&:hover": {
+      backgroundColor: "rgba(255, 255, 255, 1)",
+    },
+    "& .MuiSvgIcon-root": {
+      fontSize: 20,
+    },
+  }));
 
 export default ImageUploader;
