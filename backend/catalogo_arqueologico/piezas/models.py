@@ -88,7 +88,7 @@ class Artifact(models.Model):
         Thumbnail, on_delete=models.SET_NULL, null=True, related_name="thumbnail"
     )
     id_model = models.ForeignKey(
-        Model, on_delete=models.CASCADE, related_name="model3d", default=0
+        Model, on_delete=models.CASCADE, related_name="model", default=0
     )
     id_shape = models.ForeignKey(
         Shape, on_delete=models.SET_NULL, null=True, related_name="shape"
