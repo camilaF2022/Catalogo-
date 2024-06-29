@@ -30,15 +30,7 @@ const Gallery = ({ loggedIn }) => {
       .then((response) => response.json())
       .then((response) => {
         let artifacts = response.data;
-        let artifactsSimplified = artifacts.map((artifact) => {
-          let { id, attributes, preview } = artifact;
-          return {
-            id,
-            attributes,
-            preview,
-          };
-        });
-        setArtifactList(artifactsSimplified);
+        setArtifactList(artifacts);
       })
       .catch((error) => {
         setErrors(true);

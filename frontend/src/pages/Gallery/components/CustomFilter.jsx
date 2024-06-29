@@ -61,26 +61,18 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch(API_URLS.ALL_ARTIFACTS)
+    fetch(API_URLS.ALL_METADATA)
       .then((response) => response.json())
       .then((response) => {
-        let artifacts = response.data;
+        let metadata = response.data;
 
-        let shapes = new Set();
-        let cultures = new Set();
-        let tags = new Set();
+        let shapes = metadata.shapes;
+        let cultures = metadata.cultures;
+        let tags = metadata.tags;
 
-        artifacts.forEach((artifact) => {
-          let { attributes } = artifact;
-          let { shape, culture, tags: artifactTags } = attributes;
-          shapes.add(JSON.stringify(shape.value));
-          cultures.add(JSON.stringify(culture.value));
-          artifactTags.forEach((tag) => tags.add(JSON.stringify(tag.value)));
-        });
-
-        setShapeOptions(Array.from(shapes).map(JSON.parse));
-        setCultureOptions(Array.from(cultures).map(JSON.parse));
-        setTagOptions(Array.from(tags).map(JSON.parse));
+        setShapeOptions(shapes);
+        setCultureOptions(cultures);
+        setTagOptions(tags);
       })
       .catch((error) => {
         setErrors(true);
@@ -92,9 +84,16 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
   // Filter artifacts based on the filter state
   useEffect(() => {
     let filtered = artifactList.filter((artifact) => {
-      const { shape: artifactShape, culture: artifactCulture, tags:artifactTags, description: artifactDescription } = artifact.attributes;
-      const artifactTagsInLowerCase = artifactTags.map((tag) => tag.value.toLowerCase());
-      
+      const {
+        shape: artifactShape,
+        culture: artifactCulture,
+        tags: artifactTags,
+        description: artifactDescription,
+      } = artifact.attributes;
+      const artifactTagsInLowerCase = artifactTags.map((tag) =>
+        tag.value.toLowerCase()
+      );
+
       const {
         query,
         shape: filterShape,
@@ -106,15 +105,16 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
 
       if (
         query &&
-        !artifactDescription
-          .toLowerCase()
-          .includes(query.toLowerCase()) &&
+        !artifactDescription.toLowerCase().includes(query.toLowerCase()) &&
         !query.includes(String(artifact.id))
       ) {
         return false;
       }
 
-      if (filterShape && artifactShape.value.toLowerCase() !== filterShape.toLowerCase()) {
+      if (
+        filterShape &&
+        artifactShape.value.toLowerCase() !== filterShape.toLowerCase()
+      ) {
         return false;
       }
 
@@ -127,7 +127,9 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
 
       if (
         filterTagsInLowerCase.length > 0 &&
-        !filterTagsInLowerCase.every((tagInFilter) => artifactTagsInLowerCase.includes(tagInFilter))
+        !filterTagsInLowerCase.every((tagInFilter) =>
+          artifactTagsInLowerCase.includes(tagInFilter)
+        )
       ) {
         return false;
       }
