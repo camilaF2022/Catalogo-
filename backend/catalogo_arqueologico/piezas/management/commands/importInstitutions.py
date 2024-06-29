@@ -22,7 +22,6 @@ class Command(BaseCommand):
         with open(file, "r", encoding="utf-8") as archivo_csv:
             institutions = csv.reader(archivo_csv, delimiter=",")
             for institution in institutions:
-                print(institution[3])
                 try:
                     recentlyAdded = Institution.objects.create(
                         name=institution[3]
