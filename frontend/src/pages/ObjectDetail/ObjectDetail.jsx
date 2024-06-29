@@ -18,9 +18,9 @@ import NotFound from "../../components/NotFound";
 import { API_URLS } from "../../api";
 
 const ObjectDetail = ({ loggedIn }) => {
-
   const { pieceId } = useParams();
   const [notFound, setNotFound] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [piece, setPiece] = useState({
     attributes: {
       culture: { id: "", value: "" },
@@ -36,7 +36,7 @@ const ObjectDetail = ({ loggedIn }) => {
   });
 
   useEffect(() => {
-    fetch(`${API_URLS.DETAILED_ARTIFACT}${pieceId}`)
+    fetch(`${API_URLS.DETAILED_ARTIFACT}/${pieceId}`)
       .then((response) => {
         if (!response.ok) {
           if (response.status === 404) {
@@ -49,14 +49,15 @@ const ObjectDetail = ({ loggedIn }) => {
       .then((response) => {
         setPiece(response);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.error(error))
+      .finally(() => setLoading(false));
   }, [pieceId]);
   return (
     <>
       {notFound ? (
         <NotFound />
       ) : (
-        <ContainerGrid >
+        <ContainerGrid>
           <LeftBox>
             <CustomContainer>
               <Typography variant="h3">
@@ -89,16 +90,12 @@ const ObjectDetail = ({ loggedIn }) => {
             <ImagesCarousel images={piece.images}></ImagesCarousel>
           </LeftBox>
           <RightBox>
-          <Typography>
-              {piece.attributes.description === "" ? (
-                <CustomSkeletonText />
-              ) : (
-                piece.attributes.description
-              )}
+            <Typography>
+              {loading ? <CustomSkeletonText /> : piece.attributes.description}
             </Typography>
             <HorizontalStack>
               <Typography variant="h5">Cultura:</Typography>
-              {piece.attributes.culture.value === "" ? (
+              {loading ? (
                 <CustomSkeletonTag />
               ) : (
                 <CustomCultureTag label={piece.attributes.culture.value} />
@@ -106,23 +103,26 @@ const ObjectDetail = ({ loggedIn }) => {
             </HorizontalStack>
             <HorizontalStack>
               <Typography variant="h5"> Forma: </Typography>
-              {piece.attributes.shape.value === "" ? (
+              {loading ? (
                 <CustomSkeletonTag />
               ) : (
                 <CustomShapeTag label={piece.attributes.shape.value} />
               )}
-            </HorizontalStack>          
+            </HorizontalStack>
             {
               <VerticalStack>
                 <Typography variant="h5">Etiquetas:</Typography>
                 <TagContainer>
-                  {piece.attributes.tags.length === 0 ? (
+                  {loading ? (
                     <CustomSkeletonTag />
-                  ) : (
+                  ) : piece.attributes.tags.length > 0 ? (
                     piece.attributes.tags.map((tag) => (
                       <Chip key={tag.id} label={tag.value} />
                     ))
-                  )}
+                  ) : (
+                    <p>Sin etiquetas</p>
+                  )
+                  }
                 </TagContainer>
               </VerticalStack>
             }
@@ -133,25 +133,25 @@ const ObjectDetail = ({ loggedIn }) => {
   );
 };
 
-const CustomContainer = styled('div')(() => ({
+const CustomContainer = styled("div")(() => ({
   display: "flex",
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
   width: "100%",
 }));
-const HorizontalStack = styled('div')(({ theme }) => ({
+const HorizontalStack = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   gap: theme.spacing(1),
 }));
-const VerticalStack = styled('div')(({ theme }) => ({
+const VerticalStack = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(1),
 }));
 
-const LeftBox = styled('div')(({ theme }) => ({
+const LeftBox = styled("div")(({ theme }) => ({
   width: theme.spacing(83),
   [theme.breakpoints.up("md")]: {
     width: theme.spacing(106.5),
@@ -169,11 +169,10 @@ const LeftBox = styled('div')(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-const RightBox = styled('div')(({ theme }) => ({
-  
-  padding:theme.spacing(1),
-  paddingTop:theme.spacing(3),
-  paddingBottom:theme.spacing(3),
+const RightBox = styled("div")(({ theme }) => ({
+  padding: theme.spacing(1),
+  paddingTop: theme.spacing(3),
+  paddingBottom: theme.spacing(3),
   backgroundColor: "#fff",
   [theme.breakpoints.down("md")]: {
     width: theme.spacing(83),
@@ -185,19 +184,18 @@ const RightBox = styled('div')(({ theme }) => ({
   [theme.breakpoints.up("lg")]: {
     marginTop: theme.spacing(8),
     width: theme.spacing(28),
-    height:theme.spacing(69),
+    height: theme.spacing(69),
     gap: theme.spacing(1.7),
   },
   [theme.breakpoints.up("xl")]: {
-    width: theme.spacing(34.25)
+    width: theme.spacing(34.25),
   },
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(3),
 }));
 
-
-const ContainerGrid = styled('div')(({ theme }) => ({
+const ContainerGrid = styled("div")(({ theme }) => ({
   marginTop: theme.spacing(3),
   paddingBottom: theme.spacing(3),
   display: "flex",
@@ -209,14 +207,13 @@ const ContainerGrid = styled('div')(({ theme }) => ({
   [theme.breakpoints.up("lg")]: {
     gap: theme.spacing(3),
   },
-
 }));
 
-const TagContainer = styled('div')(({ theme }) => ({
+const TagContainer = styled("div")(({ theme }) => ({
   display: "flex",
   flexWrap: "wrap",
   flexDirection: "row",
-  width: "100%",  
+  width: "100%",
   gap: theme.spacing(1),
 }));
 
@@ -240,9 +237,9 @@ const CustomSkeletonText = styled(Skeleton)(({ theme }) => ({
   variant: "text",
 }));
 
-const CustomDiv = styled("div")(({theme}) => ({
+const CustomDiv = styled("div")(({ theme }) => ({
   width: "100%",
-  height: theme.spacing(75) ,
+  height: theme.spacing(75),
   backgroundColor: "#2e2d2c",
   display: "flex",
   justifyContent: "center",

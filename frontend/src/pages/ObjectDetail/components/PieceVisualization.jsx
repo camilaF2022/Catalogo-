@@ -3,7 +3,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { OrbitControls } from '@react-three/drei'
 import { styled } from "@mui/material/styles";
-import { Tooltip, IconButton, List, ListItem, Slider } from '@mui/material';
+import { Tooltip, IconButton } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
@@ -14,7 +14,6 @@ import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import { useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
 
-const { DEG2RAD } = THREE.MathUtils
 
 const PieceVisualization = ({ objPath, mtlPath }) => {
     const material = useLoader(MTLLoader, mtlPath)
