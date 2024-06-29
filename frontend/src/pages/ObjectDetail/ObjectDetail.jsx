@@ -15,12 +15,13 @@ import ModalFormButton from "./components/ModalFormButton";
 import EditForm from "./components/EditForm";
 import PieceVisualization from "./components/PieceVisualization";
 import ImagesCarousel from "./components/ImagesCarousel";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import DownloadForm from "./components/DownloadForm";
 import NotFound from "../../components/NotFound";
 import { API_URLS } from "../../api";
 
 const ObjectDetail = ({ loggedIn }) => {
+  const navigate = useNavigate();
   // set a dummy piece object for initial  rendering
   const { pieceId } = useParams();
   const [notFound, setNotFound] = useState(false);
@@ -37,12 +38,17 @@ const ObjectDetail = ({ loggedIn }) => {
       material: "",
     },
   });
+
+  const handleEdit = () => {
+    navigate(`/catalog/${pieceId}/edit`, { state: { piece } });
+  };
   /*
   useEffect(() => {
     console.log("hola")
     console.log("piece:", piece);
   }, [piece]);
   */
+  
 
   useEffect(() => {
     fetch(`${API_URLS.DETAILED_ARTIFACT}${pieceId}`)
@@ -75,10 +81,8 @@ const ObjectDetail = ({ loggedIn }) => {
                 {loggedIn ? (
                   <HorizontalStack>
                     <Button variant="contained">Descargar Pieza</Button>
-
-                    <ModalFormButton text={"Editar Pieza"}>
-                      <EditForm piece={piece} onCancel={() => console.log('Cancel')}  />
-                    </ModalFormButton>
+                    
+                    <Button variant="contained" onClick={handleEdit}>Editar Pieza</Button>
                   </HorizontalStack>
                 ) : (
                   <ModalFormButton text={"Solicitar datos"}>

@@ -4,7 +4,8 @@ import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import MenuBar from "./MenuBar";
 import NotFound from "./NotFound";
-import { Home, Login, Gallery, CreateItem, ObjectDetail } from "../pages";
+import { Home, Login, Gallery, CreateItem, ObjectDetail, EditForm } from "../pages";
+
 import useToken from "../hooks/useToken";
 
 const Layout = () => {
@@ -25,6 +26,9 @@ const Layout = () => {
           path="/catalog/:pieceId"
           element={<ObjectDetail loggedIn={isAuthenticated} />}
         />
+        <Route 
+        path="/catalog/:pieceId/edit" 
+        element={<EditForm loggedIn={isAuthenticated} />} />
         {/* Private routes */}
         <Route
           path="/catalog/new"

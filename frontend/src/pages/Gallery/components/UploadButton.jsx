@@ -23,6 +23,10 @@ const UploadButton = ({ label, name, isMultiple, isRequired, setStateFn, initial
     setFilename(initialFilename || "");
   }, [initialFilename]);
 
+  useEffect(() => {
+    console.log(`Filename for ${name}:`, filename);
+  }, [filename, name]);
+
   const allowedTypesLabel = allowedFileTypes[name].join(", ");
 
   const handleUploadFile = (inputName, files) => {
