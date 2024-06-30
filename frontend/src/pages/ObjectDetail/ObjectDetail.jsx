@@ -75,10 +75,9 @@ const ObjectDetail = ({ loggedIn }) => {
               {loggedIn ? (
                 <HorizontalStack>
                   <Button variant="contained">Descargar Pieza</Button>
-
-                  <ModalFormButton text={"Editar Pieza"}>
-                    <EditForm />
-                  </ModalFormButton>
+                  <Button variant="contained" onClick={handleRedirect}>
+                    Editar Pieza
+                  </Button>
                 </HorizontalStack>
               ) : (
                 <ModalFormButton text={"Solicitar datos"}>
@@ -130,8 +129,7 @@ const ObjectDetail = ({ loggedIn }) => {
                     ))
                   ) : (
                     <p>Sin etiquetas</p>
-                  )
-                  }
+                  )}
                 </TagContainer>
               </VerticalStack>
             }
