@@ -34,7 +34,7 @@ class ThumbnailSerializer(serializers.ModelSerializer):
 
 class ArtifactSerializer(serializers.ModelSerializer):
     attributes = serializers.SerializerMethodField()
-    preview = serializers.SerializerMethodField()
+    thumbnail = serializers.SerializerMethodField()
     model = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
 
@@ -43,7 +43,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "attributes",
-            "preview",
+            "thumbnail",
             "model",
             "images",
         ]
@@ -61,7 +61,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
         }
         return wholeDict
 
-    def get_preview(self, instance):
+    def get_thumbnail(self, instance):
         if instance.id_thumbnail:
             return self.context["request"].build_absolute_uri(
                 instance.id_thumbnail.path.url
@@ -93,11 +93,11 @@ class ArtifactSerializer(serializers.ModelSerializer):
 # Obtains the json object with the attributes of the artifacts for the catalog
 class CatalogSerializer(serializers.ModelSerializer):
     attributes = serializers.SerializerMethodField(read_only=True)
-    preview = serializers.SerializerMethodField(read_only=True)
+    thumbnail = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Artifact
-        fields = ["id", "attributes", "preview"]
+        fields = ["id", "attributes", "thumbnail"]
 
     def get_attributes(self, instance):
         shapeInstance = Shape.objects.get(id=instance.id_shape.id)
@@ -116,7 +116,7 @@ class CatalogSerializer(serializers.ModelSerializer):
         }
         return attributes
 
-    def get_preview(self, instance):
+    def get_thumbnail(self, instance):
         if instance.id_thumbnail:
             return self.context["request"].build_absolute_uri(
                 instance.id_thumbnail.path.url
