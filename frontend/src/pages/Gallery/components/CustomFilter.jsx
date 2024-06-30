@@ -11,8 +11,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import Clear from "@mui/icons-material/Clear";
 import { styled } from "@mui/system";
 import { useSearchParams } from "react-router-dom";
-import useSnackBars from "../../../hooks/useSnackbars";
 import { API_URLS } from "../../../api";
+import { useSnackBars } from "../../../hooks/useSnackbars";
 
 const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
   const { addAlert } = useSnackBars();

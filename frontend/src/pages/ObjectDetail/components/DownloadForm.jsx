@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Stack, Paper, InputLabel, Select } from "@mui/material";
-import useSnackBars from "../../../hooks/useSnackbars";
+import { useSnackBars } from "../../../hooks/useSnackbars";
 
 const DownloadForm = ({ pieceInfo, handleClose }) => {
   const { addAlert } = useSnackBars();
@@ -32,7 +32,7 @@ const DownloadForm = ({ pieceInfo, handleClose }) => {
     link.download = downloadName;
     link.click();
     link.remove();
-  }
+  };
 
   const handleDownload = () => {
     // metadata
@@ -45,26 +45,29 @@ const DownloadForm = ({ pieceInfo, handleClose }) => {
 
     // model
     fetch(pieceInfo.model.object)
-      .then((response) => response.blob()).then((response) =>
+      .then((response) => response.blob())
+      .then((response) =>
         downloadFile(response, pieceInfo.model.object.split("/").pop())
-      )
+      );
     fetch(pieceInfo.model.material)
       .then((response) => response.blob())
-      .then((response) => downloadFile(response, pieceInfo.model.material.split("/").pop()));
+      .then((response) =>
+        downloadFile(response, pieceInfo.model.material.split("/").pop())
+      );
 
     fetch(pieceInfo.model.texture)
       .then((response) => response.blob())
-      .then((response) => downloadFile(response, pieceInfo.model.texture.split("/").pop()));
+      .then((response) =>
+        downloadFile(response, pieceInfo.model.texture.split("/").pop())
+      );
 
     //images
     pieceInfo.images.map((image, index) => {
-      fetch(image).then((response) => response.blob())
-        .then((response) =>
-          downloadFile(response, image.split("/").pop())
-        )
+      fetch(image)
+        .then((response) => response.blob())
+        .then((response) => downloadFile(response, image.split("/").pop()));
       return null;
     });
-
   };
 
   const handleSubmit = async (e) => {
@@ -155,11 +158,20 @@ const DownloadForm = ({ pieceInfo, handleClose }) => {
             />
           </Stack>
           <OptionBox>
-            <CustomButton variant="outlined" color="primary" onClick={handleClose}>
+            <CustomButton
+              variant="outlined"
+              color="primary"
+              onClick={handleClose}
+            >
               Cancelar
             </CustomButton>
 
-            <CustomButton variant="contained" color="primary" type="submit" onClick={handleSubmit}>
+            <CustomButton
+              variant="contained"
+              color="primary"
+              type="submit"
+              onClick={handleSubmit}
+            >
               Enviar
             </CustomButton>
           </OptionBox>

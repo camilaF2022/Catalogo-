@@ -13,10 +13,10 @@ import { styled } from "@mui/material/styles";
 import UploadButton from "../../Gallery/components/UploadButton";
 import AutocompleteExtended from "../../Gallery/components/AutocompleteExtended";
 import { API_URLS } from "../../../api";
-import useSnackBars from "../../../hooks/useSnackbars";
 import ImageUploader from "./ImageUploader";
 import { allowedFileTypes } from "../../Gallery/CreateItem";
 import NotFound from "../../../components/NotFound";
+import { useSnackBars } from "../../../hooks/useSnackbars";
 
 const EditForm = () => {
   const navigate = useNavigate();

@@ -15,10 +15,13 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import DownloadForm from "./components/DownloadForm";
 import NotFound from "../../components/NotFound";
 import { API_URLS } from "../../api";
+import { useToken } from "../../hooks/useToken";
 
-const ObjectDetail = ({ loggedIn }) => {
+const ObjectDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { token } = useToken();
+  const loggedIn = !!token;
   const { pieceId } = useParams();
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);

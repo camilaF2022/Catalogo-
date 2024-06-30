@@ -5,12 +5,15 @@ import { styled } from "@mui/material/styles";
 import ArtifactCard from "./components/ArtifactCard";
 import CustomPagination from "./components/CustomPagination";
 import CustomFilter from "./components/CustomFilter";
-import useSnackBars from "../../hooks/useSnackbars";
 import { API_URLS } from "../../api";
+import { useToken } from "../../hooks/useToken";
+import { useSnackBars } from "../../hooks/useSnackbars";
 
-const Gallery = ({ loggedIn }) => {
+const Gallery = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { token } = useToken();
+  const loggedIn = !!token;
   const { addAlert } = useSnackBars();
 
   const [loading, setLoading] = useState(true);

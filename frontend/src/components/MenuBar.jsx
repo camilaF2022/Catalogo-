@@ -2,14 +2,18 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import { Link , useLocation, useNavigate} from "react-router-dom";
 import { AppBar, Toolbar, IconButton, Button, Typography } from "@mui/material";
+import { useToken } from "../hooks/useToken";
 
 
-const MenuBar = ({ loggedIn, setToken }) => {
+const MenuBar = () => {
+  const { token, setToken } = useToken();
+  const loggedIn = !!token;
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleLogout = () => {
     setToken(null);
+    navigate('/');
   };
 
   const handleLoginClick = () => {

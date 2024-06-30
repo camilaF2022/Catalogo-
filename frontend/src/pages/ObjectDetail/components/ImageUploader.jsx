@@ -3,7 +3,7 @@ import { Grid, IconButton, Button, Box, FormLabel } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
-import useSnackBars from "../../../hooks/useSnackbars";
+import { useSnackBars } from "../../../hooks/useSnackbars";
 
 const ImageUploader = ({
   label,

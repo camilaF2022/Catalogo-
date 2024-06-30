@@ -10,10 +10,10 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useNavigate, useLocation } from "react-router-dom";
-import useSnackBars from "../../hooks/useSnackbars";
 import UploadButton from "./components/UploadButton";
 import AutocompleteExtended from "./components/AutocompleteExtended";
 import { API_URLS } from "../../api";
+import { useSnackBars } from "../../hooks/useSnackbars";
 
 export const allowedFileTypes = {
   object: ["obj"],
