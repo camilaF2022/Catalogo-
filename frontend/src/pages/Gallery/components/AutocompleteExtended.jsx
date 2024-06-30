@@ -56,6 +56,7 @@ const AutocompleteExtended = ({
       onChange={(e, value, reason) => {
         if (value == null) {
           setValue(name, { id: "", value: "" });
+          return;
         }
         setValue(name, value);
         setOpenMenu(false);
