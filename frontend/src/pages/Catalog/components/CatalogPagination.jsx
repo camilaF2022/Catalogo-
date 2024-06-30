@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Pagination } from "@mui/material";
 
-const CustomPagination = ({ items, setDisplayedItems }) => {
+const CatalogPagination = ({ items, setDisplayedItems }) => {
   const itemsPerPage = 6; // Set the number of items per page
   const totalItems = items.length; // Get the total number of items
   const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate the total number of pages
@@ -38,4 +38,4 @@ const CustomPagination = ({ items, setDisplayedItems }) => {
   );
 };
 
-export default CustomPagination;
+export default CatalogPagination;

@@ -100,15 +100,6 @@ const CustomCardContent = styled(CardContent)(({ theme }) => ({
   rowGap: 5,
 }));
 
-const CardTitle = styled(Typography)(({ theme }) => ({
-  fontWeight: "bold",
-  fontSize: 18,
-}));
-
-const CardDescription = styled(Typography)(({ theme }) => ({
-  fontSize: 10,
-}));
-
 const MetadataContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexWrap: "wrap",

@@ -76,6 +76,7 @@ const AutocompleteExtended = ({
       noOptionsText={createOption}
       renderInput={(params) => (
         <TextField
+          key={name}
           {...params}
           label={label}
           required={isRequired}
@@ -86,6 +87,7 @@ const AutocompleteExtended = ({
         selectedOptions.map((option, index) => (
           <Chip
             {...getTagProps({ index })}
+            key={index}
             label={option.value}
             sx={(theme) => ({
               backgroundColor: options

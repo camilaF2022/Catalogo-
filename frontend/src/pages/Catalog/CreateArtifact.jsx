@@ -10,8 +10,8 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useNavigate, useLocation } from "react-router-dom";
-import UploadButton from "./components/UploadButton";
-import AutocompleteExtended from "./components/AutocompleteExtended";
+import UploadButton from "../sharedComponents/UploadButton";
+import AutocompleteExtended from "../sharedComponents/AutocompleteExtended";
 import { API_URLS } from "../../api";
 import { useSnackBars } from "../../hooks/useSnackbars";
 
@@ -23,7 +23,7 @@ export const allowedFileTypes = {
   images: ["jpg", "jpeg", "png"],
 };
 
-const CreateItem = () => {
+const CreateArtifact = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { addAlert } = useSnackBars();
@@ -75,7 +75,7 @@ const CreateItem = () => {
         addAlert(error.message);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleInputChange = (name, value) => {
     setNewObjectAttributes({ ...newObjectAttributes, [name]: value });
@@ -240,4 +240,4 @@ const ColumnGrid = styled(Grid)(({ theme }) => ({
   flexDirection: "column",
 }));
 
-export default CreateItem;
+export default CreateArtifact;

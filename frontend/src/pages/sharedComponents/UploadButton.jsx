@@ -10,8 +10,8 @@ import {
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Clear from "@mui/icons-material/Clear";
-import { allowedFileTypes } from "../CreateItem";
-import { useSnackBars } from "../../../hooks/useSnackbars";
+import { allowedFileTypes } from "../Catalog/CreateArtifact";
+import { useSnackBars } from "../../hooks/useSnackbars";
 
 const UploadButton = ({
   label,

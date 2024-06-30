@@ -14,7 +14,7 @@ import { useSearchParams } from "react-router-dom";
 import { API_URLS } from "../../../api";
 import { useSnackBars } from "../../../hooks/useSnackbars";
 
-const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
+const CatalogFilter = ({ artifactList, setFilteredArtifacts }) => {
   const { addAlert } = useSnackBars();
   // Search params from the URL
   const [searchParams, setSearchParams] = useSearchParams();
@@ -79,7 +79,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
         addAlert(error.message);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Filter artifacts based on the filter state
   useEffect(() => {
@@ -287,4 +287,4 @@ const CustomStack = styled(Stack)(({ theme }) => ({
   columnGap: theme.spacing(2),
 }));
 
-export default CustomFilter;
+export default CatalogFilter;

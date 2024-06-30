@@ -3,29 +3,28 @@ import {
   Typography,
   Button,
   Chip,
-  Paper,
   Skeleton,
   CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import ModalFormButton from "./components/ModalFormButton";
-import PieceVisualization from "./components/PieceVisualization";
+import DownloadArtifactButton from "./components/DownloadArtifactButton";
+import ModelVisualization from "./components/ModelVisualization";
 import ImagesCarousel from "./components/ImagesCarousel";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import DownloadForm from "./components/DownloadForm";
+import DownloadArtifactForm from "./components/DownloadArtifactForm";
 import NotFound from "../../components/NotFound";
 import { API_URLS } from "../../api";
 import { useToken } from "../../hooks/useToken";
 
-const ObjectDetail = () => {
+const ArtifactDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useToken();
   const loggedIn = !!token;
-  const { pieceId } = useParams();
+  const { artifactId } = useParams();
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [piece, setPiece] = useState({
+  const [artifact, setArtifact] = useState({
     attributes: {
       culture: { id: "", value: "" },
       shape: { id: "", value: "" },
@@ -42,13 +41,13 @@ const ObjectDetail = () => {
   });
 
   const handleRedirect = () => {
-    navigate(`/catalog/${pieceId}/edit`, {
+    navigate(`/catalog/${artifactId}/edit`, {
       state: { from: location.pathname },
     });
   };
 
   useEffect(() => {
-    fetch(`${API_URLS.DETAILED_ARTIFACT}/${pieceId}`)
+    fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}`)
       .then((response) => {
         if (!response.ok) {
           if (response.status === 404) {
@@ -59,11 +58,11 @@ const ObjectDetail = () => {
         return response.json();
       })
       .then((response) => {
-        setPiece(response);
+        setArtifact(response);
       })
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
-  }, [pieceId]);
+  }, [artifactId]);
   return (
     <>
       {notFound ? (
@@ -73,7 +72,7 @@ const ObjectDetail = () => {
           <LeftBox>
             <CustomContainer>
               <Typography variant="h3">
-                <b>{piece.id}</b>
+                <b>{artifact.id}</b>
               </Typography>
               {loggedIn ? (
                 <HorizontalStack>
@@ -83,33 +82,33 @@ const ObjectDetail = () => {
                   </Button>
                 </HorizontalStack>
               ) : (
-                <ModalFormButton text={"Solicitar datos"}>
-                  <DownloadForm pieceInfo={piece}></DownloadForm>
-                </ModalFormButton>
+                <DownloadArtifactButton text={"Solicitar datos"}>
+                  <DownloadArtifactForm artifactInfo={artifact}></DownloadArtifactForm>
+                </DownloadArtifactButton>
               )}
             </CustomContainer>
-            {!piece.model.object || !piece.model.material ? (
+            {!artifact.model.object || !artifact.model.material ? (
               <CustomDiv>
                 <CircularProgress color="primary" />
               </CustomDiv>
             ) : (
-              <PieceVisualization
-                objPath={piece.model.object}
-                mtlPath={piece.model.material}
+              <ModelVisualization
+                objPath={artifact.model.object}
+                mtlPath={artifact.model.material}
               />
             )}
-            <ImagesCarousel images={piece.images}></ImagesCarousel>
+            <ImagesCarousel images={artifact.images}></ImagesCarousel>
           </LeftBox>
           <RightBox>
             <Typography>
-              {loading ? <CustomSkeletonText /> : piece.attributes.description}
+              {loading ? <CustomSkeletonText /> : artifact.attributes.description}
             </Typography>
             <HorizontalStack>
               <Typography variant="h5">Cultura:</Typography>
               {loading ? (
                 <CustomSkeletonTag />
               ) : (
-                <CustomCultureTag label={piece.attributes.culture.value} />
+                <CustomCultureTag label={artifact.attributes.culture.value} />
               )}
             </HorizontalStack>
             <HorizontalStack>
@@ -117,7 +116,7 @@ const ObjectDetail = () => {
               {loading ? (
                 <CustomSkeletonTag />
               ) : (
-                <CustomShapeTag label={piece.attributes.shape.value} />
+                <CustomShapeTag label={artifact.attributes.shape.value} />
               )}
             </HorizontalStack>
             {
@@ -126,8 +125,8 @@ const ObjectDetail = () => {
                 <TagContainer>
                   {loading ? (
                     <CustomSkeletonTag />
-                  ) : piece.attributes.tags.length > 0 ? (
-                    piece.attributes.tags.map((tag) => (
+                  ) : artifact.attributes.tags.length > 0 ? (
+                    artifact.attributes.tags.map((tag) => (
                       <Chip key={tag.id} label={tag.value} />
                     ))
                   ) : (
@@ -256,4 +255,4 @@ const CustomDiv = styled("div")(({ theme }) => ({
   alignItems: "center",
 }));
 
-export default ObjectDetail;
+export default ArtifactDetails;

@@ -10,11 +10,11 @@ import { CircularProgress } from "@mui/material";
 // Lazy-loaded components
 const Home = lazy(() => import("../pages/Home/Home"));
 const Login = lazy(() => import("../pages/Login/Login"));
-const Gallery = lazy(() => import("../pages/Gallery/Gallery"));
-const CreateItem = lazy(() => import("../pages/Gallery/CreateItem"));
-const ObjectDetail = lazy(() => import("../pages/ObjectDetail/ObjectDetail"));
-const EditForm = lazy(() =>
-  import("../pages/ObjectDetail/components/EditForm")
+const Catalog = lazy(() => import("../pages/Catalog/Catalog"));
+const CreateArtifact = lazy(() => import("../pages/Catalog/CreateArtifact"));
+const ArtifactDetails = lazy(() => import("../pages/ArtifactDetails/ArtifactDetails"));
+const EditArtifact = lazy(() =>
+  import("../pages/ArtifactDetails/components/EditArtifact")
 );
 
 const PrivateRouteWrapper = () => {
@@ -42,11 +42,11 @@ const Layout = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/catalog" element={<Gallery />} />
-          <Route path="/catalog/:pieceId" element={<ObjectDetail />} />
+          <Route path="/catalog" element={<Catalog />} />
+          <Route path="/catalog/:artifactId" element={<ArtifactDetails />} />
           <Route element={<PrivateRouteWrapper />}>
-            <Route path="/catalog/new" element={<CreateItem />} />
-            <Route path="/catalog/:pieceId/edit" element={<EditForm />} />
+            <Route path="/catalog/new" element={<CreateArtifact />} />
+            <Route path="/catalog/:artifactId/edit" element={<EditArtifact />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

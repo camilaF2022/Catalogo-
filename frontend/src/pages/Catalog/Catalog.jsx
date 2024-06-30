@@ -3,13 +3,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Box, Button, Container, Grid, Typography, Skeleton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArtifactCard from "./components/ArtifactCard";
-import CustomPagination from "./components/CustomPagination";
-import CustomFilter from "./components/CustomFilter";
+import CatalogPagination from "./components/CatalogPagination";
+import CatalogFilter from "./components/CatalogFilter";
 import { API_URLS } from "../../api";
 import { useToken } from "../../hooks/useToken";
 import { useSnackBars } from "../../hooks/useSnackbars";
 
-const Gallery = () => {
+const Catalog = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useToken();
@@ -17,7 +17,7 @@ const Gallery = () => {
   const { addAlert } = useSnackBars();
 
   const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState(false);
+  const [_, setErrors] = useState(false); // eslint-disable-line no-unused-vars
 
   // Retrieved data from the API
   const [artifactList, setArtifactList] = useState([]);
@@ -40,7 +40,7 @@ const Gallery = () => {
         addAlert(error.message);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRedirect = () => {
     navigate("/catalog/new", { state: { from: location.pathname } });
@@ -49,7 +49,7 @@ const Gallery = () => {
   return (
     <Container>
       <CustomTypography variant="h1">Catálogo</CustomTypography>
-      <CustomFilter
+      <CatalogFilter
         artifactList={artifactList}
         setFilteredArtifacts={setFilteredArtifacts}
       />
@@ -61,7 +61,7 @@ const Gallery = () => {
             size="large"
             onClick={handleRedirect}
           >
-            Agregar objeto
+            Agregar pieza
           </Button>
         </CustomBox>
       )}
@@ -85,7 +85,7 @@ const Gallery = () => {
             ))}
           </Grid>
 
-          <CustomPagination
+          <CatalogPagination
             items={filteredArtifacts}
             setDisplayedItems={setArtifactsToDisplay}
           />
@@ -116,4 +116,4 @@ const CustomBox = styled(Grid)(({ theme }) => ({
   marginBottom: theme.spacing(3),
 }));
 
-export default Gallery;
+export default Catalog;

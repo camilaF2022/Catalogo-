@@ -10,22 +10,22 @@ import {
   Box,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import UploadButton from "../../Gallery/components/UploadButton";
-import AutocompleteExtended from "../../Gallery/components/AutocompleteExtended";
+import UploadButton from "../../sharedComponents/UploadButton";
+import AutocompleteExtended from "../../sharedComponents/AutocompleteExtended";
 import { API_URLS } from "../../../api";
 import ImageUploader from "./ImageUploader";
-import { allowedFileTypes } from "../../Gallery/CreateItem";
+import { allowedFileTypes } from "../../Catalog/CreateArtifact";
 import NotFound from "../../../components/NotFound";
 import { useSnackBars } from "../../../hooks/useSnackbars";
 
-const EditForm = () => {
+const EditArtifact = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { pieceId } = useParams();
+  const { artifactId } = useParams();
   const { addAlert } = useSnackBars();
 
   const [notFound, setNotFound] = useState(false);
-  const [updatedPiece, setUpdatedPiece] = useState({
+  const [updatedArtifact, setUpdatedArtifact] = useState({
     object: "",
     texture: "",
     material: "",
@@ -54,7 +54,7 @@ const EditForm = () => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch(`${API_URLS.DETAILED_ARTIFACT}/${pieceId}`)
+    fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}`)
       .then((response) => {
         if (!response.ok) {
           if (response.status === 404) {
@@ -66,7 +66,7 @@ const EditForm = () => {
       })
       .then((response) => {
         let { attributes, preview, model, images } = response;
-        setUpdatedPiece({
+        setUpdatedArtifact({
           thumbnail: preview,
           images: images,
           ...model,
@@ -74,7 +74,7 @@ const EditForm = () => {
         });
       })
       .catch((error) => console.error(error));
-  }, [pieceId]);
+  }, [artifactId]);
 
   useEffect(() => {
     fetch(API_URLS.ALL_METADATA)
@@ -95,20 +95,20 @@ const EditForm = () => {
         addAlert(error.message);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleInputChange = (name, value) => {
-    setUpdatedPiece({ ...updatedPiece, [name]: value });
+    setUpdatedArtifact({ ...updatedArtifact, [name]: value });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append(`model[object]`, updatedPiece.object);
-    formData.append(`model[texture]`, updatedPiece.texture);
-    formData.append(`model[material]`, updatedPiece.material);
-    formData.append(`thumbnail`, updatedPiece.thumbnail);
+    formData.append(`model[object]`, updatedArtifact.object);
+    formData.append(`model[texture]`, updatedArtifact.texture);
+    formData.append(`model[material]`, updatedArtifact.material);
+    formData.append(`thumbnail`, updatedArtifact.thumbnail);
     // New images are files, but old images are URLs
-    updatedPiece.images.forEach((image) => {
+    updatedArtifact.images.forEach((image) => {
       if (image instanceof File) {
         formData.append("new_images", image);
       } else if (
@@ -118,19 +118,19 @@ const EditForm = () => {
         formData.append("images", image);
       }
     });
-    formData.append("description", updatedPiece.description);
-    formData.append("id_shape", updatedPiece.shape.id);
-    formData.append("id_culture", updatedPiece.culture.id);
-    updatedPiece.tags.forEach((tag) => formData.append("id_tags", tag.id));
+    formData.append("description", updatedArtifact.description);
+    formData.append("id_shape", updatedArtifact.shape.id);
+    formData.append("id_culture", updatedArtifact.culture.id);
+    updatedArtifact.tags.forEach((tag) => formData.append("id_tags", tag.id));
 
-    await fetch(`${API_URLS.DETAILED_ARTIFACT}/${pieceId}/update`, {
+    await fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}/update`, {
       method: "POST",
       body: formData,
     })
       .then((response) => response.json())
       .then((response) => {
         addAlert("¡Objeto editado con éxito!");
-        navigate(`/catalog/${pieceId}`);
+        navigate(`/catalog/${artifactId}`);
       })
       .catch((error) => {
         addAlert(error.message);
@@ -161,7 +161,7 @@ const EditForm = () => {
           <Box component="form" autoComplete="off" onSubmit={handleSubmit}>
             <Grid container rowGap={4}>
               <CustomTypography variant="h1">
-                Editar Pieza {pieceId}
+                Editar Pieza {artifactId}
               </CustomTypography>
               <Grid container spacing={2}>
                 <ColumnGrid item xs={6} rowGap={2}>
@@ -169,34 +169,34 @@ const EditForm = () => {
                     label="Objeto *"
                     name="object"
                     isRequired
-                    setStateFn={setUpdatedPiece}
-                    initialFilename={getFileNameOrUrl(updatedPiece.object)}
+                    setStateFn={setUpdatedArtifact}
+                    initialFilename={getFileNameOrUrl(updatedArtifact.object)}
                   />
                   <UploadButton
                     label="Textura *"
                     name="texture"
                     isRequired
-                    setStateFn={setUpdatedPiece}
-                    initialFilename={getFileNameOrUrl(updatedPiece.texture)}
+                    setStateFn={setUpdatedArtifact}
+                    initialFilename={getFileNameOrUrl(updatedArtifact.texture)}
                   />
                   <UploadButton
                     label="Material *"
                     name="material"
                     isRequired
-                    setStateFn={setUpdatedPiece}
-                    initialFilename={getFileNameOrUrl(updatedPiece.material)}
+                    setStateFn={setUpdatedArtifact}
+                    initialFilename={getFileNameOrUrl(updatedArtifact.material)}
                   />
                   <UploadButton
                     label="Miniatura (opcional)"
                     name="thumbnail"
-                    setStateFn={setUpdatedPiece}
-                    initialFilename={getFileNameOrUrl(updatedPiece.thumbnail)}
+                    setStateFn={setUpdatedArtifact}
+                    initialFilename={getFileNameOrUrl(updatedArtifact.thumbnail)}
                   />
                   <ImageUploader
                     label="Imágenes (opcional)"
                     name="images"
-                    images={updatedPiece.images}
-                    onListChange={setUpdatedPiece}
+                    images={updatedArtifact.images}
+                    onListChange={setUpdatedArtifact}
                     allowedImageTypes={allowedFileTypes.images}
                   />
                 </ColumnGrid>
@@ -210,7 +210,7 @@ const EditForm = () => {
                     multiline
                     rows={4}
                     fullWidth
-                    value={updatedPiece.description}
+                    value={updatedArtifact.description}
                     onChange={(e) =>
                       handleInputChange(e.target.name, e.target.value)
                     }
@@ -219,7 +219,7 @@ const EditForm = () => {
                   <AutocompleteExtended
                     id="shape"
                     name="shape"
-                    value={updatedPiece.shape}
+                    value={updatedArtifact.shape}
                     setValue={handleInputChange}
                     options={shapeOptions}
                     placeholder="Seleccionar la forma del objeto"
@@ -232,7 +232,7 @@ const EditForm = () => {
                   <AutocompleteExtended
                     id="culture"
                     name="culture"
-                    value={updatedPiece.culture}
+                    value={updatedArtifact.culture}
                     setValue={handleInputChange}
                     options={cultureOptions}
                     placeholder="Seleccionar la cultura del objeto"
@@ -248,7 +248,7 @@ const EditForm = () => {
                     fullWidth
                     id="tags"
                     name="tags"
-                    value={updatedPiece.tags}
+                    value={updatedArtifact.tags}
                     setValue={handleInputChange}
                     options={tagOptions}
                     placeholder="Seleccionar las etiquetas del objeto"
@@ -283,4 +283,4 @@ const ColumnGrid = styled(Grid)(({ theme }) => ({
   flexDirection: "column",
 }));
 
-export default EditForm;
+export default EditArtifact;
