@@ -29,10 +29,10 @@ const CreateItem = () => {
   const { addAlert } = useSnackBars();
 
   const [newObjectAttributes, setNewObjectAttributes] = useState({
-    model: "",
-    texture: "",
-    material: "",
-    thumbnail: "",
+    object: {},
+    texture: {},
+    material: {},
+    thumbnail: {},
     images: [],
     description: "",
     shape: {
@@ -91,11 +91,35 @@ const CreateItem = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(newObjectAttributes); // Send new object to the server
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Emulate POST delay
-    const newId = 1;
-    addAlert("¡Objeto creado con éxito!");
-    navigate(`/catalog/${newId}`);
+    const formData = new FormData();
+    formData.append(`model[object]`, newObjectAttributes.object);
+    formData.append(`model[texture]`, newObjectAttributes.texture);
+    formData.append(`model[material]`, newObjectAttributes.material);
+    formData.append(`thumbnail`, newObjectAttributes.thumbnail);
+    newObjectAttributes.images.forEach((image) =>
+      formData.append("images", image)
+    );
+    formData.append("description", newObjectAttributes.description);
+    formData.append("id_shape", newObjectAttributes.shape.id);
+    formData.append("id_culture", newObjectAttributes.culture.id);
+    newObjectAttributes.tags.forEach((tag) =>
+      formData.append("id_tags", tag.id)
+    );
+
+    await fetch(`${API_URLS.DETAILED_ARTIFACT}/upload`, {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        const successfully_response = response.data;
+        const newArtifactId = successfully_response.id;
+        addAlert("¡Objeto creado con éxito!");
+        navigate(`/catalog/${newArtifactId}`);
+      })
+      .catch((error) => {
+        addAlert(error.message);
+      });
   };
 
   const handleCancel = () => {
@@ -111,8 +135,8 @@ const CreateItem = () => {
           <Grid container spacing={2}>
             <ColumnGrid item xs={6} rowGap={2}>
               <UploadButton
-                label="Modelo *"
-                name="model"
+                label="Objeto *"
+                name="object"
                 isRequired
                 setStateFn={setNewObjectAttributes}
               />
@@ -167,6 +191,7 @@ const CreateItem = () => {
                 fullWidth
                 filterSelectedOptions
                 disabled={loading || errors}
+                allowCreation={false}
               />
               <FormLabel component="legend">Cultura *</FormLabel>
               <AutocompleteExtended
@@ -180,6 +205,7 @@ const CreateItem = () => {
                 fullWidth
                 filterSelectedOptions
                 disabled={loading || errors}
+                allowCreation={false}
               />
               <FormLabel component="legend">Etiquetas (opcional)</FormLabel>
               <AutocompleteExtended
@@ -194,6 +220,7 @@ const CreateItem = () => {
                 placeholder="Seleccionar las etiquetas del objeto"
                 filterSelectedOptions
                 disabled={loading || errors}
+                allowCreation={false}
               />
             </ColumnGrid>
           </Grid>
