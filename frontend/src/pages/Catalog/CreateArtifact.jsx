@@ -123,7 +123,7 @@ const CreateArtifact = () => {
     <Container>
       <Box component="form" autoComplete="off" onSubmit={handleSubmit}>
         <Grid container rowGap={4}>
-          <CustomTypography variant="h1">Agregar nuevo objeto</CustomTypography>
+          <CustomTypography variant="h1">Agregar nueva pieza</CustomTypography>
           <Grid container spacing={2}>
             <ColumnGrid item xs={6} rowGap={2}>
               <UploadButton
@@ -231,7 +231,7 @@ const CreateArtifact = () => {
 };
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
-  marginTop: theme.spacing(12),
+  marginTop: theme.spacing(6),
   textAlign: "left",
 }));
 

@@ -83,7 +83,9 @@ const ArtifactDetails = () => {
                 </HorizontalStack>
               ) : (
                 <DownloadArtifactButton text={"Solicitar datos"}>
-                  <DownloadArtifactForm artifactInfo={artifact}></DownloadArtifactForm>
+                  <DownloadArtifactForm
+                    artifactInfo={artifact}
+                  ></DownloadArtifactForm>
                 </DownloadArtifactButton>
               )}
             </CustomContainer>
@@ -101,22 +103,26 @@ const ArtifactDetails = () => {
           </LeftBox>
           <RightBox>
             <Typography>
-              {loading ? <CustomSkeletonText /> : artifact.attributes.description}
-            </Typography>
-            <HorizontalStack>
-              <Typography variant="h5">Cultura:</Typography>
               {loading ? (
-                <CustomSkeletonTag />
+                <CustomSkeletonText />
               ) : (
-                <CustomCultureTag label={artifact.attributes.culture.value} />
+                artifact.attributes.description
               )}
-            </HorizontalStack>
+            </Typography>
             <HorizontalStack>
               <Typography variant="h5"> Forma: </Typography>
               {loading ? (
                 <CustomSkeletonTag />
               ) : (
                 <CustomShapeTag label={artifact.attributes.shape.value} />
+              )}
+            </HorizontalStack>
+            <HorizontalStack>
+              <Typography variant="h5">Cultura:</Typography>
+              {loading ? (
+                <CustomSkeletonTag />
+              ) : (
+                <CustomCultureTag label={artifact.attributes.culture.value} />
               )}
             </HorizontalStack>
             {
