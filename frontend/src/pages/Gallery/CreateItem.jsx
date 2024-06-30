@@ -17,9 +17,9 @@ import { API_URLS } from "../../api";
 
 export const allowedFileTypes = {
   object: ["obj"],
-  texture: ["jpg"],
+  texture: ["jpg", "jpeg", "png"],
   material: ["mtl"],
-  thumbnail: ["jpg"],
+  thumbnail: ["jpg", "jpeg", "png"],
   images: ["jpg", "jpeg", "png"],
 };
 
@@ -57,26 +57,18 @@ const CreateItem = () => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch(API_URLS.ALL_ARTIFACTS)
+    fetch(API_URLS.ALL_METADATA)
       .then((response) => response.json())
       .then((response) => {
-        let artifacts = response.data;
+        let metadata = response.data;
 
-        let shapes = new Set();
-        let cultures = new Set();
-        let tags = new Set();
+        let shapes = metadata.shapes;
+        let cultures = metadata.cultures;
+        let tags = metadata.tags;
 
-        artifacts.forEach((artifact) => {
-          let { attributes } = artifact;
-          let { shape, culture, tags: artifactTags } = attributes;
-          shapes.add(JSON.stringify(shape));
-          cultures.add(JSON.stringify(culture));
-          artifactTags.forEach((tag) => tags.add(JSON.stringify(tag)));
-        });
-
-        setShapeOptions(Array.from(shapes).map(JSON.parse));
-        setCultureOptions(Array.from(cultures).map(JSON.parse));
-        setTagOptions(Array.from(tags).map(JSON.parse));
+        setShapeOptions(shapes);
+        setCultureOptions(cultures);
+        setTagOptions(tags);
       })
       .catch((error) => {
         setErrors(true);
