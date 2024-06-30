@@ -28,7 +28,7 @@ class Command(BaseCommand):
             artifact_ids = textshape.readlines()
 
         shape_artifact_relationships = [line.strip() for line in artifact_ids]
-        shape_name = os.path.splitext(os.path.basename(file_name))[0]
+        shape_name = os.path.splitext(os.path.basename(file_name))[0].strip()
         # Create shape object
         try:
             recentlyAdded = Shape.objects.create(name=shape_name)
