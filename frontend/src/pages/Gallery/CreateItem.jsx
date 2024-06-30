@@ -17,9 +17,9 @@ import { API_URLS } from "../../api";
 
 export const allowedFileTypes = {
   object: ["obj"],
-  texture: ["jpg"],
+  texture: ["jpg", "jpeg", "png"],
   material: ["mtl"],
-  thumbnail: ["jpg"],
+  thumbnail: ["jpg", "jpeg", "png"],
   images: ["jpg", "jpeg", "png"],
 };
 
