@@ -57,7 +57,7 @@ class Command(BaseCommand):
             artifact_description_relationships = csv.reader(archivo_csv, delimiter=",")
             for artifact_description_tuple in artifact_description_relationships:
                 realId = artifact_description_tuple[0]
-                descriptionArtifact = artifact_description_tuple[1]
+                descriptionArtifact = artifact_description_tuple[1].strip()
                 # Get the thumbnail, model, shape, culture, tags
                 # (these models are already created)
                 idThumbnail = Thumbnail.objects.get(

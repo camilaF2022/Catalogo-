@@ -18,7 +18,7 @@ const CatalogFilter = ({ artifactList, setFilteredArtifacts }) => {
   const { addAlert } = useSnackBars();
   // Search params from the URL
   const [searchParams, setSearchParams] = useSearchParams();
-  // Avoid updating the search params when the component mounts and there are search params
+  // Avoid updating the URL when the component mounts and there are search params already
   const [updateParamsFlag, setUpdateParamsFlag] = useState(false);
 
   // Retrieved data from the API
@@ -27,14 +27,6 @@ const CatalogFilter = ({ artifactList, setFilteredArtifacts }) => {
   const [shapeOptions, setShapeOptions] = useState([]);
   const [cultureOptions, setCultureOptions] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
-
-  // Filter state
-  const [filter, setFilter] = useState({
-    query: "",
-    shape: "",
-    culture: "",
-    tags: [],
-  });
 
   const handleFilterChange = (name, value) => {
     setFilter({ ...filter, [name]: value });

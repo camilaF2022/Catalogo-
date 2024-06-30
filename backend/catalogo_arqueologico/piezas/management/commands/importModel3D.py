@@ -63,15 +63,27 @@ class Command(BaseCommand):
                 # If any of the files already exists, skip the creation of the model
                 # This avoids the upload of the same texture, object or material multiple times
                 if (
-                    os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.MATERIALS_ROOT, texture_file))
-                    or os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.OBJECTS_ROOT, object_file))
-                    or os.path.exists(os.path.join(settings.MEDIA_ROOT, settings.MATERIALS_ROOT, material_file))
+                    os.path.exists(
+                        os.path.join(
+                            settings.MEDIA_ROOT, settings.MATERIALS_ROOT, texture_file
+                        )
+                    )
+                    or os.path.exists(
+                        os.path.join(
+                            settings.MEDIA_ROOT, settings.OBJECTS_ROOT, object_file
+                        )
+                    )
+                    or os.path.exists(
+                        os.path.join(
+                            settings.MEDIA_ROOT, settings.MATERIALS_ROOT, material_file
+                        )
+                    )
                 ):
                     logger.warning(
                         f"Skipping creation of {base_name_id} model due to the existing texture, object or material file"
                     )
                     continue
-                
+
                 texture_path = os.path.join(model_folder, texture_file)
                 object_path = os.path.join(model_folder, object_file)
                 material_path = os.path.join(model_folder, material_file)

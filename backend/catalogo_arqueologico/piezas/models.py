@@ -17,7 +17,7 @@ class Shape(models.Model):
     Shape model to store the shapes of the artifacts
     Name must be unique
     """
-
+    
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
 
@@ -72,7 +72,7 @@ class Image(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     id_artifact = models.ForeignKey(
-        "Artifact", on_delete=models.CASCADE, related_name="artifact"
+        "Artifact", on_delete=models.CASCADE, null=True, related_name="images"
     )
     path = models.ImageField(upload_to=settings.IMAGES_ROOT, unique=True)
 
@@ -85,16 +85,16 @@ class Artifact(models.Model):
     id = models.BigAutoField(primary_key=True)
     description = models.CharField(max_length=300)
     id_thumbnail = models.ForeignKey(
-        Thumbnail, on_delete=models.SET_NULL, null=True, related_name="thumbnail"
+        Thumbnail, on_delete=models.SET_NULL, null=True, related_name="artifact"
     )
     id_model = models.ForeignKey(
-        Model, on_delete=models.CASCADE, related_name="model3d", default=0
+        Model, on_delete=models.CASCADE, related_name="artifact", default=0
     )
     id_shape = models.ForeignKey(
-        Shape, on_delete=models.SET_NULL, null=True, related_name="shape"
+        Shape, on_delete=models.SET_NULL, null=True, related_name="artifact"
     )
     id_culture = models.ForeignKey(
-        Culture, on_delete=models.SET_NULL, null=True, related_name="culture"
+        Culture, on_delete=models.SET_NULL, null=True, related_name="artifact"
     )
     id_tags = models.ManyToManyField(Tag)
 
@@ -153,6 +153,11 @@ class ShapeIds(models.Model):
         ]
 
 
+
+class Institution(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=100, unique=True)
+
 """
 class Solicitud(models.Model):
     id = models.BigAutoField(primary_key=True, unique=True)
@@ -163,6 +168,7 @@ class Solicitud(models.Model):
     email = models.CharField(max_length=50)
     institution = models.CharField(max_length=50)
 
+    
     
 Para los usuarios, hay que crear 2 o 3 grupos, dependiendo de si existira un usuario general.
 

@@ -1,6 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Box, Button, Container, Grid, Typography, Skeleton } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  Typography,
+  Skeleton,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArtifactCard from "./components/ArtifactCard";
 import CatalogPagination from "./components/CatalogPagination";
@@ -75,10 +82,10 @@ const Catalog = () => {
             ))}
           </Grid>
         </Box>
-      ) : filteredArtifacts.length > 0 ? (
+      ) : artifactList.length > 0 ? (
         <Box>
           <Grid container spacing={2}>
-            {artifactsToDisplay.map((artifact) => (
+            {artifactList.map((artifact) => (
               <Grid item xs={12} sm={6} md={4} key={artifact.id}>
                 <ArtifactCard artifact={artifact} />
               </Grid>
