@@ -17,10 +17,12 @@ import math
 class ArtifactDetailAPIView(generics.RetrieveAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
+    permission_classes = [permissions.IsAdminUser, IsFuncionarioPermission]
 
 
 class ArtifactListAPIView(generics.ListAPIView):
     serializer_class = ArtifactSerializer
+    permission_classes = [permissions.IsAdminUser, IsFuncionarioPermission]
 
     def get_queryset(self):
         return Artifact.objects.all()
@@ -50,6 +52,7 @@ class ArtifactDestroyAPIView(generics.DestroyAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
     lookup_field = "pk"
+    permission_classes = [permissions.IsAdminUser, IsFuncionarioPermission]
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -114,6 +117,7 @@ class ArtifactUpdateAPIView(generics.UpdateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = UpdateArtifactSerializer
     lookup_field = 'pk'
+    permission_classes = [permissions.IsAdminUser, IsFuncionarioPermission]
     
     def patch(self, request, *args, **kwargs):
         artifactModel_object = self.get_object()
