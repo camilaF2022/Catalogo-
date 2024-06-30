@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import authentication, generics, permissions
 from rest_framework.pagination import PageNumberPagination
 from .serializers import (
     ArtifactSerializer,
@@ -10,6 +10,7 @@ from .serializers import (
 from .models import Artifact, Institution
 from rest_framework.response import Response
 from django.db.models import Q
+from .permissions import IsFuncionarioPermission
 import math
 
 
@@ -42,6 +43,7 @@ class ArtifactListAPIView(generics.ListAPIView):
 class ArtifactCreateAPIView(generics.CreateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = NewArtifactSerializer
+    permission_classes = [permissions.IsAdminUser, IsFuncionarioPermission]
 
 
 class ArtifactDestroyAPIView(generics.DestroyAPIView):

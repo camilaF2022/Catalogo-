@@ -77,6 +77,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'catalogo_arqueologico.wsgi.application'
 
 AUTH_USER_MODEL = 'piezas.CustomUser'
+
+REST_FRAMEWORK={
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "piezas.authentication.TokenAuthentication"
+    ],
+    "DEFAULT_PERMISSIONS_CLASSES":[
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly"
+    ]
+}
+    
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
