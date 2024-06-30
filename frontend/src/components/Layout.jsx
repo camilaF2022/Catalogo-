@@ -4,8 +4,22 @@ import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import MenuBar from "./MenuBar";
 import NotFound from "./NotFound";
-import { Home, Login, Gallery, CreateItem, ObjectDetail } from "../pages";
+import {
+  Home,
+  Login,
+  Gallery,
+  CreateItem,
+  ObjectDetail,
+  EditForm,
+} from "../pages";
 import useToken from "../hooks/useToken";
+import { useParams } from "react-router-dom";
+
+// Wrapper component
+const LoginWrapper = ({ setToken }) => {
+  const { pieceId } = useParams();
+  return <Login setToken={setToken} navigateTo={`/catalog/${pieceId}/edit`} />;
+};
 
 const Layout = () => {
   const { token, setToken } = useToken();
@@ -36,6 +50,16 @@ const Layout = () => {
             )
           }
         />
+        <Route
+          path="/catalog/:pieceId/edit"
+          element={
+            isAuthenticated ? (
+              <EditForm />
+            ) : (
+              <LoginWrapper setToken={setToken} />
+            )
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </CustomGrid>
@@ -44,7 +68,7 @@ const Layout = () => {
 
 const CustomGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.main,
-  minHeight: '100vh',
+  minHeight: "100vh",
 }));
 
 export default Layout;

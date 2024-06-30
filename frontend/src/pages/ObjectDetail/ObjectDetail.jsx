@@ -9,15 +9,16 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ModalFormButton from "./components/ModalFormButton";
-import EditForm from "./components/EditForm";
 import PieceVisualization from "./components/PieceVisualization";
 import ImagesCarousel from "./components/ImagesCarousel";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import DownloadForm from "./components/DownloadForm";
 import NotFound from "../../components/NotFound";
 import { API_URLS } from "../../api";
 
 const ObjectDetail = ({ loggedIn }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { pieceId } = useParams();
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -28,12 +29,20 @@ const ObjectDetail = ({ loggedIn }) => {
       tags: [],
       description: "",
     },
-    images: [],
+    preview: "",
     model: {
       object: "",
       material: "",
+      texture: "",
     },
+    images: [],
   });
+
+  const handleRedirect = () => {
+    navigate(`/catalog/${pieceId}/edit`, {
+      state: { from: location.pathname },
+    });
+  };
 
   useEffect(() => {
     fetch(`${API_URLS.DETAILED_ARTIFACT}/${pieceId}`)

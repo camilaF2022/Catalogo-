@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   FormLabel,
@@ -13,10 +13,21 @@ import Clear from "@mui/icons-material/Clear";
 import useSnackBars from "../../../hooks/useSnackbars";
 import { allowedFileTypes } from "../CreateItem";
 
-const UploadButton = ({ label, name, isMultiple, isRequired, setStateFn }) => {
+const UploadButton = ({
+  label,
+  name,
+  isMultiple,
+  isRequired,
+  setStateFn,
+  initialFilename = "",
+}) => {
   const { addAlert } = useSnackBars();
 
-  const [filename, setFilename] = useState("");
+  const [filename, setFilename] = useState(initialFilename);
+
+  useEffect(() => {
+    setFilename(initialFilename);
+  }, [initialFilename]);
 
   const allowedTypesLabel = allowedFileTypes[name].join(", ");
 
@@ -33,10 +44,10 @@ const UploadButton = ({ label, name, isMultiple, isRequired, setStateFn }) => {
       return;
     }
     // Save file in state
-    if (inputName === "images") {
-      const images = Array.from(files);
-      setFilename(images.map((image) => image.name).join("\n"));
-      setStateFn((prevState) => ({ ...prevState, [inputName]: images }));
+    if (isMultiple) {
+      const listOfFiles = Array.from(files);
+      setFilename(listOfFiles.map((file) => file.name).join("\n"));
+      setStateFn((prevState) => ({ ...prevState, [inputName]: listOfFiles }));
       return;
     }
     const file = files[0];

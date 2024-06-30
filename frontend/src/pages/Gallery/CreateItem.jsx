@@ -19,8 +19,8 @@ export const allowedFileTypes = {
   object: ["obj"],
   texture: ["jpg"],
   material: ["mtl"],
-  thumbnail: ["jpg", "png", "jpeg"],
-  images: ["jpg", "png", "jpeg"],
+  thumbnail: ["jpg"],
+  images: ["jpg", "jpeg", "png"],
 };
 
 const CreateItem = () => {
@@ -48,6 +48,7 @@ const CreateItem = () => {
 
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState(false);
+  const returnTo = !!location.state?.from;
 
   // Retrieved data from the API
   const [shapeOptions, setShapeOptions] = useState([]);
@@ -225,7 +226,7 @@ const CreateItem = () => {
           </Grid>
           <Grid container justifyContent="flex-end" columnGap={2}>
             <Button variant="text" color="secondary" onClick={handleCancel}>
-              Cancelar
+              {returnTo ? "Cancelar" : "Volver al catálogo"}
             </Button>
             <Button variant="contained" color="primary" type="submit">
               Publicar
