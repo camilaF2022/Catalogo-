@@ -44,7 +44,7 @@ class MetadataListAPIView(generics.ListAPIView):
             "cultures": culture_serializer.data,
         }
 
-        return Response(data)
+        return Response({"status":"HTTP_OK","data":data})
 
 
 class ArtifactCreateAPIView(generics.CreateAPIView):
@@ -58,7 +58,7 @@ class ArtifactCreateAPIView(generics.CreateAPIView):
         )
         if serializer.is_valid():
             serializer.save()
-            return Response({"status": "success", "data": serializer.data})
+            return Response({"status": "HTTP_OK", "data": serializer.data})
         return Response({"status": "error", "data": serializer.errors})
 
 
@@ -154,14 +154,14 @@ class CatalogAPIView(generics.ListAPIView):
 
     def get(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            page_data = self.get_paginated_response(serializer.data).data
+            return Response({**{"status":"HTTP_OK"},**page_data})
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response({"status": "success", "data": serializer.data})
+        return Response({"status": "HTTP_OK", "data": serializer.data})
 
 
 class ArtifactUpdateAPIView(generics.UpdateAPIView):
@@ -179,7 +179,7 @@ class ArtifactUpdateAPIView(generics.UpdateAPIView):
         )
         if serializer.is_valid():
             serializer.save()
-            return Response({"status": "success", "data": serializer.data})
+            return Response({"status": "HTTP_OK", "data": serializer.data})
         return Response({"status": "error", "data": serializer.errors})
 
 
