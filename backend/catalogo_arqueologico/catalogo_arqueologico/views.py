@@ -5,8 +5,9 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from catalogo_arqueologico.serializer import UserSerializer
+from django.views.decorators.csrf import csrf_protect
 
-
+@csrf_protect
 class LoginView(APIView):
     def post(self, request):
         user = get_object_or_404(User, email=self.request.data['email'])

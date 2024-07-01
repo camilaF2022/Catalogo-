@@ -7,26 +7,11 @@ from django.conf import settings
 
 class CustomUser(AbstractUser):
     class RoleUser(models.TextChoices):
-        FUNCIONARIO = "FN", "STAFF"
+        FUNCIONARIO = "FN", "FUNCIONARIO"
         ADMINISTRADOR = "AD","ADMIN"
     role=models.CharField(max_length=2,choices=RoleUser.choices,default=RoleUser.FUNCIONARIO)
     institution=models.CharField(max_length=100,blank=True)
-    def validation(rut):
-        last=rut[8]
-        inverse=rut[7::-1]
-        total=0
-        for number in range(8):
-            total+=int(inverse[number])*(number%6+2)
-        rest=11-abs(total-11*(total//11))%11
-        if(rest==10 and last=='k'):
-            return None
-        elif(rest==int(last)):
-            return None
-        else:
-            if(rest==10):
-                rest='k'
-            raise Exception("Invalid identifier: Validation digit is "+str(last)+" and should be "+str(rest))
-    rut=models.CharField(max_length=9,blank=True,validators=[validation],help_text='Enter unique indentifier without dots or dashes')
+    rut=models.CharField(max_length=9,blank=True,help_text='Enter unique indentifier without dots or dashes')
 
 
 

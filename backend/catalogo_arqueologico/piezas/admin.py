@@ -15,6 +15,10 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = UserAdmin.add_fieldsets + (
         (None, {'fields': ('role', 'rut', 'institution')}),
     )
+    def save_model(self,request,obj,form,change):
+        if not obj.pk:
+            obj.is_staff=True
+        super().save_model(request,obj,form,change)
 
 class TagAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
