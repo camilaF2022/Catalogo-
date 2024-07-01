@@ -1,5 +1,15 @@
 from django.contrib import admin
-from .models import Tag, Shape, Culture, Artifact, Model, Thumbnail, Image, Institution
+from .models import (
+    ArtifactRequester,
+    Tag,
+    Shape,
+    Culture,
+    Artifact,
+    Model,
+    Thumbnail,
+    Image,
+    Institution,
+)
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -34,3 +44,4 @@ admin.site.register(Model)
 admin.site.register(Thumbnail)
 admin.site.register(Image)
 admin.site.register(Institution)
+admin.site.register(ArtifactRequester)

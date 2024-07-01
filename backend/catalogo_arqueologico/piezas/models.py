@@ -161,30 +161,21 @@ class Institution(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
 
-"""
-class Solicitud(models.Model):
-    id = models.BigAutoField(primary_key=True, unique=True)
-    arq_piece = models.ForeignKey("Artifact", on_delete=models.CASCADE)
-    date = models.DateField()
-    approved = models.BooleanField()
+class ArtifactRequester(models.Model):
+    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=50)
-    email = models.CharField(max_length=50)
-    institution = models.CharField(max_length=50)
-
-    
-    
-Para los usuarios, hay que crear 2 o 3 grupos, dependiendo de si existira un usuario general.
-
-Grupo Admin = puede hacer de todo con:
-- Tabla Pieza Arqueologica
-- Tabla Usuarios
-- Tabla Metadata
-- Tabla Media
-- Tabla Solicitud
-
-Grupo Investigador = puede hacer de todo con:
-- Tabla Pieza Arqueologica
-- Tabla Metadata
-- Tabla Media
-'
-"""
+    rut = models.CharField(max_length=50)
+    email = models.EmailField()
+    is_registered = models.BooleanField(default=True)
+    institution = models.ForeignKey(
+        Institution,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="artifact_requester",
+    )
+    artifact = models.ForeignKey(
+        Artifact,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="artifact_requester",
+    )

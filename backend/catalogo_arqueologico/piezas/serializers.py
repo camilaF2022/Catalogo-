@@ -2,7 +2,7 @@ import os
 from django.conf import settings
 from django.core.files import File
 from rest_framework import serializers
-from .models import Tag, Shape, Culture, Artifact, Model, Thumbnail, Image, Institution
+from .models import ArtifactRequester, Tag, Shape, Culture, Artifact, Model, Thumbnail, Image, Institution
 import logging
 
 logger = logging.getLogger(__name__)
@@ -155,3 +155,9 @@ class InstitutionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institution
         fields = ["id", "name"]
+
+
+class ArtifactRequesterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArtifactRequester
+        fields = "__all__"

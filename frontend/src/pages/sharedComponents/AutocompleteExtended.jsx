@@ -72,7 +72,7 @@ const AutocompleteExtended = ({
         setOpenMenu(false);
       }}
       options={options}
-      getOptionLabel={(option) => option.value}
+      getOptionLabel={(option) => option.value ?? ""}
       noOptionsText={createOption}
       renderInput={(params) => (
         <TextField

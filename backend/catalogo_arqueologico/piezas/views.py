@@ -4,6 +4,7 @@ from django.conf import settings
 from rest_framework import generics, status
 from rest_framework.pagination import PageNumberPagination
 from .serializers import (
+    ArtifactRequesterSerializer,
     ArtifactSerializer,
     CatalogSerializer,
     UpdateArtifactSerializer,
@@ -12,7 +13,17 @@ from .serializers import (
     TagSerializer,
     CultureSerializer,
 )
-from .models import Artifact, Institution, Image, Shape, Tag, Culture, Model, Thumbnail
+from .models import (
+    Artifact,
+    ArtifactRequester,
+    Institution,
+    Image,
+    Shape,
+    Tag,
+    Culture,
+    Model,
+    Thumbnail,
+)
 from rest_framework.response import Response
 from django.db.models import Q
 from django.core.files import File
@@ -61,12 +72,28 @@ class ArtifactDestroyAPIView(generics.DestroyAPIView):
     lookup_field = "pk"
 
 
-class ArtifactDownloadAPIView(generics.RetrieveAPIView):
+class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
     lookup_field = "pk"
 
+    def post(self, request, *args, **kwargs):
+        logger.info(
+            "Creating new artifact requester for artifact {}".format(kwargs.get("pk"))
+        )
+        requester = ArtifactRequester.objects.create(
+            name=request.data.get("fullName"),
+            rut=request.data.get("rut"),
+            email=request.data.get("email"),
+            is_registered=False,
+            institution=Institution.objects.get(pk=request.data.get("institution")),
+            artifact=Artifact.objects.get(pk=kwargs.get("pk")),
+        )
+        serializer = ArtifactRequesterSerializer(requester)
+        return Response({"status": "HTTP_OK", "data": serializer.data})
+
     def get(self, request, *args, **kwargs):
+        logger.info(f"Downloading artifact {kwargs.get('pk')}")
         pk = kwargs.get("pk")
         if pk is not None:
             try:
@@ -324,12 +351,19 @@ class ArtifactCreateUpdateAPIView(generics.GenericAPIView):
 
 
 class InstitutionAPIView(generics.ListCreateAPIView):
-    queryset = Institution.objects.all()
+    queryset = Institution.objects.all().order_by("id")
     serializer_class = InstitutionSerializer
-    lookup_field = "pk"
 
+    def get(self, request, *args, **kwargs):
+        institutions = Institution.objects.all()
 
-class InstitutionDetailAPIView(generics.RetrieveAPIView):
-    queryset = Institution.objects.all()
-    serializer_class = InstitutionSerializer
-    lookup_field = "pk"
+        # Serialize the data
+        institution_serializer = InstitutionSerializer(institutions, many=True)
+
+        # Function to change 'name' key to 'value'
+        def rename_key(lst):
+            return [{"id": item["id"], "value": item["name"]} for item in lst]
+
+        data = rename_key(institution_serializer.data)
+
+        return Response({"data": data}, status=status.HTTP_200_OK)

@@ -60,7 +60,6 @@ const ArtifactDetails = () => {
       .then((response) => {
         setArtifact(response);
       })
-      .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, [artifactId]);
   return (

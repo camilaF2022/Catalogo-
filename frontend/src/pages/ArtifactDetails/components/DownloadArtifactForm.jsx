@@ -1,21 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { Stack, Paper, InputLabel, Select } from "@mui/material";
+import { Stack, Paper, InputLabel, Autocomplete } from "@mui/material";
 import { useSnackBars } from "../../../hooks/useSnackbars";
+import { API_URLS } from "../../../api";
 
 const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
   const { addAlert } = useSnackBars();
+  const [institutions, setInstitutions] = useState([]);
   const [formValues, setFormValues] = useState({
     fullName: "",
     rut: "",
     email: "",
-    institution: "",
+    institution: { id: "", value: "" },
     description: "",
   });
+  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState(false);
+
+  useEffect(() => {
+    fetch(API_URLS.ALL_INSTITUTIONS)
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response.detail);
+        }
+        return response.json();
+      })
+      .then((response) => {
+        let institutions = Array.from(response.data);
+        setInstitutions(institutions);
+      })
+      .catch((error) => {
+        setErrors(true);
+        addAlert("Error al cargar las instituciones");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,56 +48,59 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
     });
   };
 
-  const downloadFile = (resourceBlob, downloadName) => {
-    const url = URL.createObjectURL(resourceBlob);
-    var link = document.createElement("a");
-    link.href = url;
-    link.download = downloadName;
-    link.click();
-    link.remove();
-  };
-
-  const handleDownload = () => {
-    // metadata
-    const jsonObj = {
-      attributes: artifactInfo.attributes,
+  const handleDownload = async (formValues) => {
+    let body = {
+      fullName: formValues.fullName,
+      rut: formValues.rut,
+      email: formValues.email,
+      institution: formValues.institution.id,
+      description: formValues.description,
     };
-    const jsonStr = JSON.stringify(jsonObj);
-    const jsonBlob = new Blob([jsonStr], { type: "application/json" });
-    downloadFile(jsonBlob, "metadata.json");
-
-    // model
-    fetch(artifactInfo.model.object)
-      .then((response) => response.blob())
-      .then((response) =>
-        downloadFile(response, artifactInfo.model.object.split("/").pop())
-      );
-    fetch(artifactInfo.model.material)
-      .then((response) => response.blob())
-      .then((response) =>
-        downloadFile(response, artifactInfo.model.material.split("/").pop())
-      );
-
-    fetch(artifactInfo.model.texture)
-      .then((response) => response.blob())
-      .then((response) =>
-        downloadFile(response, artifactInfo.model.texture.split("/").pop())
-      );
-
-    //images
-    artifactInfo.images.map((image, index) => {
-      fetch(image)
-        .then((response) => response.blob())
-        .then((response) => downloadFile(response, image.split("/").pop()));
-      return null;
-    });
+    await fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactInfo.id}/download`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response.detail);
+        }
+      })
+      .catch((error) => {
+        setErrors(true);
+        addAlert("Error al descargar pieza");
+      });
+    await fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactInfo.id}/download`, {
+      method: "GET",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response.detail);
+        }
+        console.log(response);
+        return response.blob();
+      })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `artifact_${artifactInfo.id}.zip`;
+        link.click();
+        link.remove();
+      })
+      .catch((error) => {
+        setErrors(true);
+        addAlert("Error al descargar pieza");
+      });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Request sent to the server", formValues);
     addAlert("¡Solicitud enviada con éxito! La descarga comenzará pronto.");
-    handleDownload();
+    handleDownload(formValues);
     handleClose();
   };
 
@@ -136,12 +162,29 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
             <InputLabel>
               <b>Institución *</b>
             </InputLabel>
-            <Select
-              // required
+            <Autocomplete
               id="institution"
               name="institution"
-              label="Institucion"
               value={formValues.institution}
+              onChange={(name, value) => {
+                setFormValues({
+                  ...formValues,
+                  institution: value,
+                });
+              }}
+              options={institutions}
+              noOptionsText="No hay instituciones disponibles"
+              getOptionLabel={(option) => option.value ?? ""}
+              filterSelectedOptions
+              renderInput={(params) => (
+                <TextField
+                  key={"institution"}
+                  {...params}
+                  required={true}
+                  placeholder={"Seleccione una institución"}
+                />
+              )}
+              disabled={loading || errors}
             />
           </Stack>
           <Stack>
