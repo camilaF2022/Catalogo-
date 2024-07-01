@@ -54,7 +54,7 @@ const Catalog = () => {
       {loading ? (
         <Box>
           <Grid container spacing={2}>
-            {Array.from({ length: 6 }, (_, index) => (
+            {Array.from({ length: 9 }, (_, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
                 <Skeleton variant="rectangular" width="100%" height={200} />
               </Grid>

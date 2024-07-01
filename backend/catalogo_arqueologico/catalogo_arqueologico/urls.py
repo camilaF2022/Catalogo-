@@ -24,5 +24,5 @@ from catalogo_arqueologico.views import LoginView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', obtain_auth_token),
-    path('catalog/', include('piezas.urls')),  # FIXME: Change `piezas` app to `catalog`
+    path('catalog/', include('piezas.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

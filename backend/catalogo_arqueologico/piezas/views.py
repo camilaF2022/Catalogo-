@@ -1,8 +1,10 @@
-from rest_framework import generics
+import os
+from sqlite3 import IntegrityError
+from django.conf import settings
+from rest_framework import generics, status
 from rest_framework.pagination import PageNumberPagination
 from .serializers import (
     ArtifactSerializer,
-    NewArtifactSerializer,
     CatalogSerializer,
     UpdateArtifactSerializer,
     InstitutionSerializer,
@@ -10,14 +12,17 @@ from .serializers import (
     TagSerializer,
     CultureSerializer,
 )
-from .models import Artifact, Institution, Image, Shape, Tag, Culture
+from .models import Artifact, Institution, Image, Shape, Tag, Culture, Model, Thumbnail
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from django.db.models import Q
+from django.core.files import File
 import math
 import zipfile
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse
 from io import BytesIO
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ArtifactDetailAPIView(generics.RetrieveAPIView):
@@ -47,22 +52,7 @@ class MetadataListAPIView(generics.ListAPIView):
             "cultures": rename_key(culture_serializer.data),
         }
 
-        return Response({"status": "HTTP_OK", "data": data})
-
-
-class ArtifactCreateAPIView(generics.CreateAPIView):
-    queryset = Artifact.objects.all()
-    serializer_class = NewArtifactSerializer
-    lookup_field = "pk"
-
-    def post(self, request, *args, **kwargs):
-        serializer = NewArtifactSerializer(
-            data=request.data, context={"request": request}
-        )
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"status": "HTTP_OK", "data": serializer.data})
-        return Response({"status": "error", "data": serializer.errors})
+        return Response({"data": data}, status=status.HTTP_200_OK)
 
 
 class ArtifactDestroyAPIView(generics.DestroyAPIView):
@@ -137,7 +127,7 @@ class CatalogAPIView(generics.ListAPIView):
     pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
-        queryset = Artifact.objects.all()
+        queryset = Artifact.objects.all().order_by("id")
 
         # Filter by query parameters
         description = self.request.query_params.get("query", None)
@@ -169,29 +159,168 @@ class CatalogAPIView(generics.ListAPIView):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             page_data = self.get_paginated_response(serializer.data).data
-            return Response({**{"status": "HTTP_OK"}, **page_data})
+            return Response({**page_data})
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response({"status": "HTTP_OK", "data": serializer.data})
+        return Response({"data": serializer.data}, status=status.HTTP_200_OK)
 
 
-class ArtifactUpdateAPIView(generics.UpdateAPIView):
+class ArtifactCreateUpdateAPIView(generics.GenericAPIView):
     queryset = Artifact.objects.all()
     serializer_class = UpdateArtifactSerializer
     lookup_field = "pk"
 
+    def get_object(self):
+        pk = self.kwargs.get("pk")
+        if pk is not None:
+            return super().get_object()
+        return None
+
+    def post(self, request, *args, **kwargs):
+        return self.create_or_update(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.create_or_update(request, *args, **kwargs)
+
     def patch(self, request, *args, **kwargs):
-        artifactModel_object = self.get_object()
-        serializer = UpdateArtifactSerializer(
-            artifactModel_object,
-            data=request.data,
-            partial=False,
-            context={"request": request},
+        return self.create_or_update(request, *args, **kwargs, partial=True)
+
+    def create_or_update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+
+        if instance is None:
+            logger.info("Creating new artifact")
+            serializer = self.get_serializer(data=request.data)
+            success_status = status.HTTP_201_CREATED
+        else:
+            logger.info(f"Updating artifact {instance.id}")
+            serializer = self.get_serializer(
+                instance, data=request.data, partial=partial
+            )
+            success_status = status.HTTP_200_OK
+
+        serializer.is_valid(raise_exception=True)
+
+        # Save the instance first
+        instance = serializer.save()
+
+        logger.info(f"Handle file uploads for artifact {instance.id}")
+        # Handle file uploads
+        self.handle_file_uploads(instance, request.FILES, request.data)
+
+        # Save again to ensure all related objects are properly linked
+        instance.save()
+
+        return Response(
+            {"data": serializer.data},
+            status=success_status,
         )
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"status": "HTTP_OK", "data": serializer.data})
-        return Response({"status": "error", "data": serializer.errors})
+
+    def perform_create_or_update(self, serializer):
+        serializer.save()
+
+    def handle_file_uploads(self, instance, files, data):
+        # Handle thumbnail
+        thumbnail_data = files.get("new_thumbnail")
+        if thumbnail_data:
+            # Upload file
+            thumbnail_file = File(thumbnail_data, name=thumbnail_data.name)
+            # Create Thumbnail instance
+            thumbnail = Thumbnail.objects.create(path=thumbnail_file)
+            logger.info(f"Thumbnail created: {thumbnail.path}")
+            # Set the thumbnail
+            instance.id_thumbnail = thumbnail
+        else:
+            thumbnail_name = data.get("thumbnail", None)
+            if thumbnail_name:
+                thumbnail_path = os.path.join(settings.THUMBNAILS_ROOT, thumbnail_name)
+                thumbnail = Thumbnail.objects.get(path=thumbnail_path)
+                instance.id_thumbnail = thumbnail
+                logger.info(f"Thumbnail kept: {thumbnail.path}")
+            else:
+                instance.id_thumbnail = None
+                logger.info("Thumbnail removed")
+
+        # Handle model files
+        # New files
+        new_texture_file = files.get("model[new_texture]")
+        new_object_file = files.get("model[new_object]")
+        new_material_file = files.get("model[new_material]")
+
+        new_texture_instance, new_object_instance, new_material_instance = (
+            None,
+            None,
+            None,
+        )
+        if new_texture_file:
+            new_texture_instance = File(new_texture_file, name=new_texture_file.name)
+            logger.info(f"New texture file: {new_texture_instance}")
+        if new_object_file:
+            new_object_instance = File(new_object_file, name=new_object_file.name)
+            logger.info(f"New object file: {new_object_instance}")
+        if new_material_file:
+            new_material_instance = File(new_material_file, name=new_material_file.name)
+            logger.info(f"New material file: {new_material_instance}")
+
+        if new_texture_instance or new_object_instance or new_material_instance:
+            # Create Model instance
+            # It allows to create a new model with only the new files
+            model = Model.objects.create(
+                texture=(
+                    new_texture_instance
+                    if new_texture_instance
+                    else instance.id_model.texture
+                ),
+                object=(
+                    new_object_instance
+                    if new_object_instance
+                    else instance.id_model.object
+                ),
+                material=(
+                    new_material_instance
+                    if new_material_instance
+                    else instance.id_model.material
+                ),
+            )
+            logger.info(
+                f"Model created: {model.texture}, {model.object}, {model.material}"
+            )
+            # Set the model
+            instance.id_model = model
+
+        # Handle images
+        # Get the images that are already uploaded and should be kept, and the new images to be uploaded
+        # Old images are unlinked. This way we can set an empty list of images if we want to remove all images
+
+        # First we get the images linked to the artifact
+        old_images = Image.objects.filter(id_artifact=instance)
+        # We update them so they are not linked to the artifact anymore
+        for image in old_images:
+            image.id_artifact = None
+            image.save()
+            logger.info(f"Image unlinked: {image.path}")
+
+        # Now we recover the images that should be kept
+        keep_images = data.getlist(
+            "images", []
+        )  # images are paths from photos already uploaded
+        for image_name in keep_images:
+            # Update instances
+            image_path = os.path.join(settings.IMAGES_ROOT, image_name)
+            image = Image.objects.get(path=image_path)
+            image.id_artifact = instance
+            image.save()
+            logger.info(f"Image updated: {image.path}")
+
+        new_images = files.getlist(
+            "new_images", []
+        )  # new_images are files to be uploaded
+        for image_data in new_images:
+            image_file = File(image_data, name=image_data.name)
+            # Create Image instance
+            image = Image.objects.create(id_artifact=instance, path=image_file)
+            logger.info(f"Image created: {image.path}")
 
 
 class InstitutionAPIView(generics.ListCreateAPIView):

@@ -17,7 +17,7 @@ class Shape(models.Model):
     Shape model to store the shapes of the artifacts
     Name must be unique
     """
-    
+
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
 
@@ -88,7 +88,10 @@ class Artifact(models.Model):
         Thumbnail, on_delete=models.SET_NULL, null=True, related_name="artifact"
     )
     id_model = models.ForeignKey(
-        Model, on_delete=models.CASCADE, related_name="artifact", default=0
+        Model,
+        on_delete=models.CASCADE,
+        null=True,
+        related_name="artifact",
     )
     id_shape = models.ForeignKey(
         Shape, on_delete=models.SET_NULL, null=True, related_name="artifact"
@@ -96,7 +99,7 @@ class Artifact(models.Model):
     id_culture = models.ForeignKey(
         Culture, on_delete=models.SET_NULL, null=True, related_name="artifact"
     )
-    id_tags = models.ManyToManyField(Tag)
+    id_tags = models.ManyToManyField(Tag, blank=True, related_name="artifact")
 
 
 class TagsIds(models.Model):
@@ -153,10 +156,10 @@ class ShapeIds(models.Model):
         ]
 
 
-
 class Institution(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
+
 
 """
 class Solicitud(models.Model):

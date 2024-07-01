@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tag, Shape, Culture, Artifact
+from .models import Tag, Shape, Culture, Artifact, Model, Thumbnail, Image, Institution
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -30,3 +30,7 @@ admin.site.register(Tag, TagAdmin)
 admin.site.register(Shape, ShapeAdmin)
 admin.site.register(Culture, CultureAdmin)
 admin.site.register(Artifact, ArtifactAdmin)
+admin.site.register(Model)
+admin.site.register(Thumbnail)
+admin.site.register(Image)
+admin.site.register(Institution)
