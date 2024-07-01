@@ -9,11 +9,12 @@ from .serializers import (
     ShapeSerializer,
     TagSerializer,
     CultureSerializer,
+    RequesterSerializer
 )
-from .permissions import IsFuncionarioPermission 
-from .models import Artifact, Institution, Image, Shape, Tag, Culture
+from .permissions import IsFuncionarioPermission , IsAuthenticatedOrProvidesData
+from rest_framework.permissions import IsAuthenticated 
+from .models import Artifact, Institution, Image, Shape, Tag, Culture,Requester
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
 from django.db.models import Q
 import math
 import zipfile
@@ -54,7 +55,7 @@ class ArtifactCreateAPIView(generics.CreateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = NewArtifactSerializer
     lookup_field = "pk"
-    permission_classes = [IsFuncionarioPermission]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         serializer = NewArtifactSerializer(
@@ -70,14 +71,27 @@ class ArtifactDestroyAPIView(generics.DestroyAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
     lookup_field = "pk"
-    permission_classes = [IsFuncionarioPermission]
+    permission_classes = [IsAuthenticated]
 
-class ArtifactDownloadAPIView(generics.RetrieveAPIView):
+    
+class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
     lookup_field = "pk"
-    permission_classes = [IsFuncionarioPermission]
-
+    permission_classes = [IsAuthenticatedOrProvidesData]
+    
+    def post(self, request, *args, **kwargs):
+        requester = Requester.objects.create(
+        name=request.data.get("fullName"),
+        rut=request.data.get("rut"),
+        email=request.data.get("email"),
+        is_registered=False,
+        # institution=institution,  # 
+        artifact=Artifact.objects.get(pk=kwargs.get("pk"))
+    )
+        serializer = RequesterSerializer(requester)
+        return Response({"status": "HTTP_OK", "data": serializer.data})
+        
     def get(self, request, *args, **kwargs):
         pk = kwargs.get("pk")
         if pk is not None:
@@ -181,7 +195,7 @@ class ArtifactUpdateAPIView(generics.UpdateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = UpdateArtifactSerializer
     lookup_field = "pk"
-    permission_classes = [IsFuncionarioPermission]
+    permission_classes = [IsAuthenticated]
 
     def patch(self, request, *args, **kwargs):
         artifactModel_object = self.get_object()
@@ -207,3 +221,4 @@ class InstitutionDetailAPIView(generics.RetrieveAPIView):
     queryset = Institution.objects.all()
     serializer_class = InstitutionSerializer
     lookup_field = "pk"
+

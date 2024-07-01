@@ -9,12 +9,6 @@ User._meta.get_field('email')._unique = True
 User._meta.get_field('email').blank = False
 User._meta.get_field('email').null = False
 
-# class CustomUser(AbstractUser):
-#     email = models.EmailField('email address', unique=True, blank=False, null=False)
-
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = ['username']  
-
 
 class Shape(models.Model):
     """
@@ -161,6 +155,22 @@ class ShapeIds(models.Model):
 class Institution(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
+
+class Requester(models.Model):
+    """
+    Requester model to store the information of the users making requests
+    """
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=50)
+    rut = models.CharField(max_length=50)
+    email = models.EmailField()
+    is_registered = models.BooleanField(default=True)
+    # institution = models.ForeignKey(
+    #     Institution, on_delete=models.CASCADE, related_name="requesters"
+    # )
+    artifact = models.ForeignKey(
+        Artifact, on_delete=models.CASCADE, related_name="requesters"
+    )
 
 """
 class Solicitud(models.Model):

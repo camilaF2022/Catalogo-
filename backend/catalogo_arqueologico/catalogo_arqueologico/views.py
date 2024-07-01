@@ -10,7 +10,6 @@ from django.contrib.auth import get_user_model
 
 class LoginView(APIView):
     def post(self, request):
-        print(User)
         if 'email' not in self.request.data or 'password' not in self.request.data:
             return Response({"detail": "Faltan datos"}, 
                             status=status.HTTP_400_BAD_REQUEST)

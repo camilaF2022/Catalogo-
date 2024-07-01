@@ -2,11 +2,15 @@ import os
 from django.conf import settings
 from django.core.files import File
 from rest_framework import serializers
-from .models import Tag, Shape, Culture, Artifact, Model, Thumbnail, Image, Institution
+from .models import Tag, Shape, Culture, Artifact, Model, Thumbnail, Image, Institution,Requester
 import logging
 
 logger = logging.getLogger(__name__)
 
+class RequesterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Requester
+        fields = "__all__"
 
 class ShapeSerializer(serializers.ModelSerializer):
     class Meta:
