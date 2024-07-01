@@ -187,7 +187,6 @@ const RightBox = styled("div")(({ theme }) => ({
   paddingTop: theme.spacing(5),
   paddingBottom: theme.spacing(3),
   backgroundColor: "#fff",
-  height: theme.spacing(67),
   [theme.breakpoints.down("md")]: {
     width: theme.spacing(83),
     minWidth: theme.spacing(83),
@@ -196,6 +195,7 @@ const RightBox = styled("div")(({ theme }) => ({
     width: theme.spacing(104.5),
   },
   [theme.breakpoints.up("lg")]: {
+    height: theme.spacing(67),
     marginTop: theme.spacing(8),
     width: theme.spacing(28),
     gap: theme.spacing(1.7),
