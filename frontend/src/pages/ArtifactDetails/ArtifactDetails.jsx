@@ -71,9 +71,7 @@ const ArtifactDetails = () => {
         <ContainerGrid>
           <LeftBox>
             <CustomContainer>
-              <Typography variant="h3">
-                <b>{artifact.id}</b>
-              </Typography>
+              {artifact.id? <Typography variant="h3">Pieza {artifact.id}</Typography> : <div></div>}
               {loggedIn ? (
                 <HorizontalStack>
                   <Button variant="contained">Descargar Pieza</Button>
@@ -186,9 +184,10 @@ const LeftBox = styled("div")(({ theme }) => ({
 
 const RightBox = styled("div")(({ theme }) => ({
   padding: theme.spacing(1),
-  paddingTop: theme.spacing(3),
+  paddingTop: theme.spacing(5),
   paddingBottom: theme.spacing(3),
   backgroundColor: "#fff",
+  height: theme.spacing(67),
   [theme.breakpoints.down("md")]: {
     width: theme.spacing(83),
     minWidth: theme.spacing(83),
@@ -199,7 +198,6 @@ const RightBox = styled("div")(({ theme }) => ({
   [theme.breakpoints.up("lg")]: {
     marginTop: theme.spacing(8),
     width: theme.spacing(28),
-    height: theme.spacing(69),
     gap: theme.spacing(1.7),
   },
   [theme.breakpoints.up("xl")]: {
