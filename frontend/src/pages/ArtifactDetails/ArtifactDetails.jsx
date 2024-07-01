@@ -31,7 +31,7 @@ const ArtifactDetails = () => {
       tags: [],
       description: "",
     },
-    preview: "",
+    thumbnail: "",
     model: {
       object: "",
       material: "",

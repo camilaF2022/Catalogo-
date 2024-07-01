@@ -14,40 +14,22 @@ import CatalogPagination from "./components/CatalogPagination";
 import CatalogFilter from "./components/CatalogFilter";
 import { API_URLS } from "../../api";
 import { useToken } from "../../hooks/useToken";
-import { useSnackBars } from "../../hooks/useSnackbars";
+import useFetchItems from "../../hooks/useFetchItems";
 
 const Catalog = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useToken();
   const loggedIn = !!token;
-  const { addAlert } = useSnackBars();
 
-  const [loading, setLoading] = useState(true);
-  const [_, setErrors] = useState(false); // eslint-disable-line no-unused-vars
-
-  // Retrieved data from the API
-  const [artifactList, setArtifactList] = useState([]);
-
-  // Filtered artifacts
-  const [filteredArtifacts, setFilteredArtifacts] = useState([]);
-  // Sliced artifacts to display on the current page
-  const [artifactsToDisplay, setArtifactsToDisplay] = useState([]);
-
-  // Fetch data from the API
-  useEffect(() => {
-    fetch(API_URLS.ALL_ARTIFACTS)
-      .then((response) => response.json())
-      .then((response) => {
-        let artifacts = response.data;
-        setArtifactList(artifacts);
-      })
-      .catch((error) => {
-        setErrors(true);
-        addAlert(error.message);
-      })
-      .finally(() => setLoading(false));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const {
+    items: artifactList,
+    loading,
+    filter,
+    setFilter,
+    pagination,
+    setPagination,
+  } = useFetchItems(API_URLS.ALL_ARTIFACTS);
 
   const handleRedirect = () => {
     navigate("/catalog/new", { state: { from: location.pathname } });
@@ -56,10 +38,7 @@ const Catalog = () => {
   return (
     <Container>
       <CustomTypography variant="h1">Catálogo</CustomTypography>
-      <CatalogFilter
-        artifactList={artifactList}
-        setFilteredArtifacts={setFilteredArtifacts}
-      />
+      <CatalogFilter filter={filter} setFilter={setFilter} />
       {loggedIn && (
         <CustomBox>
           <Button
@@ -93,8 +72,8 @@ const Catalog = () => {
           </Grid>
 
           <CatalogPagination
-            items={filteredArtifacts}
-            setDisplayedItems={setArtifactsToDisplay}
+            pagination={pagination}
+            setPagination={setPagination}
           />
         </Box>
       ) : (

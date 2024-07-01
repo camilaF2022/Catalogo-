@@ -2,16 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Box, Pagination } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 
-const CatalogPagination = ({ items, setDisplayedItems }) => {
-  const itemsPerPage = 6; // Set the number of items per page
-  const totalItems = items.length; // Get the total number of items
-  const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate the total number of pages
+const CatalogPagination = ({ pagination, setPagination }) => {
+  const { currentPage, totalPages } = pagination;
 
-  const [currentPage, setCurrentPage] = useState(1); // Set the current page initially to 1
+  // Search params from the URL
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const startIndex = (currentPage - 1) * itemsPerPage; // Calculate the start index of the items to display
-  const endIndex = startIndex + itemsPerPage; // Calculate the end index of the items to display
-  const displayedItems = items.slice(startIndex, endIndex); // Get the items to display on the current page
+  // Avoid updating the URL when the component mounts and there are search params already
+  const [updateParamsFlag, setUpdateParamsFlag] = useState(false);
 
   const handlePageChange = (_, page) => {
     setPagination({ ...pagination, currentPage: page });

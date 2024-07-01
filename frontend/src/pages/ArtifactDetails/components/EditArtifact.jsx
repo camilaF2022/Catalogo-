@@ -65,9 +65,9 @@ const EditArtifact = () => {
         return response.json();
       })
       .then((response) => {
-        let { attributes, preview, model, images } = response;
+        let { attributes, thumbnail, model, images } = response;
         setUpdatedArtifact({
-          thumbnail: preview,
+          thumbnail: thumbnail,
           images: images,
           ...model,
           ...attributes,

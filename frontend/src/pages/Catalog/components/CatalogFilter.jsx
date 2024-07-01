@@ -14,7 +14,7 @@ import { useSearchParams } from "react-router-dom";
 import { API_URLS } from "../../../api";
 import { useSnackBars } from "../../../hooks/useSnackbars";
 
-const CatalogFilter = ({ artifactList, setFilteredArtifacts }) => {
+const CatalogFilter = ({ filter, setFilter }) => {
   const { addAlert } = useSnackBars();
   // Search params from the URL
   const [searchParams, setSearchParams] = useSearchParams();
@@ -59,12 +59,15 @@ const CatalogFilter = ({ artifactList, setFilteredArtifacts }) => {
         let metadata = response.data;
 
         let shapes = metadata.shapes;
+        let shapesNames = shapes.map((shape) => shape.value);
         let cultures = metadata.cultures;
+        let culturesNames = cultures.map((culture) => culture.value);
         let tags = metadata.tags;
+        let tagsNames = tags.map((tag) => tag.value);
 
-        setShapeOptions(shapes);
-        setCultureOptions(cultures);
-        setTagOptions(tags);
+        setShapeOptions(shapesNames);
+        setCultureOptions(culturesNames);
+        setTagOptions(tagsNames);
       })
       .catch((error) => {
         setErrors(true);
@@ -72,64 +75,6 @@ const CatalogFilter = ({ artifactList, setFilteredArtifacts }) => {
       })
       .finally(() => setLoading(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Filter artifacts based on the filter state
-  useEffect(() => {
-    let filtered = artifactList.filter((artifact) => {
-      const {
-        shape: artifactShape,
-        culture: artifactCulture,
-        tags: artifactTags,
-        description: artifactDescription,
-      } = artifact.attributes;
-      const artifactTagsInLowerCase = artifactTags.map((tag) =>
-        tag.value.toLowerCase()
-      );
-
-      const {
-        query,
-        shape: filterShape,
-        culture: filterCulture,
-        tags: filterTags,
-      } = filter;
-
-      const filterTagsInLowerCase = filterTags.map((tag) => tag.toLowerCase());
-
-      if (
-        query &&
-        !artifactDescription.toLowerCase().includes(query.toLowerCase()) &&
-        !query.includes(String(artifact.id))
-      ) {
-        return false;
-      }
-
-      if (
-        filterShape &&
-        artifactShape.value.toLowerCase() !== filterShape.toLowerCase()
-      ) {
-        return false;
-      }
-
-      if (
-        filterCulture &&
-        artifactCulture.value.toLowerCase() !== filterCulture.toLowerCase()
-      ) {
-        return false;
-      }
-
-      if (
-        filterTagsInLowerCase.length > 0 &&
-        !filterTagsInLowerCase.every((tagInFilter) =>
-          artifactTagsInLowerCase.includes(tagInFilter)
-        )
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-    setFilteredArtifacts(filtered);
-  }, [filter, artifactList]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update the URL search params when the user applies a filter
   useEffect(() => {
@@ -201,7 +146,7 @@ const CatalogFilter = ({ artifactList, setFilteredArtifacts }) => {
             handleFilterChange("shape", value.target.textContent)
           }
           options={shapeOptions}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => option ?? ""}
           noOptionsText="No hay formas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (
@@ -222,7 +167,7 @@ const CatalogFilter = ({ artifactList, setFilteredArtifacts }) => {
             handleFilterChange("culture", value.target.textContent)
           }
           options={cultureOptions}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => option ?? ""}
           noOptionsText="No hay culturas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (
@@ -248,7 +193,7 @@ const CatalogFilter = ({ artifactList, setFilteredArtifacts }) => {
             )
           }
           options={tagOptions}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => option ?? ""}
           noOptionsText="No hay etiquetas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (

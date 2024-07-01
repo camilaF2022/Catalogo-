@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useSnackBars from "./useSnackbars";
+import { useSnackBars } from "./useSnackbars";
 
 const useFetchItems = (baseUrl) => {
   const { addAlert } = useSnackBars();

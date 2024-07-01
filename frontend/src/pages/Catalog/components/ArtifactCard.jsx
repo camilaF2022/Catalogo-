@@ -13,7 +13,7 @@ import { styled } from "@mui/material/styles";
 
 const ArtifactCard = ({ artifact }) => {
   const navigate = useNavigate();
-  const { id, attributes, preview: previewPath } = artifact;
+  const { id, attributes, thumbnail: previewPath } = artifact;
   const { shape, tags, culture, description } = attributes;
 
   const flattenTags = tags.map((tag) => tag.value).join(", ");
