@@ -1,7 +1,27 @@
 from django.contrib import admin
-from .models import Tag, Shape, Culture, Artifact
+from django.contrib.auth.admin import UserAdmin 
+from .models import Tag, Shape, Culture, Artifact, CustomUser
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django.forms import ModelForm
+    
+   
 
-
+class CustomUserAdmin(UserAdmin):
+    list_display = (  "email","username", "first_name","last_name","is_staff","is_superuser")
+    list_filter = ("is_staff", "is_superuser", "is_active", "groups")
+    search_fields = ("username", "email")
+    ordering = ("email",)
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("email", "username","password1", "password2"),
+            },
+        ),
+    )
+    
 class TagAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
     list_filter = ("name",)
@@ -26,6 +46,8 @@ class ArtifactAdmin(admin.ModelAdmin):
     search_fields = ("description",)
 
 
+
+admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Shape, ShapeAdmin)
 admin.site.register(Culture, CultureAdmin)

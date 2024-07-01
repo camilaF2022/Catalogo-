@@ -1,17 +1,16 @@
 from django.db import models
 from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
 from django.conf import settings
 
-
-class CustomStorage(FileSystemStorage):
-    def get_available_name(self, name, max_length=None):
-        if self.exists(name):
-            self.delete(name)
-        return name
+class CustomUser(AbstractUser):
+    email = models.EmailField('email address', unique=True, blank=False, null=False)
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']  
 
 
-# Create your models here.
 class Shape(models.Model):
     """
     Shape model to store the shapes of the artifacts
