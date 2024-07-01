@@ -10,6 +10,7 @@ from .serializers import (
     TagSerializer,
     CultureSerializer,
 )
+from .permissions import IsFuncionarioPermission 
 from .models import Artifact, Institution, Image, Shape, Tag, Culture
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -23,8 +24,7 @@ from io import BytesIO
 class ArtifactDetailAPIView(generics.RetrieveAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
-
-
+    
 class MetadataListAPIView(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         shapes = Shape.objects.all()
@@ -54,6 +54,7 @@ class ArtifactCreateAPIView(generics.CreateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = NewArtifactSerializer
     lookup_field = "pk"
+    permission_classes = [IsFuncionarioPermission]
 
     def post(self, request, *args, **kwargs):
         serializer = NewArtifactSerializer(
@@ -69,12 +70,13 @@ class ArtifactDestroyAPIView(generics.DestroyAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
     lookup_field = "pk"
-
+    permission_classes = [IsFuncionarioPermission]
 
 class ArtifactDownloadAPIView(generics.RetrieveAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
     lookup_field = "pk"
+    permission_classes = [IsFuncionarioPermission]
 
     def get(self, request, *args, **kwargs):
         pk = kwargs.get("pk")
@@ -135,7 +137,7 @@ class CustomPageNumberPagination(PageNumberPagination):
 class CatalogAPIView(generics.ListAPIView):
     serializer_class = CatalogSerializer
     pagination_class = CustomPageNumberPagination
-
+    
     def get_queryset(self):
         queryset = Artifact.objects.all()
 
@@ -179,6 +181,7 @@ class ArtifactUpdateAPIView(generics.UpdateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = UpdateArtifactSerializer
     lookup_field = "pk"
+    permission_classes = [IsFuncionarioPermission]
 
     def patch(self, request, *args, **kwargs):
         artifactModel_object = self.get_object()

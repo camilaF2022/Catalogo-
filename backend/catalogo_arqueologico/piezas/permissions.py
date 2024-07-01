@@ -12,8 +12,6 @@ class  IsFuncionarioPermission(permissions.DjangoModelPermissions):
     }
 
     def has_permission(self, request, view):
-        print(request.user.get_all_permissions())
         if not request.user.is_staff:
-            print("No es staff")
             return False
         return super().has_permission(request, view)
