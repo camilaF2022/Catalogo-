@@ -6,6 +6,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Stack, Paper, InputLabel, Select } from "@mui/material";
 import { useSnackBars } from "../../../hooks/useSnackbars";
+import { API_URLS } from "../../../api";
 
 const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
   const { addAlert } = useSnackBars();
@@ -24,50 +25,22 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
       [name]: value,
     });
   };
-
-  const downloadFile = (resourceBlob, downloadName) => {
-    const url = URL.createObjectURL(resourceBlob);
-    var link = document.createElement("a");
-    link.href = url;
-    link.download = downloadName;
-    link.click();
-    link.remove();
-  };
-
-  const handleDownload = () => {
-    // metadata
-    const jsonObj = {
-      attributes: artifactInfo.attributes,
-    };
-    const jsonStr = JSON.stringify(jsonObj);
-    const jsonBlob = new Blob([jsonStr], { type: "application/json" });
-    downloadFile(jsonBlob, "metadata.json");
-
-    // model
-    fetch(artifactInfo.model.object)
-      .then((response) => response.blob())
-      .then((response) =>
-        downloadFile(response, artifactInfo.model.object.split("/").pop())
-      );
-    fetch(artifactInfo.model.material)
-      .then((response) => response.blob())
-      .then((response) =>
-        downloadFile(response, artifactInfo.model.material.split("/").pop())
-      );
-
-    fetch(artifactInfo.model.texture)
-      .then((response) => response.blob())
-      .then((response) =>
-        downloadFile(response, artifactInfo.model.texture.split("/").pop())
-      );
-
-    //images
-    artifactInfo.images.map((image, index) => {
-      fetch(image)
-        .then((response) => response.blob())
-        .then((response) => downloadFile(response, image.split("/").pop()));
-      return null;
-    });
+  
+  const handleDownload = () => {    
+    fetch(API_URLS.DETAILED_ARTIFACT + "/" + artifactInfo.id + "/download")
+      .then((response) => {
+        response.blob().then((blob) => {
+          const url = window.URL.createObjectURL(new Blob([blob]));
+          const link = document.createElement("a");
+          link.href=url;
+          link.download= `artifact_${artifactInfo.id}.zip` 
+          link.click()
+          link.remove()
+        }
+      )})
+      .catch((error) => {
+        console.error("Error downloading artifact:", error);
+      });
   };
 
   const handleSubmit = async (e) => {
