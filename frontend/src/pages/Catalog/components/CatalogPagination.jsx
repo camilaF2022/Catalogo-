@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Pagination } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 
-const CustomPagination = ({ pagination, setPagination }) => {
+const CatalogPagination = ({ pagination, setPagination }) => {
   const { currentPage, totalPages } = pagination;
 
   // Search params from the URL
@@ -45,4 +45,4 @@ const CustomPagination = ({ pagination, setPagination }) => {
   );
 };
 
-export default CustomPagination;
+export default CatalogPagination;

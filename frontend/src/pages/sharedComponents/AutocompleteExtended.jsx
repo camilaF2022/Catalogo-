@@ -10,6 +10,7 @@ const AutocompleteExtended = ({
   options = [],
   placeholder,
   isRequired,
+  allowCreation = false,
   ...props
 }) => {
   const [inputValue, setInputValue] = useState("");
@@ -34,15 +35,24 @@ const AutocompleteExtended = ({
         .includes(inputValue)
     : true;
 
-  const createOption = optionAvailable ? (
-    <NewOption component="li" key={inputValue} onClick={handleCreateNewOption}>
-      Crear "{inputValue}"
-    </NewOption>
-  ) : (
-    <NewOption component="li" key={inputValue} disabled>
-      "{inputValue}" ya existe
-    </NewOption>
-  );
+  const createOption =
+    allowCreation && optionAvailable ? (
+      <NewOption
+        component="li"
+        key={inputValue}
+        onClick={handleCreateNewOption}
+      >
+        Crear "{inputValue}"
+      </NewOption>
+    ) : !optionAvailable ? (
+      <NewOption component="li" key={inputValue} disabled>
+        "{inputValue}" ya existe
+      </NewOption>
+    ) : (
+      <NewOption component="li" key={inputValue} disabled>
+        "{inputValue}" no encontrado
+      </NewOption>
+    );
 
   return (
     <Autocomplete
@@ -56,6 +66,7 @@ const AutocompleteExtended = ({
       onChange={(e, value, reason) => {
         if (value == null) {
           setValue(name, { id: "", value: "" });
+          return;
         }
         setValue(name, value);
         setOpenMenu(false);
@@ -65,6 +76,7 @@ const AutocompleteExtended = ({
       noOptionsText={createOption}
       renderInput={(params) => (
         <TextField
+          key={name}
           {...params}
           label={label}
           required={isRequired}
@@ -75,6 +87,7 @@ const AutocompleteExtended = ({
         selectedOptions.map((option, index) => (
           <Chip
             {...getTagProps({ index })}
+            key={index}
             label={option.value}
             sx={(theme) => ({
               backgroundColor: options

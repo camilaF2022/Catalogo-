@@ -19,11 +19,10 @@ import zipfile
 from django.http import HttpResponse, FileResponse
 from io import BytesIO
 
+
 class ArtifactDetailAPIView(generics.RetrieveAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
-
-    
 
 
 class MetadataListAPIView(generics.ListAPIView):
@@ -37,14 +36,18 @@ class MetadataListAPIView(generics.ListAPIView):
         tag_serializer = TagSerializer(tags, many=True)
         culture_serializer = CultureSerializer(cultures, many=True)
 
-        # Combine the data
+        # Function to change 'name' key to 'value'
+        def rename_key(lst):
+            return [{"id": item["id"], "value": item["name"]} for item in lst]
+
+        # Combine the data with 'name' key changed to 'value'
         data = {
-            "shapes": shape_serializer.data,
-            "tags": tag_serializer.data,
-            "cultures": culture_serializer.data,
+            "shapes": rename_key(shape_serializer.data),
+            "tags": rename_key(tag_serializer.data),
+            "cultures": rename_key(culture_serializer.data),
         }
 
-        return Response({"status":"HTTP_OK","data":data})
+        return Response({"status": "HTTP_OK", "data": data})
 
 
 class ArtifactCreateAPIView(generics.CreateAPIView):
@@ -74,36 +77,44 @@ class ArtifactDownloadAPIView(generics.RetrieveAPIView):
     lookup_field = "pk"
 
     def get(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
+        pk = kwargs.get("pk")
         if pk is not None:
             try:
                 artifact = Artifact.objects.get(pk=pk)
             except Artifact.DoesNotExist:
                 return HttpResponse(status=404)
-                
-                
+
             buffer = BytesIO()
 
-            with zipfile.ZipFile(buffer, 'w') as zipf:
+            with zipfile.ZipFile(buffer, "w") as zipf:
                 if artifact.id_thumbnail:
-                    zipf.write(artifact.id_thumbnail.path.path, f'thumbnail/{artifact.id_thumbnail.path}')
-                
-                zipf.write(artifact.id_model.texture.path, f'model/{artifact.id_model.texture.name}')
-                zipf.write(artifact.id_model.object.path, f'model/{artifact.id_model.object.name}')
-                zipf.write(artifact.id_model.material.path, f'model/{artifact.id_model.material.name}')
-                    
+                    zipf.write(
+                        artifact.id_thumbnail.path.path,
+                        f"thumbnail/{artifact.id_thumbnail.path}",
+                    )
+
+                zipf.write(
+                    artifact.id_model.texture.path,
+                    f"model/{artifact.id_model.texture.name}",
+                )
+                zipf.write(
+                    artifact.id_model.object.path,
+                    f"model/{artifact.id_model.object.name}",
+                )
+                zipf.write(
+                    artifact.id_model.material.path,
+                    f"model/{artifact.id_model.material.name}",
+                )
+
                 images = Image.objects.filter(id_artifact=artifact.id)
                 for image in images:
-                    zipf.write(image.path.path, f'model/{image.path}' )
-                
+                    zipf.write(image.path.path, f"model/{image.path}")
+
             buffer.seek(0)
 
-            response = HttpResponse(buffer, content_type='application/zip')
-            response['Content-Disposition'] = f'attachment; filename=artifact_{pk}.zip'
+            response = HttpResponse(buffer, content_type="application/zip")
+            response["Content-Disposition"] = f"attachment; filename=artifact_{pk}.zip"
             return response
-            
-                
-            
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -158,7 +169,7 @@ class CatalogAPIView(generics.ListAPIView):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             page_data = self.get_paginated_response(serializer.data).data
-            return Response({**{"status":"HTTP_OK"},**page_data})
+            return Response({**{"status": "HTTP_OK"}, **page_data})
 
         serializer = self.get_serializer(queryset, many=True)
         return Response({"status": "HTTP_OK", "data": serializer.data})

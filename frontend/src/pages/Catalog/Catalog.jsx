@@ -10,14 +10,17 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ArtifactCard from "./components/ArtifactCard";
-import CustomPagination from "./components/CustomPagination";
-import CustomFilter from "./components/CustomFilter";
+import CatalogPagination from "./components/CatalogPagination";
+import CatalogFilter from "./components/CatalogFilter";
 import { API_URLS } from "../../api";
+import { useToken } from "../../hooks/useToken";
 import useFetchItems from "../../hooks/useFetchItems";
 
-const Gallery = ({ loggedIn }) => {
+const Catalog = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { token } = useToken();
+  const loggedIn = !!token;
 
   const {
     items: artifactList,
@@ -29,13 +32,13 @@ const Gallery = ({ loggedIn }) => {
   } = useFetchItems(API_URLS.ALL_ARTIFACTS);
 
   const handleRedirect = () => {
-    navigate("/catalog/new", { state: { from: location.pathname } });
+    navigate("/catalog/new", { state: { from: location } });
   };
 
   return (
     <Container>
       <CustomTypography variant="h1">Catálogo</CustomTypography>
-      <CustomFilter filter={filter} setFilter={setFilter} />
+      <CatalogFilter filter={filter} setFilter={setFilter} />
       {loggedIn && (
         <CustomBox>
           <Button
@@ -44,7 +47,7 @@ const Gallery = ({ loggedIn }) => {
             size="large"
             onClick={handleRedirect}
           >
-            Agregar objeto
+            Agregar pieza
           </Button>
         </CustomBox>
       )}
@@ -68,7 +71,7 @@ const Gallery = ({ loggedIn }) => {
             ))}
           </Grid>
 
-          <CustomPagination
+          <CatalogPagination
             pagination={pagination}
             setPagination={setPagination}
           />
@@ -99,4 +102,4 @@ const CustomBox = styled(Grid)(({ theme }) => ({
   marginBottom: theme.spacing(3),
 }));
 
-export default Gallery;
+export default Catalog;

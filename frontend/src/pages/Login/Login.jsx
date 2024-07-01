@@ -6,16 +6,17 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Stack } from "@mui/material";
+import { useToken } from "../../hooks/useToken";
 
-const Login = ({ setToken }) => {
+const Login = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setToken } = useToken();
 
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
   });
-
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;

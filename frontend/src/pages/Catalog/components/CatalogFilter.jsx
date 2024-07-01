@@ -11,10 +11,10 @@ import SearchIcon from "@mui/icons-material/Search";
 import Clear from "@mui/icons-material/Clear";
 import { styled } from "@mui/system";
 import { useSearchParams } from "react-router-dom";
-import useSnackBars from "../../../hooks/useSnackbars";
 import { API_URLS } from "../../../api";
+import { useSnackBars } from "../../../hooks/useSnackbars";
 
-const CustomFilter = ({ filter, setFilter }) => {
+const CatalogFilter = ({ filter, setFilter }) => {
   const { addAlert } = useSnackBars();
   // Search params from the URL
   const [searchParams, setSearchParams] = useSearchParams();
@@ -53,26 +53,21 @@ const CustomFilter = ({ filter, setFilter }) => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch(API_URLS.DEPRECATED_ALL_ARTIFACTS)
+    fetch(API_URLS.ALL_METADATA)
       .then((response) => response.json())
       .then((response) => {
-        let artifacts = response.data;
+        let metadata = response.data;
 
-        let shapes = new Set();
-        let cultures = new Set();
-        let tags = new Set();
+        let shapes = metadata.shapes;
+        let shapesNames = shapes.map((shape) => shape.value);
+        let cultures = metadata.cultures;
+        let culturesNames = cultures.map((culture) => culture.value);
+        let tags = metadata.tags;
+        let tagsNames = tags.map((tag) => tag.value);
 
-        artifacts.forEach((artifact) => {
-          let { attributes } = artifact;
-          let { shape, culture, tags: artifactTags } = attributes;
-          shapes.add(JSON.stringify(shape.value));
-          cultures.add(JSON.stringify(culture.value));
-          artifactTags.forEach((tag) => tags.add(JSON.stringify(tag.value)));
-        });
-
-        setShapeOptions(Array.from(shapes).map(JSON.parse));
-        setCultureOptions(Array.from(cultures).map(JSON.parse));
-        setTagOptions(Array.from(tags).map(JSON.parse));
+        setShapeOptions(shapesNames);
+        setCultureOptions(culturesNames);
+        setTagOptions(tagsNames);
       })
       .catch((error) => {
         setErrors(true);
@@ -151,7 +146,7 @@ const CustomFilter = ({ filter, setFilter }) => {
             handleFilterChange("shape", value.target.textContent)
           }
           options={shapeOptions}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => option ?? ""}
           noOptionsText="No hay formas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (
@@ -172,7 +167,7 @@ const CustomFilter = ({ filter, setFilter }) => {
             handleFilterChange("culture", value.target.textContent)
           }
           options={cultureOptions}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => option ?? ""}
           noOptionsText="No hay culturas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (
@@ -198,7 +193,7 @@ const CustomFilter = ({ filter, setFilter }) => {
             )
           }
           options={tagOptions}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => option ?? ""}
           noOptionsText="No hay etiquetas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (
@@ -229,4 +224,4 @@ const CustomStack = styled(Stack)(({ theme }) => ({
   columnGap: theme.spacing(2),
 }));
 
-export default CustomFilter;
+export default CatalogFilter;

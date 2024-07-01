@@ -5,9 +5,9 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Stack, Paper, InputLabel, Select } from "@mui/material";
-import useSnackBars from "../../../hooks/useSnackbars";
+import { useSnackBars } from "../../../hooks/useSnackbars";
 
-const DownloadForm = ({ pieceInfo, handleClose }) => {
+const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
   const { addAlert } = useSnackBars();
   const [formValues, setFormValues] = useState({
     fullName: "",
@@ -32,39 +32,42 @@ const DownloadForm = ({ pieceInfo, handleClose }) => {
     link.download = downloadName;
     link.click();
     link.remove();
-  }
+  };
 
   const handleDownload = () => {
     // metadata
     const jsonObj = {
-      attributes: pieceInfo.attributes,
+      attributes: artifactInfo.attributes,
     };
     const jsonStr = JSON.stringify(jsonObj);
     const jsonBlob = new Blob([jsonStr], { type: "application/json" });
     downloadFile(jsonBlob, "metadata.json");
 
     // model
-    fetch(pieceInfo.model.object)
-      .then((response) => response.blob()).then((response) =>
-        downloadFile(response, pieceInfo.model.object.split("/").pop())
-      )
-    fetch(pieceInfo.model.material)
+    fetch(artifactInfo.model.object)
       .then((response) => response.blob())
-      .then((response) => downloadFile(response, pieceInfo.model.material.split("/").pop()));
+      .then((response) =>
+        downloadFile(response, artifactInfo.model.object.split("/").pop())
+      );
+    fetch(artifactInfo.model.material)
+      .then((response) => response.blob())
+      .then((response) =>
+        downloadFile(response, artifactInfo.model.material.split("/").pop())
+      );
 
-    fetch(pieceInfo.model.texture)
+    fetch(artifactInfo.model.texture)
       .then((response) => response.blob())
-      .then((response) => downloadFile(response, pieceInfo.model.texture.split("/").pop()));
+      .then((response) =>
+        downloadFile(response, artifactInfo.model.texture.split("/").pop())
+      );
 
     //images
-    pieceInfo.images.map((image, index) => {
-      fetch(image).then((response) => response.blob())
-        .then((response) =>
-          downloadFile(response, image.split("/").pop())
-        )
+    artifactInfo.images.map((image, index) => {
+      fetch(image)
+        .then((response) => response.blob())
+        .then((response) => downloadFile(response, image.split("/").pop()));
       return null;
     });
-
   };
 
   const handleSubmit = async (e) => {
@@ -155,11 +158,20 @@ const DownloadForm = ({ pieceInfo, handleClose }) => {
             />
           </Stack>
           <OptionBox>
-            <CustomButton variant="outlined" color="primary" onClick={handleClose}>
+            <CustomButton
+              variant="outlined"
+              color="primary"
+              onClick={handleClose}
+            >
               Cancelar
             </CustomButton>
 
-            <CustomButton variant="contained" color="primary" type="submit" onClick={handleSubmit}>
+            <CustomButton
+              variant="contained"
+              color="primary"
+              type="submit"
+              onClick={handleSubmit}
+            >
               Enviar
             </CustomButton>
           </OptionBox>
@@ -199,4 +211,4 @@ const OptionBox = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
   gap: theme.spacing(2),
 }));
-export default DownloadForm;
+export default DownloadArtifactForm;
