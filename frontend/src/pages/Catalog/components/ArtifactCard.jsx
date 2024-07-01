@@ -62,7 +62,7 @@ const ArtifactCard = ({ artifact }) => {
               overflow={"hidden"}
               textOverflow={"ellipsis"}
             >
-              Etiquetas: {slicedTags}
+              {slicedTags ? `Etiquetas: ${slicedTags}` : "Sin etiquetas"}
             </Typography>
           </EllipsisBox>
         </Tooltip>

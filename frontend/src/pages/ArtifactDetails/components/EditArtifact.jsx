@@ -72,13 +72,17 @@ const EditArtifact = () => {
           ...model,
           ...attributes,
         });
-      })
-      .catch((error) => console.error(error));
+      });
   }, [artifactId]);
 
   useEffect(() => {
     fetch(API_URLS.ALL_METADATA)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.detail);
+        }
+        return response.json();
+      })
       .then((response) => {
         let metadata = response.data;
 
@@ -92,7 +96,7 @@ const EditArtifact = () => {
       })
       .catch((error) => {
         setErrors(true);
-        addAlert(error.message);
+        addAlert("Error al cargar los metadatos");
       })
       .finally(() => setLoading(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -102,38 +106,53 @@ const EditArtifact = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Partial update of the artifact
     const formData = new FormData();
-    formData.append(`model[object]`, updatedArtifact.object);
-    formData.append(`model[texture]`, updatedArtifact.texture);
-    formData.append(`model[material]`, updatedArtifact.material);
-    formData.append(`thumbnail`, updatedArtifact.thumbnail);
-    // New images are files, but old images are URLs
+    // For new files, we send the file itself with key "new_<name>"
+    if (updatedArtifact.object instanceof File) {
+      formData.append("model[new_object]", updatedArtifact.object);
+    }
+    if (updatedArtifact.texture instanceof File) {
+      formData.append("model[new_texture]", updatedArtifact.texture);
+    }
+    if (updatedArtifact.material instanceof File) {
+      formData.append("model[new_material]", updatedArtifact.material);
+    }
+    // For thumbnail and images we do the same but if they are not new files, we send their name with key "<name>", otherwise the backend will set them to null
+    if (updatedArtifact.thumbnail instanceof File) {
+      formData.append("new_thumbnail", updatedArtifact.thumbnail);
+    } else if (typeof updatedArtifact.thumbnail === "string") {
+      formData.append("thumbnail", updatedArtifact.thumbnail.split("/").pop());
+    }
     updatedArtifact.images.forEach((image) => {
       if (image instanceof File) {
         formData.append("new_images", image);
-      } else if (
-        typeof image === "string" &&
-        image.includes("/media/images/")
-      ) {
-        formData.append("images", image);
+      } else if (typeof image === "string") {
+        formData.append("images", image.split("/").pop());
       }
     });
     formData.append("description", updatedArtifact.description);
     formData.append("id_shape", updatedArtifact.shape.id);
     formData.append("id_culture", updatedArtifact.culture.id);
+    // If the updated list of tags is empty, we don't send anything
     updatedArtifact.tags.forEach((tag) => formData.append("id_tags", tag.id));
 
     await fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}/update`, {
       method: "POST",
       body: formData,
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.detail);
+        }
+        return response.json();
+      })
       .then((response) => {
         addAlert("¡Objeto editado con éxito!");
         navigate(`/catalog/${artifactId}`);
       })
       .catch((error) => {
-        addAlert(error.message);
+        addAlert("Error al editar el objeto");
       });
   };
 

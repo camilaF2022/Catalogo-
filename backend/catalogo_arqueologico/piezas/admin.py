@@ -1,6 +1,6 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin 
-from .models import Tag, Shape, Culture, Artifact
+from django.contrib.auth.admin import UserAdmin
+from .models import Tag, Shape, Culture, Artifact, Model, Thumbnail, Image, Institution
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ModelForm
@@ -21,6 +21,7 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
+    
     
 class TagAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
@@ -53,3 +54,7 @@ admin.site.register(Tag, TagAdmin)
 admin.site.register(Shape, ShapeAdmin)
 admin.site.register(Culture, CultureAdmin)
 admin.site.register(Artifact, ArtifactAdmin)
+admin.site.register(Model)
+admin.site.register(Thumbnail)
+admin.site.register(Image)
+admin.site.register(Institution)

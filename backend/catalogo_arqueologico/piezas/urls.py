@@ -6,9 +6,9 @@ from piezas import views
 urlpatterns = [
     path('docs/', include_docs_urls(title="Metadata API")),
     path('artifacts/', views.CatalogAPIView.as_view()),
-    path('artifact/upload', views.ArtifactCreateAPIView.as_view()),
+    path('artifact/upload', views.ArtifactCreateUpdateAPIView.as_view()),
     path('artifact/<int:pk>/', views.ArtifactDetailAPIView.as_view()),
-    path('artifact/<int:pk>/update', views.ArtifactUpdateAPIView.as_view()),
+    path('artifact/<int:pk>/update', views.ArtifactCreateUpdateAPIView.as_view()),
     path('artifact/<int:pk>/delete', views.ArtifactDestroyAPIView.as_view()),
     path('metadata/', views.MetadataListAPIView.as_view()),
     path('allinstitutions/', views.InstitutionAPIView.as_view()),

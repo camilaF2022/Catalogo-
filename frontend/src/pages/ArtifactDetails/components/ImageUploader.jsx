@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Grid, IconButton, Button, Box, FormLabel } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -13,12 +13,16 @@ const ImageUploader = ({
   allowedImageTypes,
 }) => {
   const { addAlert } = useSnackBars();
-  const imageURLs = images.map((fileOrUrlString) => {
-    if (fileOrUrlString instanceof File) {
-      return URL.createObjectURL(fileOrUrlString);
-    }
-    return fileOrUrlString;
-  });
+  const imageURLs = useMemo(
+    () =>
+      images.map((fileOrUrlString) => {
+        if (fileOrUrlString instanceof File) {
+          return URL.createObjectURL(fileOrUrlString);
+        }
+        return fileOrUrlString;
+      }),
+    [images]
+  );
 
   const allowedTypesLabel = allowedImageTypes.join(", ");
 

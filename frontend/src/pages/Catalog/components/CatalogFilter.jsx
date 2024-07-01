@@ -54,7 +54,12 @@ const CatalogFilter = ({ filter, setFilter }) => {
   // Fetch data from the API
   useEffect(() => {
     fetch(API_URLS.ALL_METADATA)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.detail);
+        }
+        return response.json();
+      })
       .then((response) => {
         let metadata = response.data;
 
@@ -71,7 +76,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
       })
       .catch((error) => {
         setErrors(true);
-        addAlert(error.message);
+        addAlert("Error al cargar los metadatos");
       })
       .finally(() => setLoading(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

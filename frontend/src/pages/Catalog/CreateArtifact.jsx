@@ -58,7 +58,12 @@ const CreateArtifact = () => {
   // Fetch data from the API
   useEffect(() => {
     fetch(API_URLS.ALL_METADATA)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.detail);
+        }
+        return response.json();
+      })
       .then((response) => {
         let metadata = response.data;
 
@@ -72,7 +77,7 @@ const CreateArtifact = () => {
       })
       .catch((error) => {
         setErrors(true);
-        addAlert(error.message);
+        addAlert("Error al cargar los metadatos");
       })
       .finally(() => setLoading(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -84,12 +89,12 @@ const CreateArtifact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append(`model[object]`, newObjectAttributes.object);
-    formData.append(`model[texture]`, newObjectAttributes.texture);
-    formData.append(`model[material]`, newObjectAttributes.material);
-    formData.append(`thumbnail`, newObjectAttributes.thumbnail);
+    formData.append(`model[new_object]`, newObjectAttributes.object);
+    formData.append(`model[new_texture]`, newObjectAttributes.texture);
+    formData.append(`model[new_material]`, newObjectAttributes.material);
+    formData.append(`new_thumbnail`, newObjectAttributes.thumbnail);
     newObjectAttributes.images.forEach((image) =>
-      formData.append("images", image)
+      formData.append("new_images", image)
     );
     formData.append("description", newObjectAttributes.description);
     formData.append("id_shape", newObjectAttributes.shape.id);
@@ -102,7 +107,12 @@ const CreateArtifact = () => {
       method: "POST",
       body: formData,
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.detail);
+        }
+        return response.json();
+      })
       .then((response) => {
         const successfully_response = response.data;
         const newArtifactId = successfully_response.id;
@@ -110,7 +120,7 @@ const CreateArtifact = () => {
         navigate(`/catalog/${newArtifactId}`);
       })
       .catch((error) => {
-        addAlert(error.message);
+        addAlert("Error al crear el objeto");
       });
   };
 
