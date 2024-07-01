@@ -32,7 +32,7 @@ const Catalog = () => {
   } = useFetchItems(API_URLS.ALL_ARTIFACTS);
 
   const handleRedirect = () => {
-    navigate("/catalog/new", { state: { from: location.pathname } });
+    navigate("/catalog/new", { state: { from: location } });
   };
 
   return (

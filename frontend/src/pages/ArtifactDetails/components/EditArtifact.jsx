@@ -45,7 +45,7 @@ const EditArtifact = () => {
 
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState(false);
-  const returnToDetails = !!location.state?.from;
+  const goBack = !!location.state?.from;
 
   // Retrieved data from the API
   const [shapeOptions, setShapeOptions] = useState([]);
@@ -148,8 +148,8 @@ const EditArtifact = () => {
   };
 
   const handleCancel = () => {
-    const from = location.state?.from || `/catalog`;
-    navigate(from, { replace: true });
+    const from = goBack ? location.state.from : `/catalog`;
+    navigate(from, { replace: goBack });
   };
 
   return (
@@ -190,7 +190,9 @@ const EditArtifact = () => {
                     label="Miniatura (opcional)"
                     name="thumbnail"
                     setStateFn={setUpdatedArtifact}
-                    initialFilename={getFileNameOrUrl(updatedArtifact.thumbnail)}
+                    initialFilename={getFileNameOrUrl(
+                      updatedArtifact.thumbnail
+                    )}
                   />
                   <ImageUploader
                     label="Imágenes (opcional)"
@@ -259,7 +261,7 @@ const EditArtifact = () => {
               </Grid>
               <Grid container justifyContent="flex-end" columnGap={2}>
                 <Button variant="text" color="secondary" onClick={handleCancel}>
-                  {returnToDetails ? "Cancelar" : "Volver al catálogo"}
+                  {goBack ? "Cancelar" : "Volver al catálogo"}
                 </Button>
                 <Button variant="contained" color="primary" type="submit">
                   Actualizar

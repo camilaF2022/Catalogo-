@@ -42,7 +42,7 @@ const ArtifactDetails = () => {
 
   const handleRedirect = () => {
     navigate(`/catalog/${artifactId}/edit`, {
-      state: { from: location.pathname },
+      state: { from: location },
     });
   };
 

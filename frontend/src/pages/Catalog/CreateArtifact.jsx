@@ -48,7 +48,7 @@ const CreateArtifact = () => {
 
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState(false);
-  const returnTo = !!location.state?.from;
+  const goBack = !!location.state?.from;
 
   // Retrieved data from the API
   const [shapeOptions, setShapeOptions] = useState([]);
@@ -115,8 +115,8 @@ const CreateArtifact = () => {
   };
 
   const handleCancel = () => {
-    const from = location.state?.from || "/catalog";
-    navigate(from, { replace: true });
+    const from = goBack ? location.state.from : "/catalog";
+    navigate(from, { replace: goBack });
   };
 
   return (
@@ -218,7 +218,7 @@ const CreateArtifact = () => {
           </Grid>
           <Grid container justifyContent="flex-end" columnGap={2}>
             <Button variant="text" color="secondary" onClick={handleCancel}>
-              {returnTo ? "Cancelar" : "Volver al catálogo"}
+              {goBack ? "Cancelar" : "Volver al catálogo"}
             </Button>
             <Button variant="contained" color="primary" type="submit">
               Publicar
