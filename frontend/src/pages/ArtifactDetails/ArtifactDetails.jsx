@@ -46,6 +46,26 @@ const ArtifactDetails = () => {
     });
   };
 
+  const handleDownload = () => {    
+    fetch(API_URLS.DETAILED_ARTIFACT + "/" + artifact.id + "/download"
+    , { headers: { Authorization: `Token ${token}` } }
+      )
+      .then((response) => {
+        response.blob().then((blob) => {
+          const url = window.URL.createObjectURL(new Blob([blob]));
+          const link = document.createElement("a");
+          link.href=url;
+          link.download= `artifact_${artifact.id}.zip` 
+          link.click()
+          link.remove()
+        }
+      )})
+      .catch((error) => {
+        console.error("Error downloading artifact:", error);
+      });
+  };
+
+  
   useEffect(() => {
     fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}`)
       .then((response) => {
@@ -74,7 +94,7 @@ const ArtifactDetails = () => {
               {artifact.id? <Typography variant="h3">Pieza {artifact.id}</Typography> : <div></div>}
               {loggedIn ? (
                 <HorizontalStack>
-                  <Button variant="contained">Descargar Pieza</Button>
+                  <Button variant="contained" onClick={handleDownload}>Descargar Pieza</Button>
                   <Button variant="contained" onClick={handleRedirect}>
                     Editar Pieza
                   </Button>

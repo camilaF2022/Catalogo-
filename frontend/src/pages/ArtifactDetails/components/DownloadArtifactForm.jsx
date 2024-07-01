@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { Stack, Paper, InputLabel, Select } from "@mui/material";
+import { Stack, Paper, InputLabel, Select, MenuItem } from "@mui/material";
 import { useSnackBars } from "../../../hooks/useSnackbars";
 import { API_URLS } from "../../../api";
-
+import AutocompleteExtended from "../../sharedComponents/AutocompleteExtended";
 const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
+  const [institutions, setInstitutions] = useState([]);
   const { addAlert } = useSnackBars();
   const [formValues, setFormValues] = useState({
     fullName: "",
@@ -18,6 +19,18 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
     description: "",
   });
 
+  useEffect(() => {
+    fetch(API_URLS.INSTITUTIONS)
+      .then((response) => response.json())
+      .then((data) => {
+        // Update the state with the fetched institutions
+        setInstitutions(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching institutions:", error);
+      });
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({
@@ -25,19 +38,27 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
       [name]: value,
     });
   };
-  
-  const handleDownload = () => {    
-    fetch(API_URLS.DETAILED_ARTIFACT + "/" + artifactInfo.id + "/download")
+
+  const handleDownload = (formValues) => {
+    console.log(formValues)
+    fetch(API_URLS.DETAILED_ARTIFACT + "/" + artifactInfo.id + "/download", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formValues),
+    })
       .then((response) => {
         response.blob().then((blob) => {
           const url = window.URL.createObjectURL(new Blob([blob]));
           const link = document.createElement("a");
-          link.href=url;
-          link.download= `artifact_${artifactInfo.id}.zip` 
+          link.href = url;
+          link.download = `artifact_${artifactInfo.id}.zip`
           link.click()
           link.remove()
         }
-      )})
+        )
+      })
       .catch((error) => {
         console.error("Error downloading artifact:", error);
       });
@@ -47,7 +68,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
     e.preventDefault();
     console.log("Request sent to the server", formValues);
     addAlert("¡Solicitud enviada con éxito! La descarga comenzará pronto.");
-    handleDownload();
+    handleDownload(formValues);
     handleClose();
   };
 
@@ -106,17 +127,27 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
             />
           </Stack>
           <Stack>
-            <InputLabel>
+            {/* <InputLabel>
               <b>Institución *</b>
             </InputLabel>
-            <Select
-              // required
+            <AutocompleteExtended
+              required
               id="institution"
               name="institution"
               label="Institucion"
-              value={formValues.institution}
+              value={formValues.institution.name}
+              options={institutions}
+              setValue={}
+              getOptionLabel={(option) => option.name}
+              onChange={(event, newValue) => {
+                // setFormValues({
+                  ...formValues,
+                  institution: newValue ? newValue.id : "",
+                });
+              }}
             />
-          </Stack>
+             */}
+          </Stack> 
           <Stack>
             <InputLabel>
               <b>Motivo de solicitud (Opcional)</b>

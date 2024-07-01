@@ -7,7 +7,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Stack } from "@mui/material";
 import { useToken } from "../../hooks/useToken";
-
+import {API_URLS} from "../../api";
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -29,9 +29,22 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(formValues); // Send credentials to the server
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Emulate POST delay
-    const token = "testToken"; // Get token from the server
-    setToken(token);
+    fetch(API_URLS.AUTH, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formValues),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data.token);
+        setToken(data.token.replace(/"/g, ""));
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
     const from = location.state?.from || "/";
     navigate(from, { replace: true });
   };
