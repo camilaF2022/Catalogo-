@@ -5,10 +5,15 @@ from django.contrib.auth.models import User
 
 from django.conf import settings
 
-class CustomUser(AbstractUser):
-    email = models.EmailField('email address', unique=True, blank=False, null=False)
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']  
+User._meta.get_field('email')._unique = True
+User._meta.get_field('email').blank = False
+User._meta.get_field('email').null = False
+
+# class CustomUser(AbstractUser):
+#     email = models.EmailField('email address', unique=True, blank=False, null=False)
+
+#     USERNAME_FIELD = 'email'
+#     REQUIRED_FIELDS = ['username']  
 
 
 class Shape(models.Model):

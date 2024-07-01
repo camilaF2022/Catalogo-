@@ -170,5 +170,3 @@ LOGGING = {
         'level': 'DEBUG',
     },
 }
-# authentication
-AUTH_USER_MODEL = 'piezas.CustomUser'
