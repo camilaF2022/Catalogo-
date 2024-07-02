@@ -18,8 +18,9 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
     rut: "",
     email: "",
     institution: { id: "", value: "" },
-    description: "",
+    comment: "",
   });
+  const [rutError, setRutError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState(false);
 
@@ -60,56 +61,67 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
       rut: formValues.rut,
       email: formValues.email,
       institution: formValues.institution.id,
-      description: formValues.description,
+      comment: formValues.comment,
     };
-    await fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactInfo.id}/download`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw Error(response.detail);
+    try {
+      const response = await fetch(
+        `${API_URLS.DETAILED_ARTIFACT}/${artifactInfo.id}/download`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(body),
         }
-      })
-      .catch((error) => {
-        setErrors(true);
-        addAlert("Error al descargar pieza");
-      });
-    await fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactInfo.id}/download`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw Error(response.detail);
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        addAlert(data.detail);
+        return;
+      }
+
+      // If the code reaches here, the first fetch was successful
+      // Proceed with the second fetch
+      const downloadResponse = await fetch(
+        `${API_URLS.DETAILED_ARTIFACT}/${artifactInfo.id}/download`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-        console.log(response);
-        return response.blob();
-      })
-      .then((blob) => {
-        const url = window.URL.createObjectURL(new Blob([blob]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `artifact_${artifactInfo.id}.zip`;
-        link.click();
-        link.remove();
-      })
-      .catch((error) => {
-        setErrors(true);
-        addAlert("Error al descargar pieza");
-      });
+      );
+
+      const downloadData = await response.json();
+
+      if (!downloadResponse.ok) {
+        addAlert(downloadData.detail);
+        return;
+      }
+      const url = window.URL.createObjectURL(new Blob([downloadData]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `artifact_${artifactInfo.id}.zip`;
+      link.click();
+      link.remove();
+      addAlert("Descarga exitosa");
+    } catch (error) {
+      addAlert("Error al descargar pieza");
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Request sent to the server", formValues);
-    addAlert("¡Solicitud enviada con éxito! La descarga comenzará pronto.");
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Assuming formValues contains a 'rut' field that needs to be validated
+    if (!validateRut(formValues.rut)) {
+      setRutError(true);
+      return; // Stop the form submission process
+    }
+    // Reset RUT error if validation passes
+    setRutError(false);
     handleDownload(formValues);
     handleClose();
   };
@@ -120,8 +132,8 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
         <CustomBox
           component="form"
           autoComplete="off"
-          onChange={handleChange}
           onSubmit={handleSubmit}
+          onChange={handleChange}
         >
           <CustomTypography variant="h6">
             Para descargar los datos debe llenar este formulario de solicitud
@@ -132,9 +144,8 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
             </InputLabel>
             <TextField
               required
-              id="nombreCompleto"
+              id="fullName"
               name="fullName"
-              label="Nombre y Apellido"
               margin="normal"
               value={formValues.fullName}
             />
@@ -148,9 +159,11 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
               required
               id="rut"
               name="rut"
-              label="Rut"
               margin="normal"
+              placeholder="123456789"
               value={formValues.rut}
+              error={rutError} // Show error style if there's a RUT error
+              helperText={"Sin puntos ni guión"} // Display the RUT error message
             />
           </Stack>
 
@@ -162,7 +175,6 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
               required
               id="email"
               name="email"
-              label="Email"
               type="email"
               margin="normal"
               value={formValues.email}
@@ -202,12 +214,11 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
               <b>Motivo de solicitud (Opcional)</b>
             </InputLabel>
             <TextField
-              id="description"
-              name="description"
-              label="Comentario"
+              id="comment"
+              name="comment"
               multiline
               margin="normal"
-              value={formValues.description}
+              value={formValues.comment}
             />
           </Stack>
           <OptionBox>
@@ -219,12 +230,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
               Cancelar
             </CustomButton>
 
-            <CustomButton
-              variant="contained"
-              color="primary"
-              type="submit"
-              onClick={handleSubmit}
-            >
+            <CustomButton variant="contained" color="primary" type="submit">
               Enviar
             </CustomButton>
           </OptionBox>
@@ -264,4 +270,27 @@ const OptionBox = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
   gap: theme.spacing(2),
 }));
+
+const validateRut = (rutStr) => {
+  let rut = rutStr.replace(/\./g, "").replace(/-/g, ""); // Change `const` to `let` for reassignment
+  rut = rut.split(""); // Correct splitting into an array of characters
+  if (rut.length !== 9) {
+    return false; // Return false if the length is not 9
+  }
+  const last = rut[8];
+  const inverse = rut.slice(0, 8).reverse();
+  let total = 0; // Initialize `total` with `let` to allow updates
+  for (let i = 0; i < inverse.length; i++) {
+    total += parseInt(inverse[i]) * ((i % 6) + 2);
+  }
+  const rest = 11 - (total % 11);
+  if (
+    (rest === 10 && (last === "K" || last === "k")) ||
+    rest === parseInt(last)
+  ) {
+    return true; // Assuming the validation logic should return true if conditions are met
+  }
+  return false; // Return false as default if conditions are not met
+};
+
 export default DownloadArtifactForm;

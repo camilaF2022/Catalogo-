@@ -5,6 +5,7 @@ from rest_framework import generics, permissions
 from rest_framework import generics, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 from .serializers import (
     ArtifactRequesterSerializer,
     ArtifactSerializer,
@@ -18,6 +19,7 @@ from .serializers import (
 from .models import (
     Artifact,
     ArtifactRequester,
+    CustomUser,
     Institution,
     Image,
     Shape,
@@ -29,7 +31,7 @@ from .models import (
 from django.db.models import Q
 from django.core.files import File
 from django.http import HttpResponse
-from .permissions import IsFuncionarioPermission, IsAdminPermission, GetPostPermission
+from .permissions import IsFuncionarioPermission, IsAdminPermission
 import math
 import zipfile
 from io import BytesIO
@@ -75,23 +77,46 @@ class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
     lookup_field = "pk"
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [GetPostPermission]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         logger.info(
             "Creating new artifact requester for artifact {}".format(kwargs.get("pk"))
         )
-        requester = ArtifactRequester.objects.create(
-            name=request.data.get("fullName"),
-            rut=request.data.get("rut"),
-            email=request.data.get("email"),
-            is_registered=False,
-            institution=Institution.objects.get(pk=request.data.get("institution")),
-            artifact=Artifact.objects.get(pk=kwargs.get("pk")),
-        )
-        serializer = ArtifactRequesterSerializer(requester)
-        return Response({"status": "HTTP_OK", "data": serializer.data})
+        # If the body is empty, retrieve info from backend
+        if not request.data:
+            token = request.headers.get("Authorization")
+            try:
+                token_instance = Token.objects.get(key=token.split(" ")[1])
+            except Token.DoesNotExist:
+                return Response(
+                    {"detail": "Se requiere iniciar sesión nuevamente"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            username = token_instance.user
+            user = CustomUser.objects.get(username=username)
+            name = user.first_name + " " + user.last_name
+            requester = ArtifactRequester.objects.create(
+                name=name,
+                rut=user.rut,
+                email=user.email,
+                is_registered=True,
+                institution=user.institution if user.institution else None,
+                artifact=Artifact.objects.get(pk=kwargs.get("pk")),
+            )
+            serializer = ArtifactRequesterSerializer(requester)
+        else:
+            requester = ArtifactRequester.objects.create(
+                name=request.data.get("fullName"),
+                rut=request.data.get("rut"),
+                email=request.data.get("email"),
+                comments=request.data.get("comments"),
+                is_registered=False,
+                institution=Institution.objects.get(pk=request.data.get("institution")),
+                artifact=Artifact.objects.get(pk=kwargs.get("pk")),
+            )
+            serializer = ArtifactRequesterSerializer(requester)
+        return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):
         logger.info(f"Downloading artifact {kwargs.get('pk')}")

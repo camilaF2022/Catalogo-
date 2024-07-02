@@ -227,6 +227,7 @@ class ArtifactRequester(models.Model):
     name = models.CharField(max_length=50)
     rut = models.CharField(max_length=50)
     email = models.EmailField()
+    comments = models.TextField(max_length=500, null=True)
     is_registered = models.BooleanField(default=True)
     institution = models.ForeignKey(
         Institution,

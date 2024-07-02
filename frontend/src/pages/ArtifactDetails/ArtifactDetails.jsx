@@ -15,11 +15,13 @@ import DownloadArtifactForm from "./components/DownloadArtifactForm";
 import NotFound from "../../components/NotFound";
 import { API_URLS } from "../../api";
 import { useToken } from "../../hooks/useToken";
+import { useSnackBars } from "../../hooks/useSnackbars";
 
 const ArtifactDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useToken();
+  const { addAlert } = useSnackBars();
   const loggedIn = !!token;
   const { artifactId } = useParams();
   const [notFound, setNotFound] = useState(false);
@@ -66,6 +68,56 @@ const ArtifactDetails = () => {
       })
       .finally(() => setLoading(false));
   }, [artifactId]);
+
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(
+        `${API_URLS.DETAILED_ARTIFACT}/${artifactId}/download`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        addAlert(data.detail);
+        return;
+      }
+
+      // If the code reaches here, the first fetch was successful
+      // Proceed with the second fetch
+      const downloadResponse = await fetch(
+        `${API_URLS.DETAILED_ARTIFACT}/${artifactId}/download`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const downloadData = await response.json();
+
+      if (!downloadResponse.ok) {
+        addAlert(downloadData.detail);
+        return;
+      }
+      const url = window.URL.createObjectURL(new Blob([downloadData]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `artifact_${artifactId}.zip`;
+      link.click();
+      link.remove();
+      addAlert("Descarga exitosa");
+    } catch (error) {
+      addAlert("Error al descargar pieza");
+    }
+  };
+
   return (
     <>
       {notFound ? (
@@ -79,7 +131,9 @@ const ArtifactDetails = () => {
               </Typography>
               {loggedIn ? (
                 <HorizontalStack>
-                  <Button variant="contained">Descargar Pieza</Button>
+                  <Button variant="contained" onClick={handleDownload}>
+                    Descargar Pieza
+                  </Button>
                   <Button variant="contained" onClick={handleRedirect}>
                     Editar Pieza
                   </Button>
