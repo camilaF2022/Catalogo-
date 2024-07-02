@@ -193,7 +193,11 @@ class CatalogAPIView(generics.ListAPIView):
 
         # Case insensitive search
         if description is not None:
-            q_objects &= Q(description__icontains=description)
+            # Check if the description is in the artifact's description
+            # or the Id of the artifact
+            q_objects &= Q(description__icontains=description) | Q(
+                id__icontains=description
+            )
         if culture is not None:
             q_objects &= Q(id_culture__name__iexact=culture)
         if shape is not None:
