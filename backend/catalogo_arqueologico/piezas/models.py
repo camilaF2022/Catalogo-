@@ -2,34 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.contrib.auth.models import Group
-from django.core.exceptions import ValidationError
+from .validators import validateRut
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-def validateRut(rut):
-    if len(rut) != 9:
-        raise ValidationError("Invalid identifier: Must be 9 characters long")
-    last = rut[8]
-    inverse = rut[7::-1]
-    total = 0
-    for number in range(8):
-        total += int(inverse[number]) * (number % 6 + 2)
-    rest = 11 - abs(total - 11 * (total // 11)) % 11
-    if rest == 10 and last == "k":
-        return None
-    elif rest == int(last):
-        return None
-    else:
-        if rest == 10:
-            rest = "k"
-        raise ValidationError(
-            "Invalid identifier: Validation digit is "
-            + str(last)
-            + " and should be "
-            + str(rest)
-        )
 
 
 class CustomUser(AbstractUser):
@@ -66,9 +42,13 @@ class CustomUser(AbstractUser):
     def save(self, *args, **kwargs):
         # New user
         if not self.pk:
-            self.is_staff = True # All users are staff so they can access the admin site
+            self.is_staff = (
+                True  # All users are staff so they can access the admin site
+            )
             if self.is_superuser:
-                self.role = self.RoleUser.ADMINISTRADOR # Change default role for superusers
+                self.role = (
+                    self.RoleUser.ADMINISTRADOR
+                )  # Change default role for superusers
         super().save(*args, **kwargs)
         self.update_group()
 
@@ -120,9 +100,9 @@ class Model(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    texture = models.ImageField(upload_to=settings.MATERIALS_ROOT, unique=True)
-    object = models.FileField(upload_to=settings.OBJECTS_ROOT, unique=True)
-    material = models.FileField(upload_to=settings.MATERIALS_ROOT, unique=True)
+    texture = models.ImageField(upload_to=settings.MATERIALS_ROOT)
+    object = models.FileField(upload_to=settings.OBJECTS_ROOT)
+    material = models.FileField(upload_to=settings.MATERIALS_ROOT)
 
 
 class Image(models.Model):

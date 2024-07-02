@@ -78,7 +78,7 @@ python manage.py importAllData
 Si se desea volver a cargar la base de datos, se deben eliminar los archivos `db.sqlite3` de la carpeta `backend/catalogo_arqueologico`, `0001_initial.py` de la carpeta `backend/catalogo_arqueologico/piezas/migrations` y el contenido de la carpeta media ubicada en `backend/catalogo_arqueologico/media`. Luego, ubicado en la carpeta contenedora de `manage.py`, se debe ejecutar el comando `python manage.py makemigrations` seguido de `python manage.py migrate` y los comandos de importación de datos.
 
 #### Creación de grupos y superusuario
-La aplicación incluye dos roles de usuario: administrador y funcionario. Junto con esto, también existen dos grupos: `administrador` y `funcionario`. Para crear estos grupos, se debe ejecutar el siguiente comando desde la carpeta que contiene `manage.py`, es decir, en la ruta `backend/catalogo_arqueologico`:
+La aplicación tiene dos roles de usuario y dos grupos de permisos: `administrador` y `funcionario`. Para crear estos grupos, se debe ejecutar el siguiente comando desde la carpeta que contiene `manage.py`, ubicada en la ruta `backend/catalogo_arqueologico`:
 
 ```bash
 python manage.py createGroups
@@ -91,6 +91,8 @@ python manage.py createsuperuser
 ```
 
 Luego, se deben seguir las instrucciones que se presentan en la terminal.
+
+Cabe destacar que el superusuario creado no tendrá todos sus atributos definidos, por lo que se recomienda completarlos desde la interfaz de administrador de Django una vez se ejecute la aplicación.
 
 #### Ejecución del backend
 Desde la carpeta `backend/catalogo_arqueologico`, ejecutar el siguiente comando:

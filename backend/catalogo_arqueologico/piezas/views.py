@@ -325,31 +325,23 @@ class ArtifactCreateUpdateAPIView(generics.GenericAPIView):
             new_material_instance = File(new_material_file, name=new_material_file.name)
             logger.info(f"New material file: {new_material_instance}")
 
-        if new_texture_instance or new_object_instance or new_material_instance:
-            # Create Model instance
-            # It allows to create a new model with only the new files
-            model = Model.objects.create(
-                texture=(
-                    new_texture_instance
-                    if new_texture_instance
-                    else instance.id_model.texture
-                ),
-                object=(
-                    new_object_instance
-                    if new_object_instance
-                    else instance.id_model.object
-                ),
-                material=(
-                    new_material_instance
-                    if new_material_instance
-                    else instance.id_model.material
-                ),
-            )
+        # Update Model instance
+        # It allows to create a new model with only the new files
+        model, created = Model.objects.get_or_create(
+            texture=new_texture_instance if new_texture_instance else instance.id_model.texture,
+            object=new_object_instance if new_object_instance else instance.id_model.object,
+            material=new_material_instance if new_material_instance else instance.id_model.material,
+        )
+        if created:
             logger.info(
                 f"Model created: {model.texture}, {model.object}, {model.material}"
             )
-            # Set the model
-            instance.id_model = model
+        else:
+            logger.info(
+                f"Model updated: {model.texture}, {model.object}, {model.material}"
+            )
+        # Set the model
+        instance.id_model = model
 
         # Handle images
         # Get the images that are already uploaded and should be kept, and the new images to be uploaded
