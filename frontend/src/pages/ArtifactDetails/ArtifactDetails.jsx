@@ -100,13 +100,7 @@ const ArtifactDetails = () => {
           },
         }
       );
-      const downloadData = await response.json();
-
-      if (!downloadResponse.ok) {
-        addAlert(downloadData.detail);
-        return;
-      }
-      const url = window.URL.createObjectURL(new Blob([downloadData]));
+      const url = window.URL.createObjectURL(new Blob([await downloadResponse.blob()]));
       const link = document.createElement("a");
       link.href = url;
       link.download = `artifact_${artifactId}.zip`;

@@ -119,13 +119,15 @@ class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
         return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):
-        logger.info(f"Downloading artifact {kwargs.get('pk')}")
         pk = kwargs.get("pk")
         if pk is not None:
+            logger.info(f"Downloading artifact {pk}")
             try:
                 artifact = Artifact.objects.get(pk=pk)
             except Artifact.DoesNotExist:
-                return HttpResponse(status=404)
+                return Response(
+                    {"detail": "Pieza no encontrada"}, status=status.HTTP_404_NOT_FOUND
+                )
 
             buffer = BytesIO()
 
@@ -328,9 +330,19 @@ class ArtifactCreateUpdateAPIView(generics.GenericAPIView):
         # Update Model instance
         # It allows to create a new model with only the new files
         model, created = Model.objects.get_or_create(
-            texture=new_texture_instance if new_texture_instance else instance.id_model.texture,
-            object=new_object_instance if new_object_instance else instance.id_model.object,
-            material=new_material_instance if new_material_instance else instance.id_model.material,
+            texture=(
+                new_texture_instance
+                if new_texture_instance
+                else instance.id_model.texture
+            ),
+            object=(
+                new_object_instance if new_object_instance else instance.id_model.object
+            ),
+            material=(
+                new_material_instance
+                if new_material_instance
+                else instance.id_model.material
+            ),
         )
         if created:
             logger.info(
