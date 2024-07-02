@@ -9,6 +9,7 @@ import {
   Box,
   Tooltip,
 } from "@mui/material";
+import { Category, Diversity3 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 
 const ArtifactCard = ({ artifact }) => {
@@ -37,6 +38,7 @@ const ArtifactCard = ({ artifact }) => {
           image={previewPath}
           alt={id}
           onClick={handleRedirect}
+          style={{ objectFit: "contain", backgroundColor: "black" }}
         />
       ) : (
         <CustomCardMedia
@@ -49,8 +51,16 @@ const ArtifactCard = ({ artifact }) => {
       )}
       <CustomCardContent>
         <MetadataContainer>
-          <CustomShapeTag label={shape.value} size="small" />
-          <CustomCultureTag label={culture.value} size="small" />
+          <CustomShapeTag
+            label={shape.value}
+            size="small"
+            icon={<Category color="inherit" fontSize="small" />}
+          />
+          <CustomCultureTag
+            label={culture.value}
+            size="small"
+            icon={<Diversity3 color="interhit" fontSize="small" />}
+          />
         </MetadataContainer>
         <Typography variant="h5" component="div">
           Pieza {id}

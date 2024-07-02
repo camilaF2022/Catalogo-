@@ -6,6 +6,7 @@ import {
   Skeleton,
   CircularProgress,
 } from "@mui/material";
+import { Category, Diversity3, LocalOffer } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import DownloadArtifactButton from "./components/DownloadArtifactButton";
 import ModelVisualization from "./components/ModelVisualization";
@@ -100,7 +101,9 @@ const ArtifactDetails = () => {
           },
         }
       );
-      const url = window.URL.createObjectURL(new Blob([await downloadResponse.blob()]));
+      const url = window.URL.createObjectURL(
+        new Blob([await downloadResponse.blob()])
+      );
       const link = document.createElement("a");
       link.href = url;
       link.download = `artifact_${artifactId}.zip`;
@@ -120,8 +123,8 @@ const ArtifactDetails = () => {
         <ContainerGrid>
           <LeftBox>
             <CustomContainer>
-              <Typography variant="h3">
-                <b>{artifact.id}</b>
+              <Typography variant="h4">
+                <b>Pieza {artifact.id}</b>
               </Typography>
               {loggedIn ? (
                 <HorizontalStack>
@@ -161,7 +164,9 @@ const ArtifactDetails = () => {
               )}
             </Typography>
             <HorizontalStack>
-              <Typography variant="h5"> Forma: </Typography>
+              <Typography variant="h5">
+                <Category color="inherit" fontSize="small" /> Forma:{" "}
+              </Typography>
               {loading ? (
                 <CustomSkeletonTag />
               ) : (
@@ -169,7 +174,10 @@ const ArtifactDetails = () => {
               )}
             </HorizontalStack>
             <HorizontalStack>
-              <Typography variant="h5">Cultura:</Typography>
+              <Typography variant="h5">
+                {" "}
+                <Diversity3 color="interhit" fontSize="small" /> Cultura:
+              </Typography>
               {loading ? (
                 <CustomSkeletonTag />
               ) : (
@@ -178,7 +186,9 @@ const ArtifactDetails = () => {
             </HorizontalStack>
             {
               <VerticalStack>
-                <Typography variant="h5">Etiquetas:</Typography>
+                <Typography variant="h5">
+                  <LocalOffer color="inherit" fontSize="small" /> Etiquetas:
+                </Typography>
                 <TagContainer>
                   {loading ? (
                     <CustomSkeletonTag />
