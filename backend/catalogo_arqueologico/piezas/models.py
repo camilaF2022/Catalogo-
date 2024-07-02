@@ -1,17 +1,78 @@
 from django.db import models
-from django.core.files.storage import FileSystemStorage
-
+from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
+import logging
+
+logger = logging.getLogger(__name__)
 
 
-class CustomStorage(FileSystemStorage):
-    def get_available_name(self, name, max_length=None):
-        if self.exists(name):
-            self.delete(name)
-        return name
+def validateRut(rut):
+    if len(rut) != 9:
+        raise ValidationError("Invalid identifier: Must be 9 characters long")
+    last = rut[8]
+    inverse = rut[7::-1]
+    total = 0
+    for number in range(8):
+        total += int(inverse[number]) * (number % 6 + 2)
+    rest = 11 - abs(total - 11 * (total // 11)) % 11
+    if rest == 10 and last == "k":
+        return None
+    elif rest == int(last):
+        return None
+    else:
+        if rest == 10:
+            rest = "k"
+        raise ValidationError(
+            "Invalid identifier: Validation digit is "
+            + str(last)
+            + " and should be "
+            + str(rest)
+        )
 
 
-# Create your models here.
+class CustomUser(AbstractUser):
+    class RoleUser(models.TextChoices):
+        FUNCIONARIO = "FN", "FUNCIONARIO"
+        ADMINISTRADOR = "AD", "ADMIN"
+
+    role = models.CharField(
+        max_length=2, choices=RoleUser.choices, default=RoleUser.FUNCIONARIO
+    )
+    institution = models.CharField(max_length=100, blank=True)
+    rut = models.CharField(
+        max_length=9,
+        blank=True,
+        help_text="Enter unique identifier without dots or dashes",
+        validators=[validateRut],
+    )
+
+    def update_group(self):
+        self.groups.clear()
+        logger.info(f"Updating group for user {self.username} with role {self.role}")
+        new_group = None
+        if self.role == self.RoleUser.ADMINISTRADOR:
+            new_group, _ = Group.objects.get_or_create(name="Administrador")
+            self.role = self.RoleUser.ADMINISTRADOR
+        elif self.role == self.RoleUser.FUNCIONARIO:
+            new_group, _ = Group.objects.get_or_create(name="Funcionario")
+
+        if new_group:
+            self.groups.add(new_group)
+            logger.info(f"Added user to group: {new_group}")
+        logger.info(f"User groups after update: {list(self.groups.all())}")
+
+    def save(self, *args, **kwargs):
+        # New user
+        if not self.pk:
+            self.is_staff = True # All users are staff so they can access the admin site
+            if self.is_superuser:
+                self.role = self.RoleUser.ADMINISTRADOR # Change default role for superusers
+        super().save(*args, **kwargs)
+        self.update_group()
+
+
 class Shape(models.Model):
     """
     Shape model to store the shapes of the artifacts
@@ -109,8 +170,8 @@ class TagsIds(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    tag = models.IntegerField(default=0)
-    artifactid = models.IntegerField(default=0)
+    tag = models.IntegerField()
+    artifactid = models.IntegerField()
 
     class Meta:
         constraints = [
@@ -127,8 +188,8 @@ class CultureIds(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    culture = models.IntegerField(default=0)
-    artifactid = models.IntegerField(default=0)
+    culture = models.IntegerField()
+    artifactid = models.IntegerField()
 
     class Meta:
         constraints = [
@@ -145,8 +206,8 @@ class ShapeIds(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    shape = models.IntegerField(default=0)
-    artifactid = models.IntegerField(default=0)
+    shape = models.IntegerField()
+    artifactid = models.IntegerField()
 
     class Meta:
         constraints = [

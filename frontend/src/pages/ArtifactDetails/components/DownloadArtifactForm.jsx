@@ -5,10 +5,12 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Stack, Paper, InputLabel, Autocomplete } from "@mui/material";
-import { useSnackBars } from "../../../hooks/useSnackbars";
 import { API_URLS } from "../../../api";
+import { useSnackBars } from "../../../hooks/useSnackbars";
+import { useToken } from "../../../hooks/useToken";
 
 const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
+  const { token } = useToken();
   const { addAlert } = useSnackBars();
   const [institutions, setInstitutions] = useState([]);
   const [formValues, setFormValues] = useState({
@@ -22,7 +24,11 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
   const [errors, setErrors] = useState(false);
 
   useEffect(() => {
-    fetch(API_URLS.ALL_INSTITUTIONS)
+    fetch(API_URLS.ALL_INSTITUTIONS, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw Error(response.detail);
@@ -60,6 +66,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(body),
     })
@@ -74,6 +81,9 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
       });
     await fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactInfo.id}/download`, {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => {
         if (!response.ok) {

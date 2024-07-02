@@ -47,7 +47,11 @@ const ArtifactDetails = () => {
   };
 
   useEffect(() => {
-    fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}`)
+    fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           if (response.status === 404) {

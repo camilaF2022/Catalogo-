@@ -1,5 +1,5 @@
+from piezas.models import CustomUser
 from rest_framework import serializers
-from django.contrib.auth.models import User
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
@@ -8,6 +8,6 @@ class UserSerializer(serializers.ModelSerializer):
         return f"{obj.first_name} {obj.last_name}"
     
     class Meta:
-        model = User
+        model = CustomUser
         fields = ["id", "username", "email", "full_name"]
 

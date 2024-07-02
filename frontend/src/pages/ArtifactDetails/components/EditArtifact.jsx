@@ -17,12 +17,14 @@ import ImageUploader from "./ImageUploader";
 import { allowedFileTypes } from "../../Catalog/CreateArtifact";
 import NotFound from "../../../components/NotFound";
 import { useSnackBars } from "../../../hooks/useSnackbars";
+import { useToken } from "../../../hooks/useToken";
 
 const EditArtifact = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { artifactId } = useParams();
   const { addAlert } = useSnackBars();
+  const { token } = useToken();
 
   const [notFound, setNotFound] = useState(false);
   const [updatedArtifact, setUpdatedArtifact] = useState({
@@ -54,7 +56,11 @@ const EditArtifact = () => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}`)
+    fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           if (response.status === 404) {
@@ -76,7 +82,11 @@ const EditArtifact = () => {
   }, [artifactId]);
 
   useEffect(() => {
-    fetch(API_URLS.ALL_METADATA)
+    fetch(API_URLS.ALL_METADATA, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error(response.detail);
@@ -140,6 +150,9 @@ const EditArtifact = () => {
     await fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}/update`, {
       method: "POST",
       body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => {
         if (!response.ok) {

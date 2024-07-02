@@ -7,10 +7,13 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Stack } from "@mui/material";
 import { useToken } from "../../hooks/useToken";
+import { API_URLS } from "../../api";
+import { useSnackBars } from "../../hooks/useSnackbars";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { addAlert } = useSnackBars();
   const { setToken } = useToken();
 
   const [formValues, setFormValues] = useState({
@@ -28,12 +31,29 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formValues); // Send credentials to the server
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Emulate POST delay
-    const token = "testToken"; // Get token from the server
-    setToken(token);
-    const from = location.state?.from || "/";
-    navigate(from, { replace: true });
+    try {
+      const response = await fetch(API_URLS.AUTH, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formValues),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle error response
+        addAlert(data.detail);
+        return;
+      }
+      setToken(data.token.replace(/"/g, ""));
+      const from = location.state?.from || "/";
+      navigate(from, { replace: true });
+    } catch (error) {
+      // Handle any errors that occurred during fetch
+      addAlert("Ha ocurrido un error durante la autenticación");
+    }
   };
 
   return (

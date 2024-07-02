@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSnackBars } from "./useSnackbars";
+import { useToken } from "./useToken";
 
 const useFetchItems = (baseUrl) => {
+  const { token } = useToken();
   const { addAlert } = useSnackBars();
   const [loading, setLoading] = useState(true);
 
@@ -40,7 +42,11 @@ const useFetchItems = (baseUrl) => {
       Object.keys(params).forEach(
         (key) => params[key] && url.searchParams.append(key, params[key])
       );
-      fetch(url)
+      fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((response) => response.json())
         .then((response) => {
           const {

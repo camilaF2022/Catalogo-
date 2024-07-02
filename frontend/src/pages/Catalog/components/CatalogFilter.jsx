@@ -13,9 +13,11 @@ import { styled } from "@mui/system";
 import { useSearchParams } from "react-router-dom";
 import { API_URLS } from "../../../api";
 import { useSnackBars } from "../../../hooks/useSnackbars";
+import { useToken } from "../../../hooks/useToken";
 
 const CatalogFilter = ({ filter, setFilter }) => {
   const { addAlert } = useSnackBars();
+  const { token } = useToken();
   // Search params from the URL
   const [searchParams, setSearchParams] = useSearchParams();
   // Avoid updating the URL when the component mounts and there are search params already
@@ -53,7 +55,11 @@ const CatalogFilter = ({ filter, setFilter }) => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch(API_URLS.ALL_METADATA)
+    fetch(API_URLS.ALL_METADATA, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error(response.detail);

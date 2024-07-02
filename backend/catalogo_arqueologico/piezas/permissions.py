@@ -1,19 +1,27 @@
 from rest_framework import permissions
 
-class  IsFuncionarioPermission(permissions.DjangoModelPermissions):
-    perms_map = {
-        'GET': ['%(app_label)s.view_%(model_name)s'],
-        'OPTIONS': [],
-        'HEAD': [],
-        'POST': ['%(app_label)s.add_%(model_name)s'],
-        'PUT': ['%(app_label)s.change_%(model_name)s'],
-        'PATCH': ['%(app_label)s.change_%(model_name)s'],
-        'DELETE': ['%(app_label)s.delete_%(model_name)s'],
-    }
 
+class IsFuncionarioPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        print(request.user.get_all_permissions())
-        if not request.user.is_staff:
-            print("No es staff")
-            return False
-        return super().has_permission(request, view)
+        return request.user and request.user.groups.filter(name="Funcionario").exists()
+
+
+class IsAdminPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return (
+            request.user and request.user.groups.filter(name="Administrador").exists()
+        )
+
+
+class GetPostPermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        # Allow any user for GET requests
+        if request.method == "GET":
+            return True
+        # For POST, require authentication and proper permissions
+        elif request.method == "POST":
+            return request.user and request.user.is_authenticated and (
+                request.user.groups.filter(name="Administrador").exists()
+                or request.user.groups.filter(name="Funcionario").exists()
+            )
+        return False

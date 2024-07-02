@@ -45,7 +45,7 @@ pip install -r requirements.txt
 
 #### Subir contenido al backend
 
-Antes de subir el contenido de prueba proveniente de Google Drive, se debe generar el esquema de la base de datos. Esto se realiza ejecutando el siguiente comando desde la carpeta que contiene `manage.py`, es decir, en la ruta `backend/catalogo_arqueologico`:
+Antes de subir el contenido proveniente de Google Drive junto con el listado de instituciones disponible, se debe generar el esquema de la base de datos. Esto se realiza ejecutando el siguiente comando desde la carpeta que contiene `manage.py`, es decir, en la ruta `backend/catalogo_arqueologico`:
 
 ```bash
 python manage.py migrate
@@ -64,6 +64,7 @@ CATALOGO
     ├── coleccion-cultura.csv
     ├── complete-dataset
     ├── metadata - descripcion.csv
+    ├── institutions.csv
     └── thumbnails
 ```
 Notar que la carpeta `multimedia` debe estar en una ubicación distinta.
@@ -76,8 +77,14 @@ python manage.py importAllData
 
 Si se desea volver a cargar la base de datos, se deben eliminar los archivos `db.sqlite3` de la carpeta `backend/catalogo_arqueologico`, `0001_initial.py` de la carpeta `backend/catalogo_arqueologico/piezas/migrations` y el contenido de la carpeta media ubicada en `backend/catalogo_arqueologico/media`. Luego, ubicado en la carpeta contenedora de `manage.py`, se debe ejecutar el comando `python manage.py makemigrations` seguido de `python manage.py migrate` y los comandos de importación de datos.
 
-#### Creación de superusuario
-Para crear un superusuario, se debe ejecutar el siguiente comando desde la carpeta que contiene `manage.py`, es decir, en la ruta `backend/catalogo_arqueologico`:
+#### Creación de grupos y superusuario
+La aplicación incluye dos roles de usuario: administrador y funcionario. Junto con esto, también existen dos grupos: `administrador` y `funcionario`. Para crear estos grupos, se debe ejecutar el siguiente comando desde la carpeta que contiene `manage.py`, es decir, en la ruta `backend/catalogo_arqueologico`:
+
+```bash
+python manage.py createGroups
+```
+
+Para crear un superusuario, se debe ejecutar el siguiente comando desde la misma carpeta anterior:
 
 ```bash
 python manage.py createsuperuser

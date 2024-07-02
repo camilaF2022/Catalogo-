@@ -1,8 +1,10 @@
 import os
-from sqlite3 import IntegrityError
 from django.conf import settings
+from .authentication import TokenAuthentication
+from rest_framework import generics, permissions
 from rest_framework import generics, status
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 from .serializers import (
     ArtifactRequesterSerializer,
     ArtifactSerializer,
@@ -24,12 +26,12 @@ from .models import (
     Model,
     Thumbnail,
 )
-from rest_framework.response import Response
 from django.db.models import Q
 from django.core.files import File
+from django.http import HttpResponse
+from .permissions import IsFuncionarioPermission, IsAdminPermission, GetPostPermission
 import math
 import zipfile
-from django.http import HttpResponse
 from io import BytesIO
 import logging
 
@@ -39,9 +41,12 @@ logger = logging.getLogger(__name__)
 class ArtifactDetailAPIView(generics.RetrieveAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class MetadataListAPIView(generics.ListAPIView):
+    permission_classes = [permissions.AllowAny]
+
     def get(self, request, *args, **kwargs):
         shapes = Shape.objects.all()
         tags = Tag.objects.all()
@@ -66,16 +71,12 @@ class MetadataListAPIView(generics.ListAPIView):
         return Response({"data": data}, status=status.HTTP_200_OK)
 
 
-class ArtifactDestroyAPIView(generics.DestroyAPIView):
-    queryset = Artifact.objects.all()
-    serializer_class = ArtifactSerializer
-    lookup_field = "pk"
-
-
 class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
     lookup_field = "pk"
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [GetPostPermission]
 
     def post(self, request, *args, **kwargs):
         logger.info(
@@ -152,6 +153,7 @@ class CustomPageNumberPagination(PageNumberPagination):
 class CatalogAPIView(generics.ListAPIView):
     serializer_class = CatalogSerializer
     pagination_class = CustomPageNumberPagination
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         queryset = Artifact.objects.all().order_by("id")
@@ -196,6 +198,10 @@ class ArtifactCreateUpdateAPIView(generics.GenericAPIView):
     queryset = Artifact.objects.all()
     serializer_class = UpdateArtifactSerializer
     lookup_field = "pk"
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [
+        permissions.IsAuthenticated & (IsFuncionarioPermission | IsAdminPermission)
+    ]
 
     def get_object(self):
         pk = self.kwargs.get("pk")
@@ -353,6 +359,7 @@ class ArtifactCreateUpdateAPIView(generics.GenericAPIView):
 class InstitutionAPIView(generics.ListCreateAPIView):
     queryset = Institution.objects.all().order_by("id")
     serializer_class = InstitutionSerializer
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
         institutions = Institution.objects.all()

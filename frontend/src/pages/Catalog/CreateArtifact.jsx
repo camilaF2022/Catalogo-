@@ -14,19 +14,21 @@ import UploadButton from "../sharedComponents/UploadButton";
 import AutocompleteExtended from "../sharedComponents/AutocompleteExtended";
 import { API_URLS } from "../../api";
 import { useSnackBars } from "../../hooks/useSnackbars";
+import { useToken } from "../../hooks/useToken";
 
 export const allowedFileTypes = {
   object: ["obj"],
-  texture: ["jpg", "jpeg", "png"],
+  texture: ["jpg"],
   material: ["mtl"],
-  thumbnail: ["jpg", "jpeg", "png"],
-  images: ["jpg", "jpeg", "png"],
+  thumbnail: ["jpg"],
+  images: ["jpg"],
 };
 
 const CreateArtifact = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { addAlert } = useSnackBars();
+  const { token } = useToken();
 
   const [newObjectAttributes, setNewObjectAttributes] = useState({
     object: {},
@@ -57,7 +59,11 @@ const CreateArtifact = () => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch(API_URLS.ALL_METADATA)
+    fetch(API_URLS.ALL_METADATA, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error(response.detail);
@@ -106,6 +112,9 @@ const CreateArtifact = () => {
     await fetch(`${API_URLS.DETAILED_ARTIFACT}/upload`, {
       method: "POST",
       body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => {
         if (!response.ok) {
