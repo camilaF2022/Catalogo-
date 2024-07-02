@@ -18,7 +18,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
     rut: "",
     email: "",
     institution: { id: "", value: "" },
-    comment: "",
+    comments: "",
   });
   const [rutError, setRutError] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -61,7 +61,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
       rut: formValues.rut,
       email: formValues.email,
       institution: formValues.institution.id,
-      comment: formValues.comment,
+      comments: formValues.comments,
     };
     try {
       const response = await fetch(
@@ -208,11 +208,11 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
               <b>Motivo de solicitud (Opcional)</b>
             </InputLabel>
             <TextField
-              id="comment"
-              name="comment"
+              id="comments"
+              name="comments"
               multiline
               margin="normal"
-              value={formValues.comment}
+              value={formValues.comments}
             />
           </Stack>
           <OptionBox>
