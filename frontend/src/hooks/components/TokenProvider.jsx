@@ -12,7 +12,7 @@ export function TokenProvider({ children }) {
 
   const setToken = useCallback((newToken) => {
     if (newToken) {
-      localStorage.setItem("token", JSON.stringify(newToken));
+      localStorage.setItem("token", newToken);
     } else {
       localStorage.removeItem("token");
     }
