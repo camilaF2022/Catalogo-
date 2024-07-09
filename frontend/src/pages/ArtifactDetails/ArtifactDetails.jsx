@@ -165,7 +165,7 @@ const ArtifactDetails = () => {
             </Typography>
             <HorizontalStack>
               <Typography variant="h5">
-                <Category color="inherit" fontSize="small" /> Forma:{" "}
+                <Category color="inherit" fontSize="small" style={{ verticalAlign: 'middle' }}/> Forma:{" "}
               </Typography>
               {loading ? (
                 <CustomSkeletonTag />
@@ -176,7 +176,7 @@ const ArtifactDetails = () => {
             <HorizontalStack>
               <Typography variant="h5">
                 {" "}
-                <Diversity3 color="interhit" fontSize="small" /> Cultura:
+                <Diversity3 color="interhit" fontSize="small" style={{ verticalAlign: 'middle' }}/> Cultura:
               </Typography>
               {loading ? (
                 <CustomSkeletonTag />
@@ -187,7 +187,7 @@ const ArtifactDetails = () => {
             {
               <VerticalStack>
                 <Typography variant="h5">
-                  <LocalOffer color="inherit" fontSize="small" /> Etiquetas:
+                  <LocalOffer color="inherit" fontSize="small" style={{ verticalAlign: 'middle' }} /> Etiquetas:
                 </Typography>
                 <TagContainer>
                   {loading ? (
