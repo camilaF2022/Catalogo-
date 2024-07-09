@@ -99,7 +99,11 @@ class Model(models.Model):
     Each attribute must be unique
     """
     class Meta:
-        unique_together = ["texture", "object", "material"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["texture", "object", "material"], name="unique_model_triplet"
+            )
+        ]
         
     id = models.BigAutoField(primary_key=True)
     texture = models.ImageField(upload_to=settings.MATERIALS_ROOT, unique=False)
