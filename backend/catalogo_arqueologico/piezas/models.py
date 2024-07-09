@@ -98,11 +98,13 @@ class Model(models.Model):
     Model to store the 3D models of the artifacts
     Each attribute must be unique
     """
-
+    class Meta:
+        unique_together = ["texture", "object", "material"]
+        
     id = models.BigAutoField(primary_key=True)
-    texture = models.ImageField(upload_to=settings.MATERIALS_ROOT)
-    object = models.FileField(upload_to=settings.OBJECTS_ROOT)
-    material = models.FileField(upload_to=settings.MATERIALS_ROOT)
+    texture = models.ImageField(upload_to=settings.MATERIALS_ROOT, unique=False)
+    object = models.FileField(upload_to=settings.OBJECTS_ROOT, unique=False)
+    material = models.FileField(upload_to=settings.MATERIALS_ROOT, unique=False)
 
 
 class Image(models.Model):
