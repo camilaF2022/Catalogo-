@@ -48,30 +48,31 @@ class ArtifactDetailAPIView(generics.RetrieveAPIView):
 
 class MetadataListAPIView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
-
     def get(self, request, *args, **kwargs):
-        shapes = Shape.objects.all()
-        tags = Tag.objects.all()
-        cultures = Culture.objects.all()
+        try:
+            shapes = Shape.objects.all()
+            tags = Tag.objects.all()
+            cultures = Culture.objects.all()
+            
+            # Serialize the data
+            shape_serializer = ShapeSerializer(shapes, many=True)
+            tag_serializer = TagSerializer(tags, many=True)
+            culture_serializer = CultureSerializer(cultures, many=True)
 
-        # Serialize the data
-        shape_serializer = ShapeSerializer(shapes, many=True)
-        tag_serializer = TagSerializer(tags, many=True)
-        culture_serializer = CultureSerializer(cultures, many=True)
+            # Function to change 'name' key to 'value'
+            def rename_key(lst):
+                return [{"id": item["id"], "value": item["name"]} for item in lst]
+            # Combine the data with 'name' key changed to 'value'
+            data = {
+                "shapes": rename_key(shape_serializer.data),
+                "tags": rename_key(tag_serializer.data),
+                "cultures": rename_key(culture_serializer.data),
+            }
 
-        # Function to change 'name' key to 'value'
-        def rename_key(lst):
-            return [{"id": item["id"], "value": item["name"]} for item in lst]
-
-        # Combine the data with 'name' key changed to 'value'
-        data = {
-            "shapes": rename_key(shape_serializer.data),
-            "tags": rename_key(tag_serializer.data),
-            "cultures": rename_key(culture_serializer.data),
-        }
-
-        return Response({"data": data}, status=status.HTTP_200_OK)
-
+            return Response({"data": data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Could not retrieve metadata:{e}")
+            return Response({"detail": f"Could not retrieve metadata"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
     queryset = Artifact.objects.all()
@@ -94,8 +95,14 @@ class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
                     status=status.HTTP_404_NOT_FOUND,
                 )
             username = token_instance.user
-            user = CustomUser.objects.get(username=username)
+            try:
+                user = CustomUser.objects.get(username=username)
+            except CustomUser.DoesNotExist:
+                return Response(
+                    {"detail": "Usuario no encontrado"}, status=status.HTTP_404_NOT_FOUND
+                )
             name = user.first_name + " " + user.last_name
+            
             requester = ArtifactRequester.objects.create(
                 name=name,
                 rut=user.rut,
@@ -103,8 +110,9 @@ class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
                 is_registered=True,
                 institution=user.institution if user.institution else None,
                 artifact=Artifact.objects.get(pk=kwargs.get("pk")),
-            )
+                )
             serializer = ArtifactRequesterSerializer(requester)
+                
         else:
             requester = ArtifactRequester.objects.create(
                 name=request.data.get("fullName"),
@@ -116,6 +124,7 @@ class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
                 artifact=Artifact.objects.get(pk=kwargs.get("pk")),
             )
             serializer = ArtifactRequesterSerializer(requester)
+            
         return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):
@@ -184,7 +193,6 @@ class CatalogAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = Artifact.objects.all().order_by("id")
-
         # Filter by query parameters
         description = self.request.query_params.get("query", None)
         culture = self.request.query_params.get("culture", None)
@@ -271,8 +279,13 @@ class ArtifactCreateUpdateAPIView(generics.GenericAPIView):
 
         logger.info(f"Handle file uploads for artifact {instance.id}")
         # Handle file uploads
-        self.handle_file_uploads(instance, request.FILES, request.data)
-
+        try:
+            self.handle_file_uploads(instance, request.FILES, request.data)
+        except Exception as e:
+            logger.error(f"Error al subir archivos: {e}")
+            return Response(
+                {"detail": f"Error al subir archivos"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         # Save again to ensure all related objects are properly linked
         instance.save()
 
@@ -288,13 +301,13 @@ class ArtifactCreateUpdateAPIView(generics.GenericAPIView):
         # Handle thumbnail
         thumbnail_data = files.get("new_thumbnail")
         if thumbnail_data:
-            # Upload file
-            thumbnail_file = File(thumbnail_data, name=thumbnail_data.name)
-            # Create Thumbnail instance
-            thumbnail = Thumbnail.objects.create(path=thumbnail_file)
-            logger.info(f"Thumbnail created: {thumbnail.path}")
-            # Set the thumbnail
-            instance.id_thumbnail = thumbnail
+                # Upload file
+                thumbnail_file = File(thumbnail_data, name=thumbnail_data.name)
+                # Create Thumbnail instance
+                thumbnail = Thumbnail.objects.create(path=thumbnail_file)
+                logger.info(f"Thumbnail created: {thumbnail.path}")
+                # Set the thumbnail
+                instance.id_thumbnail = thumbnail
         else:
             thumbnail_name = data.get("thumbnail", None)
             if thumbnail_name:
@@ -390,20 +403,25 @@ class ArtifactCreateUpdateAPIView(generics.GenericAPIView):
 
 
 class InstitutionAPIView(generics.ListCreateAPIView):
+    
     queryset = Institution.objects.all().order_by("id")
     serializer_class = InstitutionSerializer
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, *args, **kwargs):
-        institutions = Institution.objects.all()
+        try:
+            institutions = Institution.objects.all()
 
-        # Serialize the data
-        institution_serializer = InstitutionSerializer(institutions, many=True)
+            # Serialize the data
+            institution_serializer = InstitutionSerializer(institutions, many=True)
 
-        # Function to change 'name' key to 'value'
-        def rename_key(lst):
-            return [{"id": item["id"], "value": item["name"]} for item in lst]
+            # Function to change 'name' key to 'value'
+            def rename_key(lst):
+                return [{"id": item["id"], "value": item["name"]} for item in lst]
 
-        data = rename_key(institution_serializer.data)
+            data = rename_key(institution_serializer.data)
 
-        return Response({"data": data}, status=status.HTTP_200_OK)
+            return Response({"data": data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Could not retrieve institutions:{e}")
+            return Response({"detail": f"Could not retrieve institutions"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
