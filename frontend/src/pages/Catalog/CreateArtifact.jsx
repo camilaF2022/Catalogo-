@@ -20,8 +20,8 @@ export const allowedFileTypes = {
   object: ["obj"],
   texture: ["jpg"],
   material: ["mtl"],
-  thumbnail: ["jpg"],
-  images: ["jpg"],
+  thumbnail: ["jpg","png"],
+  images: ["jpg","png"],
 };
 
 const CreateArtifact = () => {
