@@ -39,7 +39,7 @@ const UploadButton = ({
     );
     const expectedFileTypes = allowedFileTypes[inputName];
     // Check if file type is allowed
-    if (fileTypes.some((fileType) => !expectedFileTypes.includes(fileType))) {
+    if (fileTypes.some((fileType) => !expectedFileTypes.includes(fileType.toLowerCase()))) {
       addAlert("Tipo de archivo no permitido");
       return;
     }
