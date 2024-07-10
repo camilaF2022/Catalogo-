@@ -1,6 +1,7 @@
 """
 This module contains a Django management command to import 3D models from a folder.
 """
+
 from django.core.management.base import BaseCommand
 from django.core.files import File
 from django.conf import settings
@@ -19,10 +20,10 @@ class Command(BaseCommand):
     This command imports 3D models from a folder.
 
     Attributes:
-        help (str): A short description of the command that is displayed when running           
+        help (str): A short description of the command that is displayed when running
             'python manage.py help importModel3D'.
     """
-    
+
     help = "Import 3D models from a folder. The folder must contain .obj, .mtl and .png files with the same name."
 
     def handle(self, *args, **kwargs):
