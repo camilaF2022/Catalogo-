@@ -2,11 +2,17 @@ import { useEffect, useState } from "react";
 import { useSnackBars } from "./useSnackbars";
 import { useToken } from "./useToken";
 
+// Custom hook to fetch items from an API based on filters and pagination
 const useFetchItems = (baseUrl) => {
-  const { token } = useToken();
-  const { addAlert } = useSnackBars();
-  const [loading, setLoading] = useState(true);
 
+// Fetch authentication token from context using custom hook
+  const { token } = useToken();
+  
+   // Access snack bar utility functions from custom hook
+  const { addAlert } = useSnackBars();
+  
+  // State variables to manage loading state, filters, pagination, and fetched items
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState({
     query: "",
     shape: "",
@@ -27,7 +33,7 @@ const useFetchItems = (baseUrl) => {
     setPagination({ ...pagination, currentPage: 1 });
   }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Fetch data from the API
+  // Fetch data from the API based on filter and pagination
   useEffect(() => {
     // Use setTimeout as debounce to avoid making a request on every keystroke
     const timeoutId = setTimeout(() => {
@@ -56,10 +62,12 @@ const useFetchItems = (baseUrl) => {
             total,
             data,
           } = response;
+          // Update pagination and items state with fetched data
           setPagination({ currentPage, total, perPage, totalPages });
           setItems(data);
         })
         .catch((error) => {
+         // Handle error and display alert using snack bar utility
           addAlert(error.message);
         })
         .finally(() => setLoading(false));
@@ -68,13 +76,14 @@ const useFetchItems = (baseUrl) => {
     return () => clearTimeout(timeoutId); // cleanup on unmount or filter change
   }, [filter, pagination.currentPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
+// Return state variables and functions for external use
   return {
-    items,
-    loading,
-    filter,
-    setFilter,
-    pagination,
-    setPagination,
+    items,         // Fetched items from API
+    loading,       // Loading state
+    filter,        // Current filter criteria
+    setFilter,     // Function to update filter criteria
+    pagination,    // Pagination information
+    setPagination, // Function to update pagination information
   };
 };
 
