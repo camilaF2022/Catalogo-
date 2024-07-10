@@ -14,7 +14,7 @@ Models:
 - Artifact: Represents an artifact with a description and relationships to other models 
     like Thumbnail, Model, Shape, Culture, and Tags.
 - TagsIds, CultureIds, ShapeIds: Auxiliary tables to store unique relationships 
-    between artifacts and tags, cultures, or shapes.
+    between artifacts and tags, cultures, or shapes when importing.
 - Institution: Represents an institution with a unique name.
 - ArtifactRequester: Represents a requester of an artifact with details like name, 
     RUT, email, comments, registration status, and relationships to Institution and Artifact.
@@ -245,7 +245,7 @@ class Artifact(models.Model):
 
 class TagsIds(models.Model):
     """
-    Auxiliary table to store the relationship between the tag and the artifact.
+    Auxiliary table to store the relationship between the tag and the artifact when importing.
 
     Tag and ArtifactId must be unique together.
 
@@ -279,7 +279,7 @@ class TagsIds(models.Model):
 
 class CultureIds(models.Model):
     """
-    Auxiliary table to store the relationship between the culture and the artifact.
+    Auxiliary table to store the relationship between the culture and the artifact when importing.
 
     Culture and ArtifactId must be unique together.
 
@@ -313,7 +313,7 @@ class CultureIds(models.Model):
 
 class ShapeIds(models.Model):
     """
-    Auxiliary table to store the relationship between the shape and the artifact.
+    Auxiliary table to store the relationship between the shape and the artifact when importing.
 
     Shape and ArtifactId must be unique together.
 

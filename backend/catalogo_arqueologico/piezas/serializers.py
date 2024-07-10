@@ -7,9 +7,7 @@ The serializers handle converting complex model instances into JSON format for e
 front-end applications, as well as parsing JSON data to update or create model instances.
 
 The module utilizes Django REST Framework's serializers for model serialization, providing methods
-to define custom fields, validation, and object creation or updating logic. It supports full CRUD
-operations on the Artifact model and related entities, ensuring data integrity and consistency 
-across the application's API.
+to define custom fields, validation, and object creation or updating logic.
 
 Serializers Included:
 - ShapeSerializer: Handles serialization for Shape model instances.
