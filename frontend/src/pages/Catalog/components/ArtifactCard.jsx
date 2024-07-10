@@ -12,25 +12,37 @@ import {
 import { Category, Diversity3 } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 
+/**
+ * Component for displaying an artifact card.
+ * Renders artifact metadata and provides navigation to artifact details.
+ *
+ * @param {Object} artifact - The artifact object containing metadata.
+ */
 const ArtifactCard = ({ artifact }) => {
   const navigate = useNavigate();
+
+  // Destructure artifact properties
   const { id, attributes, thumbnail: previewPath } = artifact;
   const { shape, tags, culture, description } = attributes;
 
+  // Flatten tags for display
   const flattenTags = tags.map((tag) => tag.value).join(", ");
 
+  // Slice tags to show first two and append count if more
   const slicedTags = tags
     .slice(0, 2)
     .map((tag) => tag.value)
     .join(", ")
     .concat(`${tags.length > 2 ? `, (+${tags.length - 2})` : ""}`);
 
+  // Handle click to navigate to detailed artifact page
   const handleRedirect = () => {
     navigate(`/catalog/${id}`);
   };
 
   return (
     <Card>
+      {/* Display thumbnail or default image */}
       {previewPath ? (
         <CustomCardMedia
           component="img"
@@ -49,42 +61,42 @@ const ArtifactCard = ({ artifact }) => {
           onClick={handleRedirect}
         />
       )}
+
       <CustomCardContent>
+        {/* Metadata container for shape and culture */}
         <MetadataContainer>
+          {/* Custom chip for shape */}
           <CustomShapeTag
             label={shape.value}
             size="small"
             icon={<Category color="inherit" fontSize="small" />}
           />
+          {/* Custom chip for culture */}
           <CustomCultureTag
             label={culture.value}
             size="small"
-            icon={<Diversity3 color="interhit" fontSize="small" />}
+            icon={<Diversity3 color="inherit" fontSize="small" />}
           />
         </MetadataContainer>
+
+        {/* Display artifact ID */}
         <Typography variant="h5" component="div">
           Pieza {id}
         </Typography>
+
+        {/* Display tags with tooltip if more than two */}
         <Tooltip arrow title={tags.length > 2 ? flattenTags : ""}>
           <EllipsisBox>
-            <Typography
-              color="text.secondary"
-              overflow={"hidden"}
-              textOverflow={"ellipsis"}
-            >
+            <Typography color="text.secondary">
               {slicedTags ? `Etiquetas: ${slicedTags}` : "Sin etiquetas"}
             </Typography>
           </EllipsisBox>
         </Tooltip>
+
+        {/* Display description with tooltip if longer than 50 characters */}
         <Tooltip arrow title={description.length > 50 ? description : ""}>
           <EllipsisBox>
-            <Typography
-              variant="body2"
-              overflow={"hidden"}
-              textOverflow={"ellipsis"}
-            >
-              {description}
-            </Typography>
+            <Typography variant="body2">{description}</Typography>
           </EllipsisBox>
         </Tooltip>
       </CustomCardContent>
@@ -92,6 +104,7 @@ const ArtifactCard = ({ artifact }) => {
   );
 };
 
+// Styled components for custom styling
 const CustomCardMedia = styled(CardMedia)(({ theme }) => ({
   cursor: "pointer",
 }));
@@ -121,7 +134,7 @@ const CustomShapeTag = styled(Chip)(({ theme }) => ({
   backgroundColor: theme.palette.tags.shape,
   fontSize: 10,
   height: 24,
-  paddingLeft: theme.spacing(1), 
+  paddingLeft: theme.spacing(1),
   paddingRight: theme.spacing(1),
   '& .MuiChip-icon': {
     fontSize: 14,
@@ -131,11 +144,11 @@ const CustomShapeTag = styled(Chip)(({ theme }) => ({
 const CustomCultureTag = styled(Chip)(({ theme }) => ({
   backgroundColor: theme.palette.tags.culture,
   fontSize: 10,
-  height: 24, 
-  paddingLeft: theme.spacing(1), 
-  paddingRight: theme.spacing(1), 
+  height: 24,
+  paddingLeft: theme.spacing(1),
+  paddingRight: theme.spacing(1),
   '& .MuiChip-icon': {
-    fontSize: 14, 
+    fontSize: 14,
   },
 }));
 
