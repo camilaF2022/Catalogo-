@@ -18,6 +18,10 @@ import { API_URLS } from "../../api";
 import { useToken } from "../../hooks/useToken";
 import { useSnackBars } from "../../hooks/useSnackbars";
 
+/**
+ * Component to display detailed information about a specific artifact.
+ * Provides options for downloading, editing (if logged in), and displaying artifact attributes.
+ */
 const ArtifactDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,6 +29,8 @@ const ArtifactDetails = () => {
   const { addAlert } = useSnackBars();
   const loggedIn = !!token;
   const { artifactId } = useParams();
+
+  // State variables
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [artifact, setArtifact] = useState({
@@ -43,12 +49,14 @@ const ArtifactDetails = () => {
     images: [],
   });
 
+  // Function to redirect to artifact edit page
   const handleRedirect = () => {
     navigate(`/catalog/${artifactId}/edit`, {
       state: { from: location },
     });
   };
 
+  // Effect to fetch artifact details on component mount
   useEffect(() => {
     fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}`, {
       headers: {
@@ -70,6 +78,7 @@ const ArtifactDetails = () => {
       .finally(() => setLoading(false));
   }, [artifactId]);
 
+  // Function to handle artifact download
   const handleDownload = async () => {
     try {
       const response = await fetch(
@@ -90,8 +99,7 @@ const ArtifactDetails = () => {
         return;
       }
 
-      // If the code reaches here, the first fetch was successful
-      // Proceed with the second fetch
+      // Proceed with download if initial request was successful
       const downloadResponse = await fetch(
         `${API_URLS.DETAILED_ARTIFACT}/${artifactId}/download`,
         {
@@ -109,40 +117,46 @@ const ArtifactDetails = () => {
       link.download = `artifact_${artifactId}.zip`;
       link.click();
       link.remove();
-      addAlert("Descarga exitosa");
+      addAlert("Download successful");
     } catch (error) {
-      addAlert("Error al descargar pieza");
+      addAlert("Error downloading artifact");
     }
   };
 
+  // Render component
   return (
     <>
       {notFound ? (
         <NotFound />
       ) : (
         <ContainerGrid>
+          {/* Left side with artifact details */}
           <LeftBox>
             <CustomContainer>
               <Typography variant="h4">
-                <b>Pieza {artifact.id}</b>
+                <b>Artifact {artifact.id}</b>
               </Typography>
               {loggedIn ? (
+                // Buttons for logged-in users (Download, Edit)
                 <HorizontalStack>
                   <Button variant="contained" onClick={handleDownload}>
-                    Descargar Pieza
+                    Download Artifact
                   </Button>
                   <Button variant="contained" onClick={handleRedirect}>
-                    Editar Pieza
+                    Edit Artifact
                   </Button>
                 </HorizontalStack>
               ) : (
-                <DownloadArtifactButton text={"Solicitar datos"}>
+                // Button for non-logged-in users (Request Data)
+                <DownloadArtifactButton text={"Request Data"}>
                   <DownloadArtifactForm
                     artifactInfo={artifact}
                   ></DownloadArtifactForm>
                 </DownloadArtifactButton>
               )}
             </CustomContainer>
+
+            {/* Display loading indicator or 3D model visualization */}
             {!artifact.model.object || !artifact.model.material ? (
               <CustomDiv>
                 <CircularProgress color="primary" />
@@ -153,9 +167,14 @@ const ArtifactDetails = () => {
                 mtlPath={artifact.model.material}
               />
             )}
+
+            {/* Display image carousel */}
             <ImagesCarousel images={artifact.images}></ImagesCarousel>
           </LeftBox>
+
+          {/* Right side with artifact attributes */}
           <RightBox>
+            {/* Display artifact description */}
             <Typography>
               {loading ? (
                 <CustomSkeletonText />
@@ -163,9 +182,11 @@ const ArtifactDetails = () => {
                 artifact.attributes.description
               )}
             </Typography>
+
+            {/* Display artifact shape */}
             <HorizontalStack>
               <Typography variant="h5">
-                <Category color="inherit" fontSize="small" style={{ verticalAlign: 'middle' }}/> Forma:{" "}
+                <Category color="inherit" fontSize="small" style={{ verticalAlign: 'middle' }}/> Shape:{" "}
               </Typography>
               {loading ? (
                 <CustomSkeletonTag />
@@ -173,10 +194,11 @@ const ArtifactDetails = () => {
                 <CustomShapeTag label={artifact.attributes.shape.value} />
               )}
             </HorizontalStack>
+
+            {/* Display artifact culture */}
             <HorizontalStack>
               <Typography variant="h5">
-                {" "}
-                <Diversity3 color="interhit" fontSize="small" style={{ verticalAlign: 'middle' }}/> Cultura:
+                <Diversity3 color="inherit" fontSize="small" style={{ verticalAlign: 'middle' }} /> Culture:
               </Typography>
               {loading ? (
                 <CustomSkeletonTag />
@@ -184,24 +206,24 @@ const ArtifactDetails = () => {
                 <CustomCultureTag label={artifact.attributes.culture.value} />
               )}
             </HorizontalStack>
-            {
-              <VerticalStack>
-                <Typography variant="h5">
-                  <LocalOffer color="inherit" fontSize="small" style={{ verticalAlign: 'middle' }} /> Etiquetas:
-                </Typography>
-                <TagContainer>
-                  {loading ? (
-                    <CustomSkeletonTag />
-                  ) : artifact.attributes.tags.length > 0 ? (
-                    artifact.attributes.tags.map((tag) => (
-                      <Chip key={tag.id} label={tag.value} />
-                    ))
-                  ) : (
-                    <p>Sin etiquetas</p>
-                  )}
-                </TagContainer>
-              </VerticalStack>
-            }
+
+            {/* Display artifact tags */}
+            <VerticalStack>
+              <Typography variant="h5">
+                <LocalOffer color="inherit" fontSize="small" style={{ verticalAlign: 'middle' }} /> Tags:
+              </Typography>
+              <TagContainer>
+                {loading ? (
+                  <CustomSkeletonTag />
+                ) : artifact.attributes.tags.length > 0 ? (
+                  artifact.attributes.tags.map((tag) => (
+                    <Chip key={tag.id} label={tag.value} />
+                  ))
+                ) : (
+                  <p>No tags</p>
+                )}
+              </TagContainer>
+            </VerticalStack>
           </RightBox>
         </ContainerGrid>
       )}
@@ -209,7 +231,8 @@ const ArtifactDetails = () => {
   );
 };
 
-const CustomContainer = styled("div")(({theme}) => ({
+// Styled components for layout and UI elements
+const CustomContainer = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   justifyContent: "space-between",
@@ -217,11 +240,13 @@ const CustomContainer = styled("div")(({theme}) => ({
   width: "100%",
   height: theme.spacing(5.25),
 }));
+
 const HorizontalStack = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   gap: theme.spacing(1),
 }));
+
 const VerticalStack = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
