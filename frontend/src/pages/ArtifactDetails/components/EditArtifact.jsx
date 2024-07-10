@@ -13,20 +13,24 @@ import { styled } from "@mui/material/styles";
 import UploadButton from "../../sharedComponents/UploadButton";
 import AutocompleteExtended from "../../sharedComponents/AutocompleteExtended";
 import { API_URLS } from "../../../api";
-import ImageUploader from "./ImageUploader";
-import { allowedFileTypes } from "../../Catalog/CreateArtifact";
+import ImageUploader from "./ImageUploader"; // Assuming this is a custom component
 import NotFound from "../../../components/NotFound";
 import { useSnackBars } from "../../../hooks/useSnackbars";
 import { useToken } from "../../../hooks/useToken";
 
+/**
+ * EditArtifact component handles the editing of artifact details.
+ * It fetches artifact data, allows updating, and handles form submission.
+ */
 const EditArtifact = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { artifactId } = useParams();
-  const { addAlert } = useSnackBars();
-  const { token } = useToken();
+  const navigate = useNavigate(); // Navigation utility from React Router
+  const location = useLocation(); // Location hook from React Router
+  const { artifactId } = useParams(); // Retrieves artifactId from URL params
+  const { addAlert } = useSnackBars(); // Snackbar utility hook for displaying alerts
+  const { token } = useToken(); // Authentication token hook
 
-  const [notFound, setNotFound] = useState(false);
+  // State variables
+  const [notFound, setNotFound] = useState(false); // Indicates if artifact is not found
   const [updatedArtifact, setUpdatedArtifact] = useState({
     object: "",
     texture: "",
@@ -43,18 +47,18 @@ const EditArtifact = () => {
       value: "",
     },
     tags: [],
-  });
+  }); // Holds updated artifact data
 
-  const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState(false);
-  const goBack = !!location.state?.from;
+  const [loading, setLoading] = useState(true); // Loading state for API fetch
+  const [errors, setErrors] = useState(false); // Error state for API fetch
+  const goBack = !!location.state?.from; // Indicates if there's a previous location to go back to
 
-  // Retrieved data from the API
-  const [shapeOptions, setShapeOptions] = useState([]);
-  const [cultureOptions, setCultureOptions] = useState([]);
-  const [tagOptions, setTagOptions] = useState([]);
+  // State variables for fetched metadata options
+  const [shapeOptions, setShapeOptions] = useState([]); // Options for artifact shapes
+  const [cultureOptions, setCultureOptions] = useState([]); // Options for artifact cultures
+  const [tagOptions, setTagOptions] = useState([]); // Options for artifact tags
 
-  // Fetch data from the API
+  // Fetches artifact data from the API based on artifactId
   useEffect(() => {
     fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}`, {
       headers: {
@@ -64,7 +68,7 @@ const EditArtifact = () => {
       .then((response) => {
         if (!response.ok) {
           if (response.status === 404) {
-            setNotFound(true);
+            setNotFound(true); // Sets notFound state if artifact is not found
             return;
           }
         }
@@ -72,6 +76,7 @@ const EditArtifact = () => {
       })
       .then((response) => {
         let { attributes, thumbnail, model, images } = response;
+        // Sets updatedArtifact state with fetched data
         setUpdatedArtifact({
           thumbnail: thumbnail,
           images: images,
@@ -79,42 +84,51 @@ const EditArtifact = () => {
           ...attributes,
         });
       });
-  }, [artifactId]);
+  }, [artifactId]); // Runs when artifactId changes
 
+  // Fetches metadata options (shapes, cultures, tags) from the API
   useEffect(() => {
     fetch(API_URLS.ALL_METADATA, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).then((response) => response.json().
-    then((data) => {
-        if (!response.ok) {
-          throw new Error(data.detail);
-        }
-        let metadata = data.data;
-        let shapes = metadata.shapes;
-        let cultures = metadata.cultures;
-        let tags = metadata.tags;
+    })
+      .then((response) =>
+        response.json().then((data) => {
+          if (!response.ok) {
+            throw new Error(data.detail); // Throws error if response is not OK
+          }
+          let metadata = data.data;
+          let shapes = metadata.shapes;
+          let cultures = metadata.cultures;
+          let tags = metadata.tags;
 
-        setShapeOptions(shapes);
-        setCultureOptions(cultures);
-        setTagOptions(tags);
-      })
+          // Sets shapeOptions, cultureOptions, and tagOptions states with fetched data
+          setShapeOptions(shapes);
+          setCultureOptions(cultures);
+          setTagOptions(tags);
+        })
+      )
       .catch((error) => {
-        setErrors(true);
-        addAlert(error.message);
+        setErrors(true); // Sets errors state if there's an error during fetch
+        addAlert(error.message); // Displays error message using addAlert
       })
-      .finally(() => setLoading(false)));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+      .finally(() => setLoading(false)); // Sets loading state to false after fetch
+  }, []); // Runs once on component mount
 
+  // Handles input change for updating updatedArtifact state
   const handleInputChange = (name, value) => {
     setUpdatedArtifact({ ...updatedArtifact, [name]: value });
   };
+
+  // Handles form submission for updating artifact details
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Partial update of the artifact
+
+    // Creates FormData object for sending data to backend
     const formData = new FormData();
-    // For new files, we send the file itself with key "new_<name>"
+
+    // Adds updatedArtifact data to FormData object
     if (updatedArtifact.object instanceof File) {
       formData.append("model[new_object]", updatedArtifact.object);
     }
@@ -124,11 +138,13 @@ const EditArtifact = () => {
     if (updatedArtifact.material instanceof File) {
       formData.append("model[new_material]", updatedArtifact.material);
     }
-    // For thumbnail and images we do the same but if they are not new files, we send their name with key "<name>", otherwise the backend will set them to null
     if (updatedArtifact.thumbnail instanceof File) {
       formData.append("new_thumbnail", updatedArtifact.thumbnail);
     } else if (typeof updatedArtifact.thumbnail === "string") {
-      formData.append("thumbnail", updatedArtifact.thumbnail.split("/").pop());
+      formData.append(
+        "thumbnail",
+        updatedArtifact.thumbnail.split("/").pop()
+      );
     }
     updatedArtifact.images.forEach((image) => {
       if (image instanceof File) {
@@ -137,61 +153,74 @@ const EditArtifact = () => {
         formData.append("images", image.split("/").pop());
       }
     });
+
     formData.append("description", updatedArtifact.description);
     formData.append("id_shape", updatedArtifact.shape.id);
     formData.append("id_culture", updatedArtifact.culture.id);
-    // If the updated list of tags is empty, we don't send anything
-    updatedArtifact.tags.forEach((tag) => formData.append("id_tags", tag.id));
 
+    // Appends tag IDs only if the updated list of tags is not empty
+    updatedArtifact.tags.forEach((tag) =>
+      formData.append("id_tags", tag.id)
+    );
+
+    // Sends FormData to update artifact endpoint
     await fetch(`${API_URLS.DETAILED_ARTIFACT}/${artifactId}/update`, {
       method: "POST",
       body: formData,
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).then((response) => {
-      response.json().then((data) => {
-        if (!response.ok) {
-          throw new Error(data.detail);
-        }
-      })
+    })
+      .then((response) =>
+        response.json().then((data) => {
+          if (!response.ok) {
+            throw new Error(data.detail); // Throws error if response is not OK
+          }
+        })
+      )
       .then((response) => {
-        addAlert("¡Objeto editado con éxito!");
-        navigate(`/catalog/${artifactId}`);
+        addAlert("¡Objeto editado con éxito!"); // Displays success message using addAlert
+        navigate(`/catalog/${artifactId}`); // Navigates to artifact details page
       })
       .catch((error) => {
-        addAlert(error.message);
+        addAlert(error.message); // Displays error message using addAlert
       });
-  })};
-
-  const getFileNameOrUrl = (item) => {
-    if (typeof item === "object" && item !== null) {
-      return item.name;
-    }
-    if (typeof item === "string" && item.includes("/")) {
-      return item.split("/").pop();
-    }
-    return item;
   };
 
+  // Retrieves filename or URL from item (file object or string)
+  const getFileNameOrUrl = (item) => {
+    if (typeof item === "object" && item !== null) {
+      return item.name; // Returns filename if item is a file object
+    }
+    if (typeof item === "string" && item.includes("/")) {
+      return item.split("/").pop(); // Returns filename from URL string
+    }
+    return item; // Returns item itself if neither file object nor string
+  };
+
+  // Handles cancel action to navigate back to previous location or catalog
   const handleCancel = () => {
     const from = goBack ? location.state.from : `/catalog`;
     navigate(from, { replace: goBack });
   };
 
+  // Renders the component
   return (
     <>
       {notFound ? (
-        <NotFound />
+        <NotFound /> // Renders NotFound component if artifact is not found
       ) : (
         <Container>
           <Box component="form" autoComplete="off" onSubmit={handleSubmit}>
             <Grid container rowGap={4}>
+              {/* Title */}
               <CustomTypography variant="h1">
                 Editar pieza {artifactId}
               </CustomTypography>
               <Grid container spacing={2}>
+                {/* Left column */}
                 <ColumnGrid item xs={6} rowGap={2}>
+                  {/* Upload buttons for object, texture, material */}
                   <UploadButton
                     label="Objeto *"
                     name="object"
@@ -213,6 +242,7 @@ const EditArtifact = () => {
                     setStateFn={setUpdatedArtifact}
                     initialFilename={getFileNameOrUrl(updatedArtifact.material)}
                   />
+                  {/* Upload button for thumbnail */}
                   <UploadButton
                     label="Miniatura (opcional)"
                     name="thumbnail"
@@ -221,6 +251,7 @@ const EditArtifact = () => {
                       updatedArtifact.thumbnail
                     )}
                   />
+                  {/* Image uploader for images */}
                   <ImageUploader
                     label="Imágenes (opcional)"
                     name="images"
@@ -229,7 +260,9 @@ const EditArtifact = () => {
                     allowedImageTypes={allowedFileTypes.images}
                   />
                 </ColumnGrid>
+                {/* Right column */}
                 <ColumnGrid item xs={6} rowGap={1}>
+                  {/* Text field for description */}
                   <FormLabel component="legend">Descripción *</FormLabel>
                   <TextField
                     required
@@ -244,6 +277,7 @@ const EditArtifact = () => {
                       handleInputChange(e.target.name, e.target.value)
                     }
                   />
+                  {/* Autocomplete for shape */}
                   <FormLabel component="legend">Forma *</FormLabel>
                   <AutocompleteExtended
                     id="shape"
@@ -257,6 +291,7 @@ const EditArtifact = () => {
                     filterSelectedOptions
                     disabled={loading || errors}
                   />
+                  {/* Autocomplete for culture */}
                   <FormLabel component="legend">Cultura *</FormLabel>
                   <AutocompleteExtended
                     id="culture"
@@ -270,6 +305,7 @@ const EditArtifact = () => {
                     filterSelectedOptions
                     disabled={loading || errors}
                   />
+                  {/* Autocomplete for tags */}
                   <FormLabel component="legend">Etiquetas (opcional)</FormLabel>
                   <AutocompleteExtended
                     multiple
@@ -286,10 +322,13 @@ const EditArtifact = () => {
                   />
                 </ColumnGrid>
               </Grid>
+              {/* Actions footer */}
               <Grid container justifyContent="flex-end" columnGap={2}>
+                {/* Cancel button */}
                 <Button variant="text" color="secondary" onClick={handleCancel}>
                   {goBack ? "Cancelar" : "Volver al catálogo"}
                 </Button>
+                {/* Update button */}
                 <Button variant="contained" color="primary" type="submit">
                   Actualizar
                 </Button>
@@ -302,11 +341,13 @@ const EditArtifact = () => {
   );
 };
 
+// Custom typography styling
 const CustomTypography = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(6),
   textAlign: "left",
 }));
 
+// Grid styling for column layout
 const ColumnGrid = styled(Grid)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
