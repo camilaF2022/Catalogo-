@@ -15,12 +15,21 @@ import { API_URLS } from "../../../api";
 import { useSnackBars } from "../../../hooks/useSnackbars";
 import { useToken } from "../../../hooks/useToken";
 
+/**
+ * Component for filtering artifacts in the catalog.
+ * Manages search, shape, culture, and tags filtering.
+ *
+ * @param {Object} filter - The current filter state.
+ * @param {Function} setFilter - Function to update filter state.
+ */
 const CatalogFilter = ({ filter, setFilter }) => {
   const { addAlert } = useSnackBars();
   const { token } = useToken();
+
   // Search params from the URL
   const [searchParams, setSearchParams] = useSearchParams();
-  // Avoid updating the URL when the component mounts and there are search params already
+
+  // Flag to avoid updating URL params when component mounts
   const [updateParamsFlag, setUpdateParamsFlag] = useState(false);
 
   // Retrieved data from the API
@@ -30,11 +39,17 @@ const CatalogFilter = ({ filter, setFilter }) => {
   const [cultureOptions, setCultureOptions] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
 
+  /**
+   * Updates the filter state when a filter value changes.
+   *
+   * @param {string} name - The name of the filter field.
+   * @param {string|Array} value - The new value of the filter field.
+   */
   const handleFilterChange = (name, value) => {
     setFilter({ ...filter, [name]: value });
   };
 
-  // Initialize the filter state with the search params
+  // Initialize the filter state with the search params from the URL
   useEffect(() => {
     const query = searchParams.get("query")
       ? decodeURIComponent(searchParams.get("query"))
@@ -53,7 +68,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
     setUpdateParamsFlag(true);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Fetch data from the API
+  // Fetch metadata (shapes, cultures, tags) from the API
   useEffect(() => {
     fetch(API_URLS.ALL_METADATA, {
       headers: {
@@ -68,17 +83,13 @@ const CatalogFilter = ({ filter, setFilter }) => {
       })
       .then((response) => {
         let metadata = response.data;
+        let shapes = metadata.shapes.map((shape) => shape.value);
+        let cultures = metadata.cultures.map((culture) => culture.value);
+        let tags = metadata.tags.map((tag) => tag.value);
 
-        let shapes = metadata.shapes;
-        let shapesNames = shapes.map((shape) => shape.value);
-        let cultures = metadata.cultures;
-        let culturesNames = cultures.map((culture) => culture.value);
-        let tags = metadata.tags;
-        let tagsNames = tags.map((tag) => tag.value);
-
-        setShapeOptions(shapesNames);
-        setCultureOptions(culturesNames);
-        setTagOptions(tagsNames);
+        setShapeOptions(shapes);
+        setCultureOptions(cultures);
+        setTagOptions(tags);
       })
       .catch((error) => {
         setErrors(true);
@@ -87,36 +98,31 @@ const CatalogFilter = ({ filter, setFilter }) => {
       .finally(() => setLoading(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Update the URL search params when the user applies a filter
+  // Update the URL search params when the filter state changes
   useEffect(() => {
     if (!updateParamsFlag) {
       return;
     }
+
+    const updatedSearchParams = new URLSearchParams();
     if (filter.query) {
-      searchParams.set("query", filter.query);
-    } else {
-      searchParams.delete("query");
+      updatedSearchParams.set("query", filter.query);
     }
     if (filter.shape) {
-      searchParams.set("shape", filter.shape);
-    } else {
-      searchParams.delete("shape");
+      updatedSearchParams.set("shape", filter.shape);
     }
     if (filter.culture) {
-      searchParams.set("culture", filter.culture);
-    } else {
-      searchParams.delete("culture");
+      updatedSearchParams.set("culture", filter.culture);
     }
     if (filter.tags.length > 0) {
-      searchParams.set("tags", filter.tags.join(","));
-    } else {
-      searchParams.delete("tags");
+      updatedSearchParams.set("tags", filter.tags.join(","));
     }
-    setSearchParams(searchParams);
+    setSearchParams(updatedSearchParams);
   }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <CustomBox>
+      {/* Search field with clear button */}
       <TextField
         InputProps={{
           startAdornment: (
@@ -147,14 +153,16 @@ const CatalogFilter = ({ filter, setFilter }) => {
           handleFilterChange(event.target.name, event.target.value)
         }
       />
+
+      {/* Autocomplete fields for shape, culture, and tags */}
       <CustomStack direction="row">
         <Autocomplete
           fullWidth
           id="shape"
           name="shape"
           value={filter.shape}
-          onChange={(value) =>
-            handleFilterChange("shape", value.target.textContent)
+          onChange={(event, value) =>
+            handleFilterChange("shape", value ?? "")
           }
           options={shapeOptions}
           getOptionLabel={(option) => option ?? ""}
@@ -169,13 +177,14 @@ const CatalogFilter = ({ filter, setFilter }) => {
           )}
           disabled={loading || errors}
         />
+
         <Autocomplete
           fullWidth
           id="culture"
           name="culture"
           value={filter.culture}
-          onChange={(value) =>
-            handleFilterChange("culture", value.target.textContent)
+          onChange={(event, value) =>
+            handleFilterChange("culture", value ?? "")
           }
           options={cultureOptions}
           getOptionLabel={(option) => option ?? ""}
@@ -190,6 +199,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
           )}
           disabled={loading || errors}
         />
+
         <Autocomplete
           multiple
           limitTags={2}
@@ -198,10 +208,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
           name="tags"
           value={filter.tags}
           onChange={(event, value) =>
-            handleFilterChange(
-              "tags",
-              value.map((tag) => tag)
-            )
+            handleFilterChange("tags", value ?? [])
           }
           options={tagOptions}
           getOptionLabel={(option) => option ?? ""}
@@ -221,6 +228,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
   );
 };
 
+// Styled component for custom box layout
 const CustomBox = styled(Grid)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -230,6 +238,7 @@ const CustomBox = styled(Grid)(({ theme }) => ({
   marginBottom: theme.spacing(3),
 }));
 
+// Styled component for custom stack layout
 const CustomStack = styled(Stack)(({ theme }) => ({
   width: "100%",
   columnGap: theme.spacing(2),
