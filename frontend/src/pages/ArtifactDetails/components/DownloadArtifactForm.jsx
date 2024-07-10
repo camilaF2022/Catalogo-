@@ -10,21 +10,28 @@ import { useSnackBars } from "../../../hooks/useSnackbars";
 import { useToken } from "../../../hooks/useToken";
 import { json } from "react-router-dom";
 
+/**
+ * DownloadArtifactForm renders a form for downloading artifact data, including user input fields and submission handling.
+ * @param {Object} artifactInfo Information about the artifact being downloaded.
+ * @param {Function} handleClose Function to close the modal or form.
+ * @returns {JSX.Element} JSX element containing a form for artifact download.
+ */
 const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
-  const { token } = useToken();
-  const { addAlert } = useSnackBars();
-  const [institutions, setInstitutions] = useState([]);
-  const [formValues, setFormValues] = useState({
+  const { token } = useToken(); // Retrieves authentication token from TokenProvider
+  const { addAlert } = useSnackBars(); // Accesses addAlert function from SnackbarProvider
+  const [institutions, setInstitutions] = useState([]); // State for storing institutions data
+  const [formValues, setFormValues] = useState({ // State for form input values
     fullName: "",
     rut: "",
     email: "",
     institution: { id: "", value: "" },
     comments: "",
   });
-  const [rutError, setRutError] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState(false);
+  const [rutError, setRutError] = useState(false); // State for RUT validation error
+  const [loading, setLoading] = useState(true); // State for loading state
+  const [errors, setErrors] = useState(false); // State for general errors
 
+// Fetch institutions data from API on component mount
   useEffect(() => {
     fetch(API_URLS.ALL_INSTITUTIONS, {
       headers: {
@@ -47,6 +54,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
         })})
       }, []);
 
+// Handle form input changes
     const handleChange = (e) => {
       const { name, value } = e.target;
       setFormValues({
@@ -55,6 +63,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
       });
     };
 
+ // Handle download request
     const handleDownload = async (formValues) => {
       let body = {
         fullName: formValues.fullName,
@@ -64,6 +73,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
         comments: formValues.comments,
       };
       try {
+      // First fetch: Send download request
         const response = await fetch(
           `${API_URLS.DETAILED_ARTIFACT}/${artifactInfo.id}/download`,
           {
@@ -78,6 +88,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
 
         const data = await response.json();
 
+// Check if the response is not successful
         if (!response.ok) {
           addAlert(data.detail);
           return;
@@ -95,6 +106,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
           }
         );
 
+// Create download link and initiate download
         const url = window.URL.createObjectURL(new Blob([await downloadResponse.blob()]));
         const link = document.createElement("a");
         link.href = url;
@@ -107,6 +119,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
       }
     };
 
+// Handle form submission
     const handleSubmit = (event) => {
       event.preventDefault();
       // Assuming formValues contains a 'rut' field that needs to be validated
@@ -116,8 +129,9 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
       }
       // Reset RUT error if validation passes
       setRutError(false);
+      // Proceed with download process
       handleDownload(formValues);
-      handleClose();
+      handleClose(); // Close the form or modal after submission
     };
 
     return (
@@ -234,6 +248,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
     );
   };
 
+// Styled components for custom styling
   const CustomStack = styled(Stack)(({ theme }) => ({
     justifyContent: "center",
     alignItems: "center",
@@ -265,8 +280,13 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
     gap: theme.spacing(2),
   }));
 
+/**
+   * validateRut validates the format and checksum of a Chilean RUT.
+   * @param {string} rutStr The RUT string to be validated.
+   * @returns {boolean} True if the RUT is valid, false otherwise.
+   */
   const validateRut = (rutStr) => {
-    let rut = rutStr.replace(/\./g, "").replace(/-/g, ""); // Change `const` to `let` for reassignment
+    let rut = rutStr.replace(/\./g, "").replace(/-/g, ""); // Remove dots and dash from RUT to `let` for reassignment
     rut = rut.split(""); // Correct splitting into an array of characters
     if (rut.length !== 9) {
       return false; // Return false if the length is not 9

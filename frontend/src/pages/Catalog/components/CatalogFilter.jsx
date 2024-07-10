@@ -15,6 +15,13 @@ import { API_URLS } from "../../../api";
 import { useSnackBars } from "../../../hooks/useSnackbars";
 import { useToken } from "../../../hooks/useToken";
 
+/**
+ * The CatalogFilter component allows users to filter artifacts by query, shape, culture, and tags.
+ * It provides text inputs and autocomplete dropdowns for each filter category.
+ * @param {object} filter - The current filter state containing query, shape, culture, and tags.
+ * @param {function} setFilter - Function to update the filter state.
+ * @returns {JSX.Element} Component for filtering artifacts.
+ */
 const CatalogFilter = ({ filter, setFilter }) => {
   const { addAlert } = useSnackBars();
   const { token } = useToken();
@@ -30,6 +37,12 @@ const CatalogFilter = ({ filter, setFilter }) => {
   const [cultureOptions, setCultureOptions] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
 
+
+/**
+   * Updates the filter state when a filter option changes.
+   * @param {string} name - The name of the filter category (query, shape, culture, tags).
+   * @param {string | string[]} value - The new value(s) for the filter category.
+   */
   const handleFilterChange = (name, value) => {
     setFilter({ ...filter, [name]: value });
   };
@@ -117,6 +130,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
 
   return (
     <CustomBox>
+     {/* Text field for searching by query */}
       <TextField
         InputProps={{
           startAdornment: (
@@ -126,6 +140,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
           ),
           endAdornment: filter.query && (
             <InputAdornment position="end">
+            {/* Button to clear search */}
               <IconButton
                 aria-label="Clear search"
                 onClick={() => handleFilterChange("query", "")}
@@ -147,6 +162,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
           handleFilterChange(event.target.name, event.target.value)
         }
       />
+      {/* Autocomplete dropdowns for shape, culture, and tags */}
       <CustomStack direction="row">
         <Autocomplete
           fullWidth
@@ -169,6 +185,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
           )}
           disabled={loading || errors}
         />
+        {/* Autocomplete for culture */}
         <Autocomplete
           fullWidth
           id="culture"
@@ -190,6 +207,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
           )}
           disabled={loading || errors}
         />
+        {/* Autocomplete for tags */}
         <Autocomplete
           multiple
           limitTags={2}
@@ -221,6 +239,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
   );
 };
 
+// Custom styled Grid container for layout and spacing
 const CustomBox = styled(Grid)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -230,6 +249,7 @@ const CustomBox = styled(Grid)(({ theme }) => ({
   marginBottom: theme.spacing(3),
 }));
 
+// Custom styled Stack for arranging Autocomplete components horizontally
 const CustomStack = styled(Stack)(({ theme }) => ({
   width: "100%",
   columnGap: theme.spacing(2),

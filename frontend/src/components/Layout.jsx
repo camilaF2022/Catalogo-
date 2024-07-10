@@ -17,6 +17,11 @@ const EditArtifact = lazy(() =>
   import("../pages/ArtifactDetails/components/EditArtifact")
 );
 
+/**
+ * PrivateRouteWrapper component checks if the user has a valid token.
+ * If token exists, renders the child components using Outlet from react-router-dom.
+ * If token doesn't exist, redirects to '/login' preserving the current location.
+ */
 const PrivateRouteWrapper = () => {
   const { token } = useToken();
   const location = useLocation();
@@ -28,6 +33,11 @@ const PrivateRouteWrapper = () => {
   );
 };
 
+/**
+ * Layout component represents the main layout structure of the application.
+ * It includes a MenuBar and handles routing using react-router-dom.
+ * Uses Suspense for lazy loading and CircularProgress for loading indication.
+ */
 const Layout = () => {
   return (
     <CustomGrid>
@@ -44,22 +54,25 @@ const Layout = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/catalog" element={<Catalog />} />
           <Route path="/catalog/:artifactId" element={<ArtifactDetails />} />
+          {/* Nested route for catalog with authorization check */}
           <Route element={<PrivateRouteWrapper />}>
             <Route path="/catalog/new" element={<CreateArtifact />} />
             <Route path="/catalog/:artifactId/edit" element={<EditArtifact />} />
           </Route>
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} /> {/* Catch-all route for 404 */}
         </Routes>
       </Suspense>
     </CustomGrid>
   );
 };
 
+// CustomGrid styled component for setting layout background and minHeight
 const CustomGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.background.main,
   minHeight: "100vh",
 }));
 
+// LoadingSpinner styled component for centered loading indicator
 const LoadingSpinner = styled("div")(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
