@@ -6,12 +6,12 @@ handles POST requests, authenticating users based on email and password, and ret
 for authenticated sessions.
 """
 
-from piezas.models import CustomUser
-from .serializer import UserSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
+from piezas.models import CustomUser
+from .serializer import UserSerializer
 
 
 class LoginView(APIView):
