@@ -1,3 +1,7 @@
+"""	
+This module contains a command to import cultures from a CSV file.
+"""
+
 import os
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
@@ -11,9 +15,20 @@ logger.setLevel("INFO")
 
 
 class Command(BaseCommand):
+    """
+    This command imports cultures from a CSV file.
+
+    Attributes:
+        help (str): A short description of the command that is displayed when running
+            'python manage.py help importCulture'.
+    """
+
     help = "Import cultures from a CSV file. The CSV file must contain a list of ids and cultures."
 
     def handle(self, *args, **kwargs):
+        """
+        Executes the command to import cultures from a CSV file.
+        """
         file = settings.CULTURE_CSV_PATH
         if not os.path.exists(file):
             logger.error(f"File {file} not found. Stop")
