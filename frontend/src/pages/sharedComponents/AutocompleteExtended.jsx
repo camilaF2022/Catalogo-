@@ -1,6 +1,24 @@
 import React, { useState } from "react";
 import { Autocomplete, Chip, MenuItem, TextField, styled } from "@mui/material";
 
+/**
+ * Extended Autocomplete component with additional functionalities:
+ * - Allows selection from predefined options.
+ * - Supports creation of new options based on user input.
+ * - Displays selected options as Chips.
+ *
+ * @param {string} id - The id attribute for the Autocomplete component.
+ * @param {string} label - The label text for the input field.
+ * @param {string} name - The name attribute for the input field.
+ * @param {Object | Array} value - The currently selected value(s) for the Autocomplete.
+ * @param {function} setValue - Callback function to update the selected value.
+ * @param {Array} options - Array of options to populate the Autocomplete list.
+ * @param {string} placeholder - Placeholder text for the input field.
+ * @param {boolean} isRequired - Determines if the input field is required.
+ * @param {boolean} allowCreation - Flag to enable/disable creation of new options.
+ * @param {...any} props - Additional props to pass down to Autocomplete component.
+ * @returns {JSX.Element} - Rendered Autocomplete component with extended functionality.
+ */
 const AutocompleteExtended = ({
   id,
   label,
@@ -16,6 +34,10 @@ const AutocompleteExtended = ({
   const [inputValue, setInputValue] = useState("");
   const [openMenu, setOpenMenu] = useState(false);
 
+  /**
+   * Handles creation of a new option based on user input.
+   * Adds the new option to the selected values if multiple selection is enabled.
+   */
   const handleCreateNewOption = () => {
     const newObject = {
       id: -1,
@@ -29,19 +51,21 @@ const AutocompleteExtended = ({
     setOpenMenu(false);
   };
 
+  /**
+   * Determines if the entered input can be created as a new option.
+   * Checks if the input is not already in the selected options.
+   */
   const optionAvailable = props.multiple
-    ? !value
-        .map((selectedOptions) => selectedOptions.value)
-        .includes(inputValue)
+    ? !value.map((selectedOptions) => selectedOptions.value).includes(inputValue)
     : true;
 
+  /**
+   * Represents the JSX element for creating a new option based on user input.
+   * Shows different messages based on whether creation is allowed and the input's availability.
+   */
   const createOption =
     allowCreation && optionAvailable ? (
-      <NewOption
-        component="li"
-        key={inputValue}
-        onClick={handleCreateNewOption}
-      >
+      <NewOption component="li" key={inputValue} onClick={handleCreateNewOption}>
         Crear "{inputValue}"
       </NewOption>
     ) : !optionAvailable ? (
@@ -104,6 +128,7 @@ const AutocompleteExtended = ({
   );
 };
 
+// Styled component for customizing the MenuItem in Autocomplete
 const NewOption = styled(MenuItem)(({ theme }) => ({
   cursor: "pointer",
   "&:hover": {
