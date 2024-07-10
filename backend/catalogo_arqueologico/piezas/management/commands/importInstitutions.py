@@ -11,9 +11,19 @@ logger = logging.getLogger(__name__)
 logger.setLevel("INFO")
 
 class Command(BaseCommand):
+    """
+    This command reads csv with institutions. It is necessary to specify which column is the one with the name.
+
+    Attributes:
+        help (str): A short description of the command that is displayed when running
+            'python manage.py help importInstitutions'.
+    """
     help = "This command reads csv with institutions. It is necessary to specify which column is the one with the name"
 
     def handle(self, *args, **kwargs):
+        """
+        Executes the command to import institutions from a CSV file.
+        """
         file = settings.INSTITUTIONS_CSV_PATH
         if not os.path.exists(file):
             logger.error(f"File {file} not found. Stop")
