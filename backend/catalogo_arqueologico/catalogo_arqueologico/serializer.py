@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
         """
         Returns the full name of the user.
 
-        Parameters:
+        Args:
             obj (CustomUser): The user instance.
 
         Returns:

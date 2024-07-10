@@ -94,7 +94,7 @@ class CustomUser(AbstractUser):
         Overrides the default save method to ensure new users are marked as
         staff and to update group membership based on role.
 
-        Parameters:
+        Args:
             args: Variable length argument list.
             kwargs: Arbitrary keyword arguments.
         """

@@ -22,7 +22,7 @@ class IsFuncionarioPermission(permissions.BasePermission):
         """
         Checks if the requesting user belongs to the "Funcionario" group.
 
-        Parameters:
+        Args:
         - request: HttpRequest object.
         - view: The view which is being accessed.
 
@@ -44,7 +44,7 @@ class IsAdminPermission(permissions.BasePermission):
         """
         Checks if the requesting user belongs to the "Administrador" group.
 
-        Parameters:
+        Args:
         - request: HttpRequest object.
         - view: The view which is being accessed.
 

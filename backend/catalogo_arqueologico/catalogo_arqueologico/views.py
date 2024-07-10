@@ -29,7 +29,7 @@ class LoginView(APIView):
 
         This method checks if the request data includes 'email' and 'password'.
 
-        Parameters:
+        Args:
             request (HttpRequest): The request object containing the email and password.
 
         Returns:

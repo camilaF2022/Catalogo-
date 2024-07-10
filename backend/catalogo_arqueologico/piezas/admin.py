@@ -72,7 +72,7 @@ class CustomUserAdmin(UserAdmin):
         """
         Returns a comma-separated string of the user's groups.
 
-        Parameters:
+        Args:
             obj (CustomUser): The user instance.
 
         Returns:
@@ -87,7 +87,7 @@ class CustomUserAdmin(UserAdmin):
         """
         Saves the model instance and updates the user's group memberships.
 
-        Parameters:
+        Args:
             request (HttpRequest): The HTTP request instance.
             obj (CustomUser): The user instance being saved.
             form (ModelForm): The form instance.
@@ -102,7 +102,7 @@ class CustomUserAdmin(UserAdmin):
         """
         Handles the response after a change has been made to a user instance.
 
-        Parameters:
+        Args:
             request (HttpRequest): The HTTP request instance.
             obj (CustomUser): The user instance that was changed.
 
