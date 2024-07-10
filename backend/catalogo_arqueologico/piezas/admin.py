@@ -1,3 +1,20 @@
+"""
+This module defines the admin interface customization for the Django application.
+
+It includes custom admin classes for the CustomUser model and other models such 
+as Tag, Shape, Culture, and Artifact.
+
+Classes:
+    CustomUserAdmin: Customizes the admin interface for the CustomUser model.
+    TagAdmin: Customizes the admin interface for the Tag model.
+    ShapeAdmin: Customizes the admin interface for the Shape model.
+    CultureAdmin: Customizes the admin interface for the Culture model.
+    ArtifactAdmin: Customizes the admin interface for the Artifact model.
+
+The module also registers these models with the Django admin to make them available in 
+the Django admin panel.
+"""
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import (
@@ -61,6 +78,7 @@ class CustomUserAdmin(UserAdmin):
         Returns:
             str: A comma-separated string of group names.
         """
+
         return ", ".join([group.name for group in obj.groups.all()])
 
     get_groups.short_description = "Groups"
@@ -73,8 +91,10 @@ class CustomUserAdmin(UserAdmin):
             request (HttpRequest): The HTTP request instance.
             obj (CustomUser): The user instance being saved.
             form (ModelForm): The form instance.
-            change (bool): True if this is a change operation, False if this is a creation operation.
+            change (bool): True if this is a change operation,
+                False if this is a creation operation.
         """
+
         super().save_model(request, obj, form, change)
         obj.update_group()
 
@@ -89,6 +109,7 @@ class CustomUserAdmin(UserAdmin):
         Returns:
             HttpResponse: The HTTP response to send back to the client.
         """
+
         response = super().response_change(request, obj)
         obj.update_group()
         return response
