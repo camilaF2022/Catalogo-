@@ -21,14 +21,6 @@ class LoginView(APIView):
     This view handles POST requests to authenticate users. It expects an email and password
     in the request data, validates them, and returns a token for authenticated sessions along
     with user data if the credentials are valid.
-
-    Methods:
-        post(request): Handles the POST request to authenticate a user.
-            - Parameters:
-                - request: HttpRequest object containing the request data.
-            - Returns:
-                - Response object with token and user data if authentication is successful.
-                - Response object with error detail if authentication fails.
     """
 
     def post(self, request):
