@@ -1,3 +1,7 @@
+"""
+This module contains the command to import shapes from a txt file.
+"""
+
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from django.conf import settings
@@ -11,12 +15,29 @@ logger.setLevel("INFO")
 
 
 class Command(BaseCommand):
+    """
+    This command imports shapes from a txt file.
+
+    Attributes:
+        help (str): A short description of the command that is displayed when running
+            'python manage.py help importShape'.
+    """
+
     help = "Import shapes from a txt file. The file must contain a list of ids. The file name will be the shape name and the file content will be the artifact ids."
 
     def add_arguments(self, parser):
+        """
+        Adds the file argument to the command.
+
+        Args:
+            parser (ArgumentParser): The parser that will receive the arguments.
+        """
         parser.add_argument("file", type=str, help="The argument file is required")
 
     def handle(self, *args, **kwargs):
+        """
+        Executes the command to import shapes from a txt file.
+        """
         folder_path = settings.SHAPE_FOLDER_PATH
         file_name = kwargs.get("file")
         file = folder_path + file_name

@@ -1,3 +1,6 @@
+"""
+This module contains a Django management command that creates groups and assigns permissions to them.
+""""
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
@@ -10,9 +13,19 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
+    """
+    This command creates groups and assigns permissions to them.
+
+    Attributes:
+        help (str): A short description of the command that is displayed when running
+            'python manage.py help createGroups'.
+    """
     help = "Creates specified groups and assigns permissions"
 
     def handle(self, *args, **options):
+        """
+        Executes the command to create groups and assign permissions.
+        """	
         groups = ["Funcionario", "Administrador"]
         for group_name in groups:
             group, created = Group.objects.get_or_create(name=group_name)

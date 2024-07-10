@@ -1,7 +1,20 @@
+"""
+This module contains a validator for data inputs specific to the 
+application's requirements. 
+
+The validator `validateRut` is designed to validate Chilean RUT (Rol Único Tributario) numbers. 
+"""
+
 from django.core.exceptions import ValidationError
 
 
 def validateRut(rut):
+    """
+    Validates a chilean RUT (Rol Único Tributario) number.
+
+    Args:
+        rut (str): The RUT to validate.
+    """
     if len(rut) != 9:
         raise ValidationError("Invalid identifier: Must be 9 characters long")
     last = rut[8]
