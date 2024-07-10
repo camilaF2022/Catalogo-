@@ -23,12 +23,12 @@ Each model is designed to capture specific details and relationships necessary f
 artifacts within the system.
 """
 
+import logging
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.contrib.auth.models import Group
 from .validators import validateRut
-import logging
 
 logger = logging.getLogger(__name__)
 
