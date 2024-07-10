@@ -1,3 +1,7 @@
+"""
+This module contains the command that executes every other command related to imports.
+"""
+
 from django.core.management.base import BaseCommand
 from django.core import management
 from django.core.management.base import BaseCommand
@@ -12,10 +16,20 @@ logger.setLevel("INFO")
 
 
 class Command(BaseCommand):
+    """
+    This command executes every other command related to imports.
+
+    Attributes:
+        help (str): A short description of the command that is displayed when running
+            'python manage.py help importAllData'.
+    """
+
     help = "This command executes every other command related to imports. Doesn't need any arguments."
 
     def handle(self, *args, **kwargs):
-
+        """
+        Executes every other command related to imports.
+        """
         # Get every shape txt file, to run importShape with that file
         shapes_txt_folder = os.listdir(settings.SHAPE_FOLDER_PATH)
         shapes_txt = [
