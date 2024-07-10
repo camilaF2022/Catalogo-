@@ -22,9 +22,9 @@ Each route is connected to a view from the 'piezas' application, which handles t
 request and response logic for that endpoint.
 """
 
-from django.urls import path, include
+from django.urls import path, include # unused import include
 from rest_framework.documentation import include_docs_urls
-from rest_framework import routers
+from rest_framework import routers # unused import routers
 from piezas import views
 
 urlpatterns = [
