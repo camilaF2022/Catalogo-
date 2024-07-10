@@ -5,6 +5,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
 import { useSnackBars } from "../../../hooks/useSnackbars";
 
+/**
+ * ImageUploader component allows users to upload and manage multiple images.
+ * @param {string} label - The label for the image uploader.
+ * @param {string} name - The name of the image uploader.
+ * @param {Array<string | File>} images - The array of image URLs or File objects.
+ * @param {Function} onListChange - Callback function triggered on image list change.
+ * @param {Array<string>} allowedImageTypes - Array of allowed image file types.
+ */
 const ImageUploader = ({
   label,
   name,
@@ -13,6 +21,8 @@ const ImageUploader = ({
   allowedImageTypes,
 }) => {
   const { addAlert } = useSnackBars();
+
+  // Memoized array of image URLs from File objects
   const imageURLs = useMemo(
     () =>
       images.map((fileOrUrlString) => {
@@ -24,24 +34,29 @@ const ImageUploader = ({
     [images]
   );
 
+  // Comma-separated string of allowed image types
   const allowedTypesLabel = allowedImageTypes.join(", ");
 
+  // Handles file upload event
   const handleImageUpload = (e) => {
     const newFilesArray = Array.from(e.target.files);
-    // Get types
+
+    // Check file types against allowed types
     const fileTypes = newFilesArray.map((file) => file.name.split(".").pop());
     const expectedFileTypes = allowedImageTypes;
-    // Check if file type is allowed
     if (fileTypes.some((fileType) => !expectedFileTypes.includes(fileType))) {
       addAlert("Tipo de archivo no permitido");
       return;
     }
+
+    // Update the list of images
     onListChange((prevState) => ({
       ...prevState,
       [name]: [...images, ...newFilesArray],
     }));
   };
 
+  // Handles image deletion
   const handleDeleteImage = (index) => {
     const imagesWithoutRemovedIndex = images.filter((_, i) => i !== index);
     onListChange((prevState) => ({
@@ -50,11 +65,13 @@ const ImageUploader = ({
     }));
   };
 
+  // Renders the component
   return (
     <Grid container rowGap={2}>
       <FormLabel component="legend">{label}</FormLabel>
       <Grid container rowGap={2}>
         <Grid item>
+          {/* Upload button for selecting files */}
           <Button
             component="label"
             variant="outlined"
@@ -65,6 +82,7 @@ const ImageUploader = ({
           </Button>
         </Grid>
         <Grid container spacing={2}>
+          {/* Displaying uploaded image previews */}
           {imageURLs.map((preview, index) => (
             <Grid item key={index}>
               <Box position="relative">
@@ -74,6 +92,7 @@ const ImageUploader = ({
                   width="100"
                   height="100"
                 />
+                {/* Delete button for each image */}
                 <CustomIconButton onClick={() => handleDeleteImage(index)}>
                   <DeleteIcon />
                 </CustomIconButton>
@@ -86,6 +105,7 @@ const ImageUploader = ({
   );
 };
 
+// Custom styled icon button for image deletion
 const CustomIconButton = styled(IconButton)(({ theme }) => ({
   position: "absolute",
   top: 4,
