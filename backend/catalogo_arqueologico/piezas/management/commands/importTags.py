@@ -1,6 +1,7 @@
 """
 This module contains a Django management command that imports tags from a CSV file.
 """
+
 import os
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
@@ -21,6 +22,7 @@ class Command(BaseCommand):
         help (str): A short description of the command that is displayed when running
             'python manage.py help import
     """
+
     help = (
         "Import tags from a CSV file. The CSV file must contain a list of ids and tags."
     )
@@ -42,7 +44,7 @@ class Command(BaseCommand):
             for artifact_tags_tuple in artifact_tags_relationships:
                 artifactId = int(artifact_tags_tuple[0])
                 tags = artifact_tags_tuple[1].split(", ")
-                tags= [tag.strip() for tag in tags]
+                tags = [tag.strip() for tag in tags]
 
                 for tag in tags:
                     if tag not in tag_artifactIds:
