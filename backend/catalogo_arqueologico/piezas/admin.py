@@ -18,7 +18,7 @@ from .forms import CustomUserCreationForm, CustomUserChangeForm
 class CustomUserAdmin(UserAdmin):
     """
     Custom user model admin that represents the CustomUser model in the Django admin interface.
-    
+
     Attributes:
         add_form (forms.ModelForm): The form used for creating new users.
         form (forms.ModelForm): The form used for changing user information.
@@ -28,6 +28,7 @@ class CustomUserAdmin(UserAdmin):
         fieldsets (tuple): A tuple specifying the layout of the admin “change” page.
         add_fieldsets (tuple): A tuple specifying the layout of the admin “add” page.
     """
+
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
@@ -53,10 +54,10 @@ class CustomUserAdmin(UserAdmin):
     def get_groups(self, obj):
         """
         Returns a comma-separated string of the user's groups.
-        
+
         Parameters:
             obj (CustomUser): The user instance.
-            
+
         Returns:
             str: A comma-separated string of group names.
         """
@@ -67,7 +68,7 @@ class CustomUserAdmin(UserAdmin):
     def save_model(self, request, obj, form, change):
         """
         Saves the model instance and updates the user's group memberships.
-        
+
         Parameters:
             request (HttpRequest): The HTTP request instance.
             obj (CustomUser): The user instance being saved.
@@ -80,11 +81,11 @@ class CustomUserAdmin(UserAdmin):
     def response_change(self, request, obj):
         """
         Handles the response after a change has been made to a user instance.
-        
+
         Parameters:
             request (HttpRequest): The HTTP request instance.
             obj (CustomUser): The user instance that was changed.
-            
+
         Returns:
             HttpResponse: The HTTP response to send back to the client.
         """
@@ -96,12 +97,13 @@ class CustomUserAdmin(UserAdmin):
 class TagAdmin(admin.ModelAdmin):
     """
     Admin interface options for Tag model.
-    
+
     Attributes:
         list_display (tuple): Fields to display in the admin list view.
         list_filter (tuple): Fields to filter by in the admin list view.
         search_fields (tuple): Fields to search in the admin list view.
     """
+
     list_display = ("id", "name")
     list_filter = ("name",)
     search_fields = ("name",)
@@ -110,25 +112,28 @@ class TagAdmin(admin.ModelAdmin):
 class ShapeAdmin(admin.ModelAdmin):
     """
     Admin interface options for Shape model.
-    
+
     Attributes:
         list_display (tuple): Fields to display in the admin list view.
         list_filter (tuple): Fields to filter by in the admin list view.
         search_fields (tuple): Fields to search in the admin list view.
     """
+
     list_display = ("id", "name")
     list_filter = ("name",)
     search_fields = ("name",)
 
+
 class CultureAdmin(admin.ModelAdmin):
     """
     Admin interface options for Culture model.
-    
+
     Attributes:
         list_display (tuple): Fields to display in the admin list view.
         list_filter (tuple): Fields to filter by in the admin list view.
         search_fields (tuple): Fields to search in the admin list view.
     """
+
     list_display = ("id", "name")
     list_filter = ("name",)
     search_fields = ("name",)
@@ -137,15 +142,17 @@ class CultureAdmin(admin.ModelAdmin):
 class ArtifactAdmin(admin.ModelAdmin):
     """
     Admin interface options for Artifact model.
-    
+
     Attributes:
         list_display (tuple): Fields to display in the admin list view.
         list_filter (tuple): Fields to filter by in the admin list view.
         search_fields (tuple): Fields to search in the admin list view.
     """
+
     list_display = ("id", "description")
     list_filter = ("id",)
     search_fields = ("description",)
+
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Tag, TagAdmin)
