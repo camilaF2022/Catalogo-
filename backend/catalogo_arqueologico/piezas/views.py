@@ -13,10 +13,19 @@ Classes:
 - InstitutionAPIView: Provides a list view for institutions.
 """
 
+import math
+import zipfile
+from io import BytesIO
+import logging
+import os
 from rest_framework import permissions, generics, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from django.db.models import Q
+from django.core.files import File
+from django.http import HttpResponse
+from django.conf import settings
 from .serializers import (
     ArtifactRequesterSerializer,
     ArtifactSerializer,
@@ -39,16 +48,7 @@ from .models import (
     Model,
     Thumbnail,
 )
-from django.db.models import Q
-from django.core.files import File
-from django.http import HttpResponse
 from .permissions import IsFuncionarioPermission, IsAdminPermission
-import math
-import zipfile
-from io import BytesIO
-import logging
-import os
-from django.conf import settings
 from .authentication import TokenAuthentication
 
 logger = logging.getLogger(__name__)
