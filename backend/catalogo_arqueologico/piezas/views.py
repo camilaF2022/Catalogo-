@@ -13,11 +13,7 @@ Classes:
 - InstitutionAPIView: Provides a list view for institutions.
 """
 
-import os
-from django.conf import settings
-from .authentication import TokenAuthentication
-from rest_framework import generics, permissions
-from rest_framework import generics, status
+from rest_framework import permissions, generics, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -51,6 +47,9 @@ import math
 import zipfile
 from io import BytesIO
 import logging
+import os
+from django.conf import settings
+from .authentication import TokenAuthentication
 
 logger = logging.getLogger(__name__)
 
