@@ -3,16 +3,31 @@ import { Modal, Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CancelIcon from "@mui/icons-material/Cancel";
 
+/**
+ * ImageModal component displays an image in a modal with an option to close.
+ * It adjusts modal size based on image dimensions.
+ * @param {string} path - The URL path to the image.
+ * @returns {JSX.Element} Component for displaying an image in a modal.
+ */
 const ImageModal = ({ path }) => {
-  const [open, setOpen] = useState(false);
-  const [isWideImage, setIsWideImage] = useState(false);
+
+  // State variables for managing modal visibility and image size
+  const [open, setOpen] = useState(false); // State for modal open/close
+  const [isWideImage, setIsWideImage] = useState(false); // State for wide image detection
+
+  
+  // Opens the modal
   const handleOpen = () => setOpen(true);
+
+  // Closes the modal
   const handleClose = () => setOpen(false);
 
+  // Checks if the image is wide when loaded
   const handleImageSize = (path) => {
     const img = new Image();
     img.src = path;
     img.onload = () => {
+    // Determines if the image is wide based on width to height ratio
       if (img.width / img.height > 2) {
         setIsWideImage(true);
       } else {
@@ -20,18 +35,26 @@ const ImageModal = ({ path }) => {
       }
     };
   };
+  
+  // Effect to handle image size when `path` prop changes
   useEffect(() => {
     handleImageSize(path);
   }, [path]);
+  
+  
   return (
     <div>
+     {/* Image thumbnail that opens the modal */}
       <CustomImage src={path} alt="lazy" onClick={handleOpen} />
+      {/* Modal that displays the image */}
       <CustomModal open={open} onClose={handleClose}>
         <CustomBox>
+        {/* Close icon */}
           <CancelIcon
             onClick={handleClose}
             style={{ cursor: "pointer", color: "white" }}
           />
+          {/* Image container */}
           <ImageContainer
             iswideimage={isWideImage ? isWideImage.toString() : undefined}
           >
@@ -48,6 +71,7 @@ const ImageModal = ({ path }) => {
   );
 };
 
+// Styled components for custom styling
 const CustomImage = styled("img")(() => ({
   cursor: "pointer",
   width: "100%",

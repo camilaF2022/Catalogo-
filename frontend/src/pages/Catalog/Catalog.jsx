@@ -16,12 +16,19 @@ import { API_URLS } from "../../api";
 import { useToken } from "../../hooks/useToken";
 import useFetchItems from "../../hooks/useFetchItems";
 
+
+/**
+ * The Catalog component displays a catalog of artifacts with pagination and filtering options.
+ * Users can view artifact cards, apply filters, and navigate through paginated results.
+ * @returns {JSX.Element} Component for displaying the catalog.
+ */
 const Catalog = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useToken();
   const loggedIn = !!token;
 
+ // Custom hook to fetch items (artifacts) from the API with pagination and filtering
   const {
     items: artifactList,
     loading,
@@ -31,14 +38,21 @@ const Catalog = () => {
     setPagination,
   } = useFetchItems(API_URLS.ALL_ARTIFACTS);
 
+
+  /**
+   * Handles redirection to the add artifact page.
+   */
   const handleRedirect = () => {
     navigate("/catalog/new", { state: { from: location } });
   };
 
   return (
     <Container>
+      {/* Title of the catalog */}
       <CustomTypography variant="h1">Catálogo</CustomTypography>
+      {/* Component for filtering artifacts */}
       <CatalogFilter filter={filter} setFilter={setFilter} />
+  {/* Button to add new artifact (visible to logged-in users) */}
       {loggedIn && (
         <CustomBox>
           <Button
@@ -51,6 +65,7 @@ const Catalog = () => {
           </Button>
         </CustomBox>
       )}
+       {/* Loading state display with skeleton cards */}
       {loading ? (
         <Box>
           <Grid container spacing={2}>
@@ -61,6 +76,7 @@ const Catalog = () => {
             ))}
           </Grid>
         </Box>
+         // Displaying artifact cards if available
       ) : artifactList.length > 0 ? (
         <Box>
           <Grid container spacing={2}>
@@ -70,7 +86,7 @@ const Catalog = () => {
               </Grid>
             ))}
           </Grid>
-
+{/* Pagination component */}
           <CatalogPagination
             pagination={pagination}
             setPagination={setPagination}
@@ -87,12 +103,14 @@ const Catalog = () => {
   );
 };
 
+// Custom styled typography for the catalog title
 const CustomTypography = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(12),
   marginBottom: theme.spacing(3),
   textAlign: "center",
 }));
 
+// Custom styled box for centering content
 const CustomBox = styled(Grid)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",

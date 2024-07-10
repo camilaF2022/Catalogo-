@@ -10,17 +10,24 @@ import { useToken } from "../../hooks/useToken";
 import { API_URLS } from "../../api";
 import { useSnackBars } from "../../hooks/useSnackbars";
 
+/**
+ * The Login component provides a form for users to log in.
+ * Upon successful login, it sets the authentication token and redirects the user.
+ * @returns {JSX.Element} Component for user login.
+ */
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { addAlert } = useSnackBars();
   const { setToken } = useToken();
 
+  // State to manage form input values
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
   });
 
+  // Function to handle changes in form input fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({
@@ -29,6 +36,7 @@ const Login = () => {
     });
   };
 
+  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -47,7 +55,11 @@ const Login = () => {
         addAlert(data.detail);
         return;
       }
+
+      // Set authentication token in local storage
       setToken(data.token.replace(/"/g, ""));
+
+      // Redirect user to previous location or home page
       const from = location.state?.from || "/";
       navigate(from, { replace: true });
     } catch (error) {
@@ -58,13 +70,17 @@ const Login = () => {
 
   return (
     <CustomStack>
+      {/* Title for the login page */}
       <CustomTypography variant="h1">Inicio de sesión</CustomTypography>
+      
+      {/* Form container */}
       <CustomBox
         component="form"
         autoComplete="off"
         onChange={handleChange}
         onSubmit={handleSubmit}
       >
+        {/* Email input field */}
         <TextField
           required
           id="email"
@@ -74,6 +90,8 @@ const Login = () => {
           margin="normal"
           value={formValues.email}
         />
+        
+        {/* Password input field */}
         <TextField
           required
           id="password"
@@ -83,6 +101,8 @@ const Login = () => {
           margin="normal"
           value={formValues.password}
         />
+        
+        {/* Submit button */}
         <CustomButton variant="contained" color="primary" type="submit">
           Iniciar sesión
         </CustomButton>
@@ -91,24 +111,29 @@ const Login = () => {
   );
 };
 
+// Styled Stack component for centering content vertically
 const CustomStack = styled(Stack)(({ theme }) => ({
   justifyContent: "center",
   alignItems: "center",
   rowGap: theme.spacing(1),
 }));
 
+// Styled Typography component for the page title
 const CustomTypography = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(12),
   marginBottom: theme.spacing(3),
 }));
 
+// Styled Box component for containing the form elements
 const CustomBox = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
 }));
 
+// Styled Button component for the submit button
 const CustomButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(3.5),
 }));
 
 export default Login;
+

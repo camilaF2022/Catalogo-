@@ -2,11 +2,25 @@ import { useEffect, useState } from "react";
 import { useSnackBars } from "./useSnackbars";
 import { useToken } from "./useToken";
 
+/**
+ * Custom hook for fetching items from an API based on filter criteria and pagination.
+ * @param {string} baseUrl The base URL of the API endpoint for fetching items.
+ * @returns {{
+ *   items: Array,       // Array of items fetched from the API.
+ *   loading: boolean,   // Indicates if data is currently being fetched.
+ *   filter: Object,     // Current filter criteria for fetching items.
+ *   setFilter: Function,// Function to update filter criteria.
+ *   pagination: Object, // Pagination information (current page, total items, etc.).
+ *   setPagination: Function // Function to update pagination information.
+ * }}
+ */
 const useFetchItems = (baseUrl) => {
-  const { token } = useToken();
-  const { addAlert } = useSnackBars();
-  const [loading, setLoading] = useState(true);
 
+   const { token } = useToken(); // Retrieves authentication token using custom hook useToken.
+  const { addAlert } = useSnackBars(); // Retrieves alert function using custom hook useSnackBars.
+  const [loading, setLoading] = useState(true); // State to track loading state of data fetching.
+
+  // State to manage filter criteria for fetching items.
   const [filter, setFilter] = useState({
     query: "",
     shape: "",
@@ -14,12 +28,15 @@ const useFetchItems = (baseUrl) => {
     tags: [],
   });
 
+// State to manage pagination information for fetched items.
   const [pagination, setPagination] = useState({
     currentPage: 1,
     total: 0,
     perPage: 0,
     totalPages: 0,
   });
+  
+  // State to store fetched items from the API.
   const [items, setItems] = useState([]);
 
   // Reset the current page when the filter changes
@@ -68,6 +85,7 @@ const useFetchItems = (baseUrl) => {
     return () => clearTimeout(timeoutId); // cleanup on unmount or filter change
   }, [filter, pagination.currentPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
+// Return objects and functions for external use.
   return {
     items,
     loading,

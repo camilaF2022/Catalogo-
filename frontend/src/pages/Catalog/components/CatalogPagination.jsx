@@ -2,6 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Box, Pagination } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 
+/**
+ * The CatalogPagination component provides pagination controls for navigating through catalog pages.
+ * It allows users to change the current page and updates the URL accordingly.
+ * @param {object} pagination - The current pagination state containing currentPage and totalPages.
+ * @param {function} setPagination - Function to update the pagination state.
+ * @returns {JSX.Element} Component for pagination controls.
+ */
 const CatalogPagination = ({ pagination, setPagination }) => {
   const { currentPage, totalPages } = pagination;
 
@@ -11,6 +18,11 @@ const CatalogPagination = ({ pagination, setPagination }) => {
   // Avoid updating the URL when the component mounts and there are search params already
   const [updateParamsFlag, setUpdateParamsFlag] = useState(false);
 
+/**
+   * Updates the currentPage state when the page changes.
+   * @param {object} event - The event object from the Pagination component.
+   * @param {number} page - The selected page number.
+   */
   const handlePageChange = (_, page) => {
     setPagination({ ...pagination, currentPage: page });
   };
