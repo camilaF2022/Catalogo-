@@ -13,6 +13,21 @@ import Clear from "@mui/icons-material/Clear";
 import { allowedFileTypes } from "../Catalog/CreateArtifact";
 import { useSnackBars } from "../../hooks/useSnackbars";
 
+/**
+ * UploadButton component for uploading files with additional functionalities:
+ * - Supports single or multiple file uploads.
+ * - Validates file types against allowed types.
+ * - Displays current filename(s) or prompts for file upload.
+ * - Enables clearing uploaded files.
+ *
+ * @param {string} label - The label for the upload button.
+ * @param {string} name - The name attribute for file input.
+ * @param {boolean} isMultiple - Flag indicating if multiple files can be uploaded.
+ * @param {boolean} isRequired - Flag indicating if the file upload is required.
+ * @param {function} setStateFn - Callback function to update state with uploaded file(s).
+ * @param {string} initialFilename - Initial filename to display (if any).
+ * @returns {JSX.Element} - Rendered UploadButton component.
+ */
 const UploadButton = ({
   label,
   name,
@@ -31,25 +46,34 @@ const UploadButton = ({
 
   const allowedTypesLabel = allowedFileTypes[name].join(", ");
 
+  /**
+   * Handles file upload event and validates file types.
+   *
+   * @param {string} inputName - The name attribute of the input element.
+   * @param {FileList} files - List of selected files.
+   */
   const handleUploadFile = (inputName, files) => {
     if (files.length === 0) return;
-    // Get types
+
+    // Get file types
     const fileTypes = Array.from(files).map((file) =>
       file.name.split(".").pop()
     );
-    const expectedFileTypes = allowedFileTypes[inputName];
+
     // Check if file type is allowed
-    if (fileTypes.some((fileType) => !expectedFileTypes.includes(fileType.toLowerCase()))) {
+    if (fileTypes.some((fileType) => !allowedFileTypes[inputName].includes(fileType.toLowerCase()))) {
       addAlert("Tipo de archivo no permitido");
       return;
     }
-    // Save file in state
+
+    // Save file(s) in state
     if (isMultiple) {
       const listOfFiles = Array.from(files);
       setFilename(listOfFiles.map((file) => file.name).join("\n"));
       setStateFn((prevState) => ({ ...prevState, [inputName]: listOfFiles }));
       return;
     }
+
     const file = files[0];
     setFilename(file.name);
     setStateFn((prevState) => ({ ...prevState, [inputName]: file }));
@@ -118,6 +142,7 @@ const UploadButton = ({
   );
 };
 
+// Styled component for visually hidden input element
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
