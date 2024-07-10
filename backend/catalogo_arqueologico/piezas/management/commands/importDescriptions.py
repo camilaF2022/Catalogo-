@@ -1,6 +1,7 @@
 """	
 This module contains a Django management command that imports descriptions from a CSV file.
 """
+
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from django.core.files import File
@@ -25,7 +26,7 @@ def addImages(self, artifact, realId):
         realId (str): The realId of the artifact.
 
     Returns:
-        None    
+        None
     """
     multimedia_path = settings.MULTIMEDIA_FOLDER_PATH
 
@@ -84,9 +85,7 @@ class Command(BaseCommand):
                 descriptionArtifact = artifact_description_tuple[1].strip()
                 # Get the thumbnail, model, shape, culture, tags
                 # (these models are already created)
-                idThumbnail = Thumbnail.objects.get(
-                    path__icontains=realId
-                )
+                idThumbnail = Thumbnail.objects.get(path__icontains=realId)
                 idModel = Model.objects.filter(
                     Q(texture__icontains=realId)
                     & Q(object__icontains=realId)
@@ -99,7 +98,7 @@ class Command(BaseCommand):
 
                 realShape = Shape.objects.get(id=idShape.shape)
                 realCulture = Culture.objects.get(id=idCulture.culture)
-                
+
                 try:
                     # Create artifact object
                     newArtifact = Artifact.objects.create(
