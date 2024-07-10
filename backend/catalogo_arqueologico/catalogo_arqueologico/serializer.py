@@ -1,8 +1,10 @@
 """
 This module defines serializers for the CustomUser model.
 
-It includes the UserSerializer class, which extends the ModelSerializer class from Django REST Framework.
-The UserSerializer class adds a custom field `full_name` to serialize the full name of a user by concatenating
+It includes the UserSerializer class, which extends the ModelSerializer class from 
+Django REST Framework.
+The UserSerializer class adds a custom field `full_name` to serialize the full name 
+of a user by concatenating
 the first name and last name of the CustomUser model instance.
 """
 
