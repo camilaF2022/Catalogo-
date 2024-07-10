@@ -1,3 +1,6 @@
+"""
+This module contains a Django management command that imports tags from a CSV file.
+"""
 import os
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
@@ -11,11 +14,21 @@ logger.setLevel("INFO")
 
 
 class Command(BaseCommand):
+    """
+    This command imports tags from a CSV file.
+
+    Attributes:
+        help (str): A short description of the command that is displayed when running
+            'python manage.py help import
+    """
     help = (
         "Import tags from a CSV file. The CSV file must contain a list of ids and tags."
     )
 
     def handle(self, *args, **kwargs):
+        """
+        Executes the command to import tags from a CSV file.
+        """
         file = settings.TAGS_CSV_PATH
         if not os.path.exists(file):
             logger.error(f"File {file} not found. Stop")
