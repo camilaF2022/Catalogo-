@@ -25,9 +25,10 @@ Serializers Included:
 - ArtifactRequesterSerializer: Handles serialization for ArtifactRequester model instances.
 """
 
-import os
-from django.conf import settings
-from django.core.files import File
+import os  # unused import
+import logging
+from django.conf import settings  # unused import
+from django.core.files import File  # unused import
 from rest_framework import serializers
 from .models import (
     ArtifactRequester,
@@ -35,12 +36,11 @@ from .models import (
     Shape,
     Culture,
     Artifact,
-    Model,
+    Model,  # unused import
     Thumbnail,
     Image,
     Institution,
 )
-import logging
 
 logger = logging.getLogger(__name__)
 
