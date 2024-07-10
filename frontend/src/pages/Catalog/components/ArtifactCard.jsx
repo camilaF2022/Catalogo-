@@ -120,11 +120,23 @@ const MetadataContainer = styled(Box)(({ theme }) => ({
 const CustomShapeTag = styled(Chip)(({ theme }) => ({
   backgroundColor: theme.palette.tags.shape,
   fontSize: 10,
+  height: 24,
+  paddingLeft: theme.spacing(1), 
+  paddingRight: theme.spacing(1),
+  '& .MuiChip-icon': {
+    fontSize: 14,
+  },
 }));
 
 const CustomCultureTag = styled(Chip)(({ theme }) => ({
   backgroundColor: theme.palette.tags.culture,
   fontSize: 10,
+  height: 24, 
+  paddingLeft: theme.spacing(1), 
+  paddingRight: theme.spacing(1), 
+  '& .MuiChip-icon': {
+    fontSize: 14, 
+  },
 }));
 
 export default ArtifactCard;

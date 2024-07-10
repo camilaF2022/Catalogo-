@@ -183,11 +183,17 @@ class Model(models.Model):
         object (FileField): Path to the 3D object file.
         material (FileField): Path to the material file.
     """
-
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["texture", "object", "material"], name="unique_model_triplet"
+            )
+        ]
+        
     id = models.BigAutoField(primary_key=True)
-    texture = models.ImageField(upload_to=settings.MATERIALS_ROOT)
-    object = models.FileField(upload_to=settings.OBJECTS_ROOT)
-    material = models.FileField(upload_to=settings.MATERIALS_ROOT)
+    texture = models.ImageField(upload_to=settings.MATERIALS_ROOT, unique=False)
+    object = models.FileField(upload_to=settings.OBJECTS_ROOT, unique=False)
+    material = models.FileField(upload_to=settings.MATERIALS_ROOT, unique=False)
 
 
 class Image(models.Model):

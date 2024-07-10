@@ -165,7 +165,7 @@ const ArtifactDetails = () => {
             </Typography>
             <HorizontalStack>
               <Typography variant="h5">
-                <Category color="inherit" fontSize="small" /> Forma:{" "}
+                <Category color="inherit" fontSize="small" style={{ verticalAlign: 'middle' }}/> Forma:{" "}
               </Typography>
               {loading ? (
                 <CustomSkeletonTag />
@@ -176,7 +176,7 @@ const ArtifactDetails = () => {
             <HorizontalStack>
               <Typography variant="h5">
                 {" "}
-                <Diversity3 color="interhit" fontSize="small" /> Cultura:
+                <Diversity3 color="interhit" fontSize="small" style={{ verticalAlign: 'middle' }}/> Cultura:
               </Typography>
               {loading ? (
                 <CustomSkeletonTag />
@@ -187,7 +187,7 @@ const ArtifactDetails = () => {
             {
               <VerticalStack>
                 <Typography variant="h5">
-                  <LocalOffer color="inherit" fontSize="small" /> Etiquetas:
+                  <LocalOffer color="inherit" fontSize="small" style={{ verticalAlign: 'middle' }} /> Etiquetas:
                 </Typography>
                 <TagContainer>
                   {loading ? (
@@ -209,12 +209,13 @@ const ArtifactDetails = () => {
   );
 };
 
-const CustomContainer = styled("div")(() => ({
+const CustomContainer = styled("div")(({theme}) => ({
   display: "flex",
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
   width: "100%",
+  height: theme.spacing(5.25),
 }));
 const HorizontalStack = styled("div")(({ theme }) => ({
   display: "flex",
@@ -258,7 +259,7 @@ const RightBox = styled("div")(({ theme }) => ({
     width: theme.spacing(104.5),
   },
   [theme.breakpoints.up("lg")]: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(6.25),
     width: theme.spacing(28),
     height: theme.spacing(69),
     gap: theme.spacing(1.7),
@@ -308,7 +309,7 @@ const CustomSkeletonTag = styled(Skeleton)(({ theme }) => ({
 }));
 
 const CustomSkeletonText = styled(Skeleton)(({ theme }) => ({
-  width: theme.spacing(30.5),
+  width: theme.spacing(28),
   height: theme.spacing(10),
   variant: "text",
 }));
