@@ -10,6 +10,7 @@ import csv
 logger = logging.getLogger(__name__)
 logger.setLevel("INFO")
 
+
 class Command(BaseCommand):
     """
     This command reads csv with institutions. It is necessary to specify which column is the one with the name.
@@ -18,6 +19,7 @@ class Command(BaseCommand):
         help (str): A short description of the command that is displayed when running
             'python manage.py help importInstitutions'.
     """
+
     help = "This command reads csv with institutions. It is necessary to specify which column is the one with the name"
 
     def handle(self, *args, **kwargs):
@@ -33,12 +35,8 @@ class Command(BaseCommand):
             institutions = csv.reader(archivo_csv, delimiter=",")
             for institution in institutions:
                 try:
-                    recentlyAdded = Institution.objects.create(
-                        name=institution[3]
-                    )
+                    recentlyAdded = Institution.objects.create(name=institution[3])
                 except IntegrityError:
                     logger.info(
                         f"Institution {institution[3]} already exists. Skipping its creation"
                     )
-
-
