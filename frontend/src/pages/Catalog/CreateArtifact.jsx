@@ -16,20 +16,27 @@ import { API_URLS } from "../../api";
 import { useSnackBars } from "../../hooks/useSnackbars";
 import { useToken } from "../../hooks/useToken";
 
+// Allowed file types for various artifact attributes
 export const allowedFileTypes = {
   object: ["obj"],
   texture: ["jpg"],
   material: ["mtl"],
-  thumbnail: ["jpg","png"],
-  images: ["jpg","png"],
+  thumbnail: ["jpg", "png"],
+  images: ["jpg", "png"],
 };
 
+/**
+ * Component for creating a new artifact.
+ * Allows users to upload object-related files, provide description, select shape, culture, and tags.
+ * Submits artifact data to the server and handles navigation.
+ */
 const CreateArtifact = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { addAlert } = useSnackBars();
   const { token } = useToken();
 
+  // State to manage new artifact attributes and form loading state
   const [newObjectAttributes, setNewObjectAttributes] = useState({
     object: {},
     texture: {},
@@ -48,26 +55,30 @@ const CreateArtifact = () => {
     tags: [],
   });
 
-  const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState(false);
-  const goBack = !!location.state?.from;
+  const [loading, setLoading] = useState(true); // Loading state for initial data fetch
+  const [errors, setErrors] = useState(false); // Error state for API fetch
 
-  // Retrieved data from the API
+  const goBack = !!location.state?.from; // Checks if there's a 'from' location to navigate back
+
+  // State to store fetched metadata options
   const [shapeOptions, setShapeOptions] = useState([]);
   const [cultureOptions, setCultureOptions] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
 
-  // Fetch data from the API
+  // Fetch metadata (shapes, cultures, tags) from the API on component mount
   useEffect(() => {
     fetch(API_URLS.ALL_METADATA, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).then((response) => response.json().
-    then((data) => {
+    })
+      .then((response) => {
         if (!response.ok) {
-          throw new Error(data.detail);
+          throw new Error("Error al obtener metadatos");
         }
+        return response.json();
+      })
+      .then((data) => {
         let metadata = data.data;
         let shapes = metadata.shapes;
         let cultures = metadata.cultures;
@@ -81,13 +92,15 @@ const CreateArtifact = () => {
         setErrors(true);
         addAlert(error.message);
       })
-      .finally(() => setLoading(false)));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+      .finally(() => setLoading(false));
+  }, []); // Dependency array ensures this effect runs only once on mount
 
+  // Function to handle input changes in the form fields
   const handleInputChange = (name, value) => {
     setNewObjectAttributes({ ...newObjectAttributes, [name]: value });
   };
 
+  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -105,39 +118,47 @@ const CreateArtifact = () => {
       formData.append("id_tags", tag.id)
     );
 
-    await fetch(`${API_URLS.DETAILED_ARTIFACT}/upload`, {
-      method: "POST",
-      body: formData,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        response.json().then((data) => {
-        if (!response.ok) {
-          throw new Error(data.detail);
-        }
-        const successfully_response = data.data;
-        const newArtifactId = successfully_response.id;
-        addAlert("¡Objeto creado con éxito!");
-        navigate(`/catalog/${newArtifactId}`);
-      })
-      .catch((error) => {
-        addAlert(error.message);
+    try {
+      const response = await fetch(`${API_URLS.DETAILED_ARTIFACT}/upload`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-    })};
 
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail);
+      }
+
+      const data = await response.json();
+      const newArtifactId = data.data.id;
+      addAlert("¡Objeto creado con éxito!");
+      navigate(`/catalog/${newArtifactId}`);
+    } catch (error) {
+      addAlert(error.message);
+    }
+  };
+
+  // Function to handle cancel button click
   const handleCancel = () => {
     const from = goBack ? location.state.from : "/catalog";
     navigate(from, { replace: goBack });
   };
 
+  // Render component
   return (
     <Container>
+      {/* Form for creating a new artifact */}
       <Box component="form" autoComplete="off" onSubmit={handleSubmit}>
         <Grid container rowGap={4}>
+          {/* Page title */}
           <CustomTypography variant="h1">Agregar nueva pieza</CustomTypography>
+
+          {/* Grid container for form inputs */}
           <Grid container spacing={2}>
+            {/* Column for upload buttons */}
             <ColumnGrid item xs={6} rowGap={2}>
               <UploadButton
                 label="Objeto *"
@@ -169,6 +190,8 @@ const CreateArtifact = () => {
                 setStateFn={setNewObjectAttributes}
               />
             </ColumnGrid>
+
+            {/* Column for text fields and autocomplete components */}
             <ColumnGrid item xs={6} rowGap={1}>
               <FormLabel component="legend">Descripción *</FormLabel>
               <TextField
@@ -184,6 +207,7 @@ const CreateArtifact = () => {
                   handleInputChange(e.target.name, e.target.value)
                 }
               />
+
               <FormLabel component="legend">Forma *</FormLabel>
               <AutocompleteExtended
                 id="shape"
@@ -198,6 +222,7 @@ const CreateArtifact = () => {
                 disabled={loading || errors}
                 allowCreation={false}
               />
+
               <FormLabel component="legend">Cultura *</FormLabel>
               <AutocompleteExtended
                 id="culture"
@@ -212,6 +237,7 @@ const CreateArtifact = () => {
                 disabled={loading || errors}
                 allowCreation={false}
               />
+
               <FormLabel component="legend">Etiquetas (opcional)</FormLabel>
               <AutocompleteExtended
                 multiple
@@ -229,10 +255,15 @@ const CreateArtifact = () => {
               />
             </ColumnGrid>
           </Grid>
+
+          {/* Grid container for buttons */}
           <Grid container justifyContent="flex-end" columnGap={2}>
+            {/* Cancel button */}
             <Button variant="text" color="secondary" onClick={handleCancel}>
               {goBack ? "Cancelar" : "Volver al catálogo"}
             </Button>
+
+            {/* Submit button */}
             <Button variant="contained" color="primary" type="submit">
               Publicar
             </Button>
@@ -243,6 +274,7 @@ const CreateArtifact = () => {
   );
 };
 
+// Styled components for custom styling
 const CustomTypography = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(6),
   textAlign: "left",
