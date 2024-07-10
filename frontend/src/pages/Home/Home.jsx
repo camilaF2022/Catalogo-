@@ -6,6 +6,10 @@ import Button from "@mui/material/Button";
 import { Stack } from "@mui/material";
 import { Link } from "react-router-dom";
 
+/**
+ * Component representing the home page of the artifact catalog website.
+ * Displays introductory text and a link to navigate to the catalog.
+ */
 const Home = () => {
   return (
     <CustomStack>
@@ -32,6 +36,8 @@ const Home = () => {
     </CustomStack>
   );
 };
+
+// Styled components for customizing the layout and appearance
 
 const CustomStack = styled(Stack)(({ theme }) => ({
   justifyContent: "center",
