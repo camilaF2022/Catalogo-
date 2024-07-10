@@ -6,15 +6,15 @@ export const TokenContext = createContext();
 
 export function TokenProvider({ children }) {
   const [token, setTokenState] = useState(() => {
-    const tokenString = sessionStorage.getItem("token");
+    const tokenString = localStorage.getItem("token");
     return tokenString ?? null;
   });
 
   const setToken = useCallback((newToken) => {
     if (newToken) {
-      sessionStorage.setItem("token", newToken);
+      localStorage.setItem("token", JSON.stringify(newToken));
     } else {
-      sessionStorage.removeItem("token");
+      localStorage.removeItem("token");
     }
     setTokenState(newToken);
   }, []);
