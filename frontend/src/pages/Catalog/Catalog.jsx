@@ -16,12 +16,17 @@ import { API_URLS } from "../../api";
 import { useToken } from "../../hooks/useToken";
 import useFetchItems from "../../hooks/useFetchItems";
 
+/**
+ * Component to display a catalog of artifacts.
+ * Displays artifact cards, pagination, and filters.
+ */
 const Catalog = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useToken();
   const loggedIn = !!token;
 
+  // Custom hook to fetch artifacts
   const {
     items: artifactList,
     loading,
@@ -31,14 +36,21 @@ const Catalog = () => {
     setPagination,
   } = useFetchItems(API_URLS.ALL_ARTIFACTS);
 
+  // Redirects to artifact creation page
   const handleRedirect = () => {
     navigate("/catalog/new", { state: { from: location } });
   };
 
+  // Render component
   return (
     <Container>
+      {/* Page title */}
       <CustomTypography variant="h1">Catálogo</CustomTypography>
+
+      {/* Filter component */}
       <CatalogFilter filter={filter} setFilter={setFilter} />
+
+      {/* Button to add new artifact (visible to logged-in users) */}
       {loggedIn && (
         <CustomBox>
           <Button
@@ -51,6 +63,8 @@ const Catalog = () => {
           </Button>
         </CustomBox>
       )}
+
+      {/* Loading skeleton */}
       {loading ? (
         <Box>
           <Grid container spacing={2}>
@@ -61,32 +75,38 @@ const Catalog = () => {
             ))}
           </Grid>
         </Box>
-      ) : artifactList.length > 0 ? (
-        <Box>
-          <Grid container spacing={2}>
-            {artifactList.map((artifact) => (
-              <Grid item xs={12} sm={6} md={4} key={artifact.id}>
-                <ArtifactCard artifact={artifact} />
-              </Grid>
-            ))}
-          </Grid>
-
-          <CatalogPagination
-            pagination={pagination}
-            setPagination={setPagination}
-          />
-        </Box>
       ) : (
-        <CustomBox>
-          <Typography variant="p" align="center">
-            No se encontraron resultados
-          </Typography>
-        </CustomBox>
+        // Display artifact cards if there are artifacts
+        artifactList.length > 0 ? (
+          <Box>
+            <Grid container spacing={2}>
+              {artifactList.map((artifact) => (
+                <Grid item xs={12} sm={6} md={4} key={artifact.id}>
+                  <ArtifactCard artifact={artifact} />
+                </Grid>
+              ))}
+            </Grid>
+
+            {/* Pagination component */}
+            <CatalogPagination
+              pagination={pagination}
+              setPagination={setPagination}
+            />
+          </Box>
+        ) : (
+          // Display message if no artifacts found
+          <CustomBox>
+            <Typography variant="p" align="center">
+              No se encontraron resultados
+            </Typography>
+          </CustomBox>
+        )
       )}
     </Container>
   );
 };
 
+// Styled components for custom styling
 const CustomTypography = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(12),
   marginBottom: theme.spacing(3),
