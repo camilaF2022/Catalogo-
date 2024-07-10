@@ -72,7 +72,7 @@ class MetadataListAPIView(generics.ListAPIView):
             return Response({"data": data}, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Could not retrieve metadata:{e}")
-            return Response({"detail": f"Could not retrieve metadata"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"detail": f"Error al obtener metadata"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
     queryset = Artifact.objects.all()
@@ -90,6 +90,7 @@ class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
             try:
                 token_instance = Token.objects.get(key=token.split(" ")[1])
             except Token.DoesNotExist:
+
                 return Response(
                     {"detail": "Se requiere iniciar sesión nuevamente"},
                     status=status.HTTP_404_NOT_FOUND,
@@ -114,17 +115,24 @@ class ArtifactDownloadAPIView(generics.RetrieveAPIView, generics.CreateAPIView):
             serializer = ArtifactRequesterSerializer(requester)
                 
         else:
-            requester = ArtifactRequester.objects.create(
-                name=request.data.get("fullName"),
-                rut=request.data.get("rut"),
-                email=request.data.get("email"),
-                comments=request.data.get("comments"),
-                is_registered=False,
-                institution=Institution.objects.get(pk=request.data.get("institution")),
-                artifact=Artifact.objects.get(pk=kwargs.get("pk")),
-            )
-            serializer = ArtifactRequesterSerializer(requester)
-            
+            try:
+                
+                requester = ArtifactRequester.objects.create(
+                    name=request.data.get("fullName"),
+                    rut=request.data.get("rut"),
+                    email=request.data.get("email"),
+                    comments=request.data.get("comments"),
+                    is_registered=False,
+                    institution=Institution.objects.get(pk=request.data.get("institution")),
+                    artifact=Artifact.objects.get(pk=kwargs.get("pk")),
+                )
+                serializer = ArtifactRequesterSerializer(requester)
+            except Exception as e:
+                logger.error(f"Error al crear solicitante: {e}")
+                return Response(
+                    {"detail": "Error al crear solicitante"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
         return Response({"data": serializer.data}, status=status.HTTP_201_CREATED)
 
     def get(self, request, *args, **kwargs):
@@ -414,14 +422,11 @@ class InstitutionAPIView(generics.ListCreateAPIView):
 
             # Serialize the data
             institution_serializer = InstitutionSerializer(institutions, many=True)
-
             # Function to change 'name' key to 'value'
             def rename_key(lst):
                 return [{"id": item["id"], "value": item["name"]} for item in lst]
-
             data = rename_key(institution_serializer.data)
-
             return Response({"data": data}, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Could not retrieve institutions:{e}")
-            return Response({"detail": f"Could not retrieve institutions"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"detail": f"Error al obtener instituciones"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

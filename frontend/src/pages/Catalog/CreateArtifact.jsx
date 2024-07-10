@@ -63,16 +63,12 @@ const CreateArtifact = () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-      .then((response) => {
+    }).then((response) => response.json().
+    then((data) => {
         if (!response.ok) {
-          throw new Error(response.detail);
+          throw new Error(data.detail);
         }
-        return response.json();
-      })
-      .then((response) => {
-        let metadata = response.data;
-
+        let metadata = data.data;
         let shapes = metadata.shapes;
         let cultures = metadata.cultures;
         let tags = metadata.tags;
@@ -83,9 +79,9 @@ const CreateArtifact = () => {
       })
       .catch((error) => {
         setErrors(true);
-        addAlert("Error al cargar los metadatos");
+        addAlert(error.message);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setLoading(false)));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleInputChange = (name, value) => {
@@ -117,21 +113,19 @@ const CreateArtifact = () => {
       },
     })
       .then((response) => {
+        response.json().then((data) => {
         if (!response.ok) {
-          throw new Error(response.detail);
+          throw new Error(data.detail);
         }
-        return response.json();
-      })
-      .then((response) => {
-        const successfully_response = response.data;
+        const successfully_response = data.data;
         const newArtifactId = successfully_response.id;
         addAlert("¡Objeto creado con éxito!");
         navigate(`/catalog/${newArtifactId}`);
       })
       .catch((error) => {
-        addAlert("Error al crear el objeto");
+        addAlert(error.message);
       });
-  };
+    })};
 
   const handleCancel = () => {
     const from = goBack ? location.state.from : "/catalog";
