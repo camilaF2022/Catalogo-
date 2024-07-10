@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
     Attributes:
         help (str): A short description of the command that is displayed when running
-            'python manage.py help import
+            'python manage.py help importTags'.
     """
 
     help = (
