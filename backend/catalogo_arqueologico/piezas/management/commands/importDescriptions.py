@@ -1,3 +1,6 @@
+"""	
+This module contains a Django management command that imports descriptions from a CSV file.
+"""
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from django.core.files import File
@@ -14,6 +17,16 @@ logger.setLevel("INFO")
 
 
 def addImages(self, artifact, realId):
+    """
+    This function adds images to an artifact.
+
+    Args:
+        artifact (Artifact): The artifact to which the images will be added.
+        realId (str): The realId of the artifact.
+
+    Returns:
+        None    
+    """
     multimedia_path = settings.MULTIMEDIA_FOLDER_PATH
 
     if not os.path.exists(multimedia_path):
@@ -45,9 +58,20 @@ def addImages(self, artifact, realId):
 
 
 class Command(BaseCommand):
+    """
+    This command imports descriptions from a CSV file.
+
+    Attributes:
+        help (str): A short description of the command that is displayed when running
+            'python manage.py help importDescriptions'.
+    """
+
     help = "Import descriptions from a CSV file. The CSV file must contain a list of ids and descriptions."
 
     def handle(self, *args, **kwargs):
+        """
+        Executes the command to import descriptions from a CSV file.
+        """
         descriptions_file = settings.DESCRIPTIONS_CSV_PATH
         if not os.path.exists(descriptions_file):
             logger.error(f"File {descriptions_file} not found. Stop")
