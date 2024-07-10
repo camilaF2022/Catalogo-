@@ -86,16 +86,12 @@ const EditArtifact = () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-      .then((response) => {
+    }).then((response) => response.json().
+    then((data) => {
         if (!response.ok) {
-          throw new Error(response.detail);
+          throw new Error(data.detail);
         }
-        return response.json();
-      })
-      .then((response) => {
-        let metadata = response.data;
-
+        let metadata = data.data;
         let shapes = metadata.shapes;
         let cultures = metadata.cultures;
         let tags = metadata.tags;
@@ -106,9 +102,9 @@ const EditArtifact = () => {
       })
       .catch((error) => {
         setErrors(true);
-        addAlert("Error al cargar los metadatos");
+        addAlert(error.message);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setLoading(false)));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleInputChange = (name, value) => {
@@ -153,21 +149,20 @@ const EditArtifact = () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-      .then((response) => {
+    }).then((response) => {
+      response.json().then((data) => {
         if (!response.ok) {
-          throw new Error(response.detail);
+          throw new Error(data.detail);
         }
-        return response.json();
       })
       .then((response) => {
         addAlert("¡Objeto editado con éxito!");
         navigate(`/catalog/${artifactId}`);
       })
       .catch((error) => {
-        addAlert("Error al editar el objeto");
+        addAlert(error.message);
       });
-  };
+  })};
 
   const getFileNameOrUrl = (item) => {
     if (typeof item === "object" && item !== null) {
