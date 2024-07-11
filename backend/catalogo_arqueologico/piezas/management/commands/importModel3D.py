@@ -80,17 +80,17 @@ class Command(BaseCommand):
                 if (
                     os.path.exists(
                         os.path.join(
-                            settings.MEDIA_ROOT, settings.MATERIALS_ROOT, texture_file
+                            settings.MEDIA_ROOT, settings.MATERIALS_URL, texture_file
                         )
                     )
                     or os.path.exists(
                         os.path.join(
-                            settings.MEDIA_ROOT, settings.OBJECTS_ROOT, object_file
+                            settings.MEDIA_ROOT, settings.OBJECTS_URL, object_file
                         )
                     )
                     or os.path.exists(
                         os.path.join(
-                            settings.MEDIA_ROOT, settings.MATERIALS_ROOT, material_file
+                            settings.MEDIA_ROOT, settings.MATERIALS_URL, material_file
                         )
                     )
                 ):

@@ -574,7 +574,7 @@ class ArtifactCreateUpdateAPIView(generics.GenericAPIView):
         else:
             thumbnail_name = data.get("thumbnail", None)
             if thumbnail_name:
-                thumbnail_path = os.path.join(settings.THUMBNAILS_ROOT, thumbnail_name)
+                thumbnail_path = os.path.join(settings.THUMBNAILS_URL, thumbnail_name)
                 thumbnail = Thumbnail.objects.get(path=thumbnail_path)
                 instance.id_thumbnail = thumbnail
                 logger.info(f"Thumbnail kept: {thumbnail.path}")
@@ -649,7 +649,7 @@ class ArtifactCreateUpdateAPIView(generics.GenericAPIView):
         )  # images are paths from photos already uploaded
         for image_name in keep_images:
             # Update instances
-            image_path = os.path.join(settings.IMAGES_ROOT, image_name)
+            image_path = os.path.join(settings.IMAGES_URL, image_name)
             image = Image.objects.get(path=image_path)
             image.id_artifact = instance
             image.save()

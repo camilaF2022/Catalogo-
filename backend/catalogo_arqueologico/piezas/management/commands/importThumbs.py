@@ -36,7 +36,7 @@ class Command(BaseCommand):
             # If the file already exists, skip the creation of the model
             # This avoids the upload of the same thumbnail multiple times
             if os.path.exists(
-                os.path.join(settings.MEDIA_ROOT, settings.THUMBNAILS_ROOT, thumb_name)
+                os.path.join(settings.MEDIA_ROOT, settings.THUMBNAILS_URL, thumb_name)
             ):
                 logger.warning(
                     f"Skipping creation of {artifactId} thumbnail model due to existing file"

@@ -228,7 +228,7 @@ class Thumbnail(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    path = models.ImageField(upload_to=settings.THUMBNAILS_ROOT, unique=True)
+    path = models.ImageField(upload_to=settings.THUMBNAILS_URL, unique=True)
 
 
 class Model(models.Model):
@@ -252,9 +252,9 @@ class Model(models.Model):
         ]
 
     id = models.BigAutoField(primary_key=True)
-    texture = models.ImageField(upload_to=settings.MATERIALS_ROOT, unique=False)
-    object = models.FileField(upload_to=settings.OBJECTS_ROOT, unique=False)
-    material = models.FileField(upload_to=settings.MATERIALS_ROOT, unique=False)
+    texture = models.ImageField(upload_to=settings.MATERIALS_URL, unique=False)
+    object = models.FileField(upload_to=settings.OBJECTS_URL, unique=False)
+    material = models.FileField(upload_to=settings.MATERIALS_URL, unique=False)
 
 
 class Image(models.Model):
@@ -273,7 +273,7 @@ class Image(models.Model):
     id_artifact = models.ForeignKey(
         "Artifact", on_delete=models.CASCADE, null=True, related_name="images"
     )
-    path = models.ImageField(upload_to=settings.IMAGES_ROOT, unique=True)
+    path = models.ImageField(upload_to=settings.IMAGES_URL, unique=True)
 
 
 class Artifact(models.Model):

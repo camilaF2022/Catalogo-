@@ -154,11 +154,11 @@ REST_FRAMEWORK = {
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-# Root folders for the different types of uploaded files
-MATERIALS_ROOT = "materials/"
-OBJECTS_ROOT = "objects/"
-THUMBNAILS_ROOT = "thumbnails/"
-IMAGES_ROOT = "images/"
+# Folders for the different types of uploaded files
+MATERIALS_URL = "materials/"
+OBJECTS_URL = "objects/"
+THUMBNAILS_URL = "thumbnails/"
+IMAGES_URL = "images/"
 
 # Paths of the different types of files to be imported
 DATA_ROOT = os.path.join(BASE_DIR, "..", "..", "data")
