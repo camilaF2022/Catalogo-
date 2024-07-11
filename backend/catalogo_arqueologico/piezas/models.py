@@ -45,6 +45,17 @@ class Institution(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
 
+    def __str__(self):
+        """
+        String representation of the Institution model.
+
+        Returns the name of the institution.
+
+        Returns:
+            str: Name of the institution.
+        """
+        return self.name
+
 
 class CustomUser(AbstractUser):
     """
@@ -141,6 +152,17 @@ class Shape(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
 
+    def __str__(self):
+        """
+        String representation of the Shape model.
+
+        Returns the name of the shape.
+
+        Returns:
+            str: Name of the shape.
+        """
+        return self.name
+
 
 class Culture(models.Model):
     """
@@ -156,6 +178,17 @@ class Culture(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
 
+    def __str__(self):
+        """
+        String representation of the Culture model.
+
+        Returns the name of the culture.
+
+        Returns:
+            str: Name of the culture.
+        """
+        return self.name
+
 
 class Tag(models.Model):
     """
@@ -170,6 +203,17 @@ class Tag(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        """
+        String representation of the Tag model.
+
+        Returns the name of the tag.
+
+        Returns:
+            str: Name of the tag.
+        """
+        return self.name
 
 
 class Thumbnail(models.Model):
@@ -401,3 +445,14 @@ class ArtifactRequester(models.Model):
         null=True,
         related_name="artifact_requester",
     )
+
+    def __str__(self):
+        """
+        String representation of the ArtifactRequester model.
+
+        Returns the name of the requester.
+
+        Returns:
+            str: Name of the requester.
+        """
+        return self.name
