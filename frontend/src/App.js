@@ -1,4 +1,3 @@
-import "./App.css";
 import Layout from "./components/Layout";
 import { TokenProvider } from "./hooks/components/TokenProvider";
 import { SnackbarProvider } from "./hooks/components/SnackbarProvider";
