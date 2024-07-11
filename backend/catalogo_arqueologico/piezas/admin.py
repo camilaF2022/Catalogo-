@@ -65,7 +65,7 @@ class CustomUserAdmin(UserAdmin):
         (None, {"fields": ("role", "rut", "institution")}),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
-        (None, {"fields": ("role", "rut", "institution")}),
+        (None, {"fields": ("first_name", "last_name", "email", "role", "rut", "institution")}),
     )
 
     def get_groups(self, obj):

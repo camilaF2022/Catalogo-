@@ -21,12 +21,8 @@ from .models import CustomUser
 
 class CustomUserCreationForm(UserCreationForm):
     """
-    A form for creating new users with the CustomUser model.
-
-    Inherits from Django's UserCreationForm and specifies the CustomUser model
-    and a set of fields to be included in the form. This form is designed to
-    include additional fields ('role', 'rut', 'institution') beyond the default
-    user model, allowing for the collection of extra information during the user creation process.
+    A form for creating new users. Includes all the required
+    fields, plus a repeated password.
 
     Attributes:
         Meta: A class containing configuration for this form class.
@@ -36,19 +32,27 @@ class CustomUserCreationForm(UserCreationForm):
         """
         Configuration class for CustomUserCreationForm.
 
-        Specifies the model to be used as the basis for the form and the fields to be
-        included in the form. This configuration ensures that the form will be populated
-        with the appropriate fields for creating a new CustomUser instance.
+        Specifies the model to be used as the basis for the form and the fields that can
+        be included. This configuration is used to ensure that the form allows for the
+        creation of new CustomUser instances with the specified fields.
 
         Attributes:
             model (CustomUser): The model that this form will create instances of.
             fields (tuple): The fields to be included in the form. This includes 'username',
-                'role', 'rut', 'institution', 'password1', and 'password2', allowing for
+                'role', 'rut', 'institution', 'email', 'password1', and 'password2', allowing for
                 comprehensive user creation.
         """
 
         model = CustomUser
-        fields = ("username", "role", "rut", "institution", "password1", "password2")
+        fields = (
+            "username",
+            "role",
+            "rut",
+            "institution",
+            "email",
+            "password1",
+            "password2",
+        )
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -75,9 +79,9 @@ class CustomUserChangeForm(UserChangeForm):
         Attributes:
             model (CustomUser): The model that this form will edit instances of.
             fields (tuple): The fields that are editable in this form. This includes 'username',
-                'role', 'rut', and 'institution', focusing on the essential user information that
+                'role', 'rut', 'institution', 'email', focusing on the essential user information that
                 might need to be updated.
         """
 
         model = CustomUser
-        fields = ("username", "role", "rut", "institution")
+        fields = ("username", "role", "rut", "institution", "email")
