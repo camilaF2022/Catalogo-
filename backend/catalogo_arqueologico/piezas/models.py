@@ -2,6 +2,7 @@
 This module defines the models used in the Django application.
 
 Models:
+- Institution: Represents an institution with a unique name.
 - CustomUser: Extends Django's AbstractUser to include additional fields like role, 
     institution, and a RUT field with custom validation.
 - Shape: Represents the shape of an artifact with a unique name.
@@ -15,7 +16,6 @@ Models:
     like Thumbnail, Model, Shape, Culture, and Tags.
 - TagsIds, CultureIds, ShapeIds: Auxiliary tables to store unique relationships 
     between artifacts and tags, cultures, or shapes when importing.
-- Institution: Represents an institution with a unique name.
 - ArtifactRequester: Represents a requester of an artifact with details like name, 
     RUT, email, comments, registration status, and relationships to Institution and Artifact.
 
@@ -31,6 +31,19 @@ from django.contrib.auth.models import Group
 from .validators import validateRut
 
 logger = logging.getLogger(__name__)
+
+
+class Institution(models.Model):
+    """
+    Represents an institution.
+
+    Attributes:
+        id (BigAutoField): Primary key.
+        name (CharField): Unique name of the institution.
+    """
+
+    id = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=100, unique=True)
 
 
 class CustomUser(AbstractUser):
@@ -58,7 +71,9 @@ class CustomUser(AbstractUser):
     role = models.CharField(
         max_length=2, choices=RoleUser.choices, default=RoleUser.FUNCIONARIO
     )
-    institution = models.CharField(max_length=100, blank=True)
+    institution = models.ForeignKey(
+        Institution, on_delete=models.SET_NULL, blank=True, null=True
+    )
     rut = models.CharField(
         max_length=9,
         unique=True,
@@ -351,19 +366,6 @@ class ShapeIds(models.Model):
                 fields=["shape", "artifactid"], name="unique_shape_artifact"
             )
         ]
-
-
-class Institution(models.Model):
-    """
-    Represents an institution.
-
-    Attributes:
-        id (BigAutoField): Primary key.
-        name (CharField): Unique name of the institution.
-    """
-
-    id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=100, unique=True)
 
 
 class ArtifactRequester(models.Model):
