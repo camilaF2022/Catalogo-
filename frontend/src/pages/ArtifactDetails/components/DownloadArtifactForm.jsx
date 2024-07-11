@@ -8,7 +8,6 @@ import { Stack, Paper, InputLabel, Autocomplete } from "@mui/material";
 import { API_URLS } from "../../../api";
 import { useSnackBars } from "../../../hooks/useSnackbars";
 import { useToken } from "../../../hooks/useToken";
-import { json } from "react-router-dom";
 
 /**
  * DownloadArtifactForm renders a form for downloading artifact data, including user input fields and submission handling.
@@ -52,7 +51,7 @@ const DownloadArtifactForm = ({ artifactInfo, handleClose }) => {
         }).finally(() => {
           setLoading(false)
         })})
-      }, []);
+      }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
 // Handle form input changes
     const handleChange = (e) => {

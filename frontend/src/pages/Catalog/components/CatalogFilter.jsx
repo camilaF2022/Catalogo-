@@ -98,7 +98,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
         addAlert("Error al cargar los metadatos");
       })
       .finally(() => setLoading(false));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update the URL search params when the user applies a filter
   useEffect(() => {

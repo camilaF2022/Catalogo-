@@ -83,7 +83,7 @@ const useFetchItems = (baseUrl) => {
     }, 500); // delay of 500ms
 
     return () => clearTimeout(timeoutId); // cleanup on unmount or filter change
-  }, [filter, pagination.currentPage]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filter, pagination.currentPage, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
 // Return objects and functions for external use.
   return {

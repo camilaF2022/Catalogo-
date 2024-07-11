@@ -20,8 +20,8 @@ export const allowedFileTypes = {
   object: ["obj"],
   texture: ["jpg"],
   material: ["mtl"],
-  thumbnail: ["jpg","png"],
-  images: ["jpg","png"],
+  thumbnail: ["jpg", "png"],
+  images: ["jpg", "png"],
 };
 
 const CreateArtifact = () => {
@@ -63,26 +63,29 @@ const CreateArtifact = () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).then((response) => response.json().
-    then((data) => {
-        if (!response.ok) {
-          throw new Error(data.detail);
-        }
-        let metadata = data.data;
-        let shapes = metadata.shapes;
-        let cultures = metadata.cultures;
-        let tags = metadata.tags;
+    }).then((response) =>
+      response
+        .json()
+        .then((data) => {
+          if (!response.ok) {
+            throw new Error(data.detail);
+          }
+          let metadata = data.data;
+          let shapes = metadata.shapes;
+          let cultures = metadata.cultures;
+          let tags = metadata.tags;
 
-        setShapeOptions(shapes);
-        setCultureOptions(cultures);
-        setTagOptions(tags);
-      })
-      .catch((error) => {
-        setErrors(true);
-        addAlert(error.message);
-      })
-      .finally(() => setLoading(false)));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+          setShapeOptions(shapes);
+          setCultureOptions(cultures);
+          setTagOptions(tags);
+        })
+        .catch((error) => {
+          setErrors(true);
+          addAlert(error.message);
+        })
+        .finally(() => setLoading(false))
+    );
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleInputChange = (name, value) => {
     setNewObjectAttributes({ ...newObjectAttributes, [name]: value });
@@ -111,21 +114,23 @@ const CreateArtifact = () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-      .then((response) => {
-        response.json().then((data) => {
-        if (!response.ok) {
-          throw new Error(data.detail);
-        }
-        const successfully_response = data.data;
-        const newArtifactId = successfully_response.id;
-        addAlert("¡Objeto creado con éxito!");
-        navigate(`/catalog/${newArtifactId}`);
-      })
-      .catch((error) => {
-        addAlert(error.message);
-      });
-    })};
+    }).then((response) => {
+      response
+        .json()
+        .then((data) => {
+          if (!response.ok) {
+            throw new Error(data.detail);
+          }
+          const successfully_response = data.data;
+          const newArtifactId = successfully_response.id;
+          addAlert("¡Objeto creado con éxito!");
+          navigate(`/catalog/${newArtifactId}`);
+        })
+        .catch((error) => {
+          addAlert(error.message);
+        });
+    });
+  };
 
   const handleCancel = () => {
     const from = goBack ? location.state.from : "/catalog";
