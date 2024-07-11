@@ -37,8 +37,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
   const [cultureOptions, setCultureOptions] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
 
-
-/**
+  /**
    * Updates the filter state when a filter option changes.
    * @param {string} name - The name of the filter category (query, shape, culture, tags).
    * @param {string | string[]} value - The new value(s) for the filter category.
@@ -130,7 +129,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
 
   return (
     <CustomBox>
-     {/* Text field for searching by query */}
+      {/* Text field for searching by query */}
       <TextField
         InputProps={{
           startAdornment: (
@@ -140,7 +139,7 @@ const CatalogFilter = ({ filter, setFilter }) => {
           ),
           endAdornment: filter.query && (
             <InputAdornment position="end">
-            {/* Button to clear search */}
+              {/* Button to clear search */}
               <IconButton
                 aria-label="Clear search"
                 onClick={() => handleFilterChange("query", "")}
