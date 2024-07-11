@@ -23,7 +23,7 @@ const Login = () => {
 
   // State to manage form input values
   const [formValues, setFormValues] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
@@ -80,15 +80,15 @@ const Login = () => {
         onChange={handleChange}
         onSubmit={handleSubmit}
       >
-        {/* Email input field */}
+        {/* username input field */}
         <TextField
           required
-          id="email"
-          name="email"
-          label="Correo electrónico"
-          type="email"
+          id="username"
+          name="username"
+          label="Usuario"
+          type="text"
           margin="normal"
-          value={formValues.email}
+          value={formValues.username}
         />
         
         {/* Password input field */}
