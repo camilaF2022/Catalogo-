@@ -61,10 +61,11 @@ class CustomUser(AbstractUser):
     institution = models.CharField(max_length=100, blank=True)
     rut = models.CharField(
         max_length=9,
-        blank=True,
+        unique=True,
         help_text="Enter unique identifier without dots or dashes",
         validators=[validateRut],
     )
+    email = models.EmailField(unique=True)
 
     def update_group(self):
         """
@@ -183,13 +184,14 @@ class Model(models.Model):
         object (FileField): Path to the 3D object file.
         material (FileField): Path to the material file.
     """
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
                 fields=["texture", "object", "material"], name="unique_model_triplet"
             )
         ]
-        
+
     id = models.BigAutoField(primary_key=True)
     texture = models.ImageField(upload_to=settings.MATERIALS_ROOT, unique=False)
     object = models.FileField(upload_to=settings.OBJECTS_ROOT, unique=False)
