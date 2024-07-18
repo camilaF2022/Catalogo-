@@ -12,19 +12,26 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import environ
+
+env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-SECRET_KEY = "django-insecure-sf==iyja_ddoy%#o50^&92d_8mo_y7&-=x(lwtd@i_i233wy^=" # TODO
+# Raises Django's ImproperlyConfigured
+# exception if SECRET_KEY not in os.environ
+SECRET_KEY = env.str("SECRET_KEY")
 
-DEBUG = False
+DEBUG = env.bool("DEBUG", default=False)
 
-ALLOWED_HOSTS = [] # TODO
+ALLOWED_HOSTS = tuple(env.list("ALLOWED_HOSTS", default=[]))
 
 CSRF_COOKIE_SECURE = True
 
@@ -138,7 +145,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STATIC_ROOT = "/var/www/example.com/static/" # TODO
+STATIC_ROOT = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
