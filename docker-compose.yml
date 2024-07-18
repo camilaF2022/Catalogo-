@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:12
+    container_name: postgres-db
+    env_file: backend/catalogo_arqueologico/.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  django:
+    build: ./backend
+    container_name: django-backend
+    env_file: backend/catalogo_arqueologico/.env
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    command: python /app/catalogo_arqueologico/manage.py runserver 0.0.0.0:8000
+
+  react:
+    build: ./frontend
+    container_name: react-frontend
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - django
+    command: npm start
+
+volumes:
+  postgres_data:
