@@ -2,12 +2,13 @@ FROM python:3.8.5-alpine
 
 ENV PYTHONUNBUFFERED=1
 
-# Install build tools and dependencies
+# Install build tools, dependencies, and PostgreSQL client tools
 RUN apk update && apk add --no-cache \
     gcc \
     musl-dev \
     libffi-dev \
     postgresql-dev \
+    postgresql-client \
     build-base
 
 # Upgrade pip
@@ -26,5 +27,8 @@ COPY . .
 # Ensure the entrypoint script has the correct permissions
 RUN chmod +x /app/entrypoint.sh
 
-# Use CMD instead of ENTRYPOINT
-CMD ["/bin/sh", "/app/entrypoint.sh"]
+# Set the entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+# Set the default command to run the backend application
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

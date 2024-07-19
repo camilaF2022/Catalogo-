@@ -7,3 +7,4 @@ catalogo_arqueologico/media/
 catalogo_arqueologico/db.sqlite3
 catalogo_arqueologico/static/
 .env
+.setup_done

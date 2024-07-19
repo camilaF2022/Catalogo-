@@ -15,8 +15,7 @@ import { useToken } from "./useToken";
  * }}
  */
 const useFetchItems = (baseUrl) => {
-
-   const { token } = useToken(); // Retrieves authentication token using custom hook useToken.
+  const { token } = useToken(); // Retrieves authentication token using custom hook useToken.
   const { addAlert } = useSnackBars(); // Retrieves alert function using custom hook useSnackBars.
   const [loading, setLoading] = useState(true); // State to track loading state of data fetching.
 
@@ -28,14 +27,14 @@ const useFetchItems = (baseUrl) => {
     tags: [],
   });
 
-// State to manage pagination information for fetched items.
+  // State to manage pagination information for fetched items.
   const [pagination, setPagination] = useState({
     currentPage: 1,
     total: 0,
     perPage: 0,
     totalPages: 0,
   });
-  
+
   // State to store fetched items from the API.
   const [items, setItems] = useState([]);
 
@@ -48,7 +47,7 @@ const useFetchItems = (baseUrl) => {
   useEffect(() => {
     // Use setTimeout as debounce to avoid making a request on every keystroke
     const timeoutId = setTimeout(() => {
-      let url = new URL(baseUrl);
+      let url = new URL(baseUrl, window.location.origin);
       let params = {
         query: filter.query,
         shape: filter.shape,
@@ -85,7 +84,7 @@ const useFetchItems = (baseUrl) => {
     return () => clearTimeout(timeoutId); // cleanup on unmount or filter change
   }, [filter, pagination.currentPage, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
-// Return objects and functions for external use.
+  // Return objects and functions for external use.
   return {
     items,
     loading,

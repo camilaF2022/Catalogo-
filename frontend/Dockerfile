@@ -16,5 +16,5 @@ COPY . .
 # Build the React app
 RUN npm run build
 
-# Start the application
+# Set the default command to run the frontend application
 CMD ["npm", "start"]
