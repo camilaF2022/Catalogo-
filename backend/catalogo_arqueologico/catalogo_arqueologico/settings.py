@@ -166,25 +166,27 @@ REST_FRAMEWORK = {
     ],
 }
 
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-# Folders for the different types of uploaded files
-MATERIALS_URL = "materials/"
-OBJECTS_URL = "objects/"
-THUMBNAILS_URL = "thumbnails/"
-IMAGES_URL = "images/"
-
 # Paths of the different types of files to be imported
-DATA_ROOT = os.path.join(BASE_DIR, "..", "..", "data")
+DATA_ROOT = "/app/data/"
 CULTURE_CSV_PATH = os.path.join(DATA_ROOT, "coleccion-cultura.csv")
 MODEL_FOLDER_PATH = os.path.join(DATA_ROOT, "complete-dataset/")
 SHAPE_FOLDER_PATH = os.path.join(DATA_ROOT, "clasificacion-forma/")
 TAGS_CSV_PATH = os.path.join(DATA_ROOT, "CH_tags.csv")
 THUMBNAILS_FOLDER_PATH = os.path.join(DATA_ROOT, "thumbnails/")
 DESCRIPTIONS_CSV_PATH = os.path.join(DATA_ROOT, "metadata - descripcion.csv")
-MULTIMEDIA_FOLDER_PATH = os.path.join(BASE_DIR, "multimedia/")
+MULTIMEDIA_FOLDER_PATH = os.path.join(DATA_ROOT, "multimedia/")
 INSTITUTIONS_CSV_PATH = os.path.join(DATA_ROOT, "institutions.csv")
+
+# Paths for the uploaded files
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = "/app/media/"
+
+# Folders for the different types of uploaded files
+MATERIALS_URL = "materials/"
+OBJECTS_URL = "objects/"
+THUMBNAILS_URL = "thumbnails/"
+IMAGES_URL = "images/"
 
 LOGGING = {
     "version": 1,

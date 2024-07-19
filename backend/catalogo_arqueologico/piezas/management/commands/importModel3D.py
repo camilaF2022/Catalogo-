@@ -123,7 +123,9 @@ class Command(BaseCommand):
                         logger.warning(
                             f"Model {base_name_id} already exists. Skipping its creation"
                         )
+                        continue
             else:
                 logger.warning(
                     f"Skipping creation of {base_name_id} model due to the missing object or corresponding material file"
                 )
+                continue

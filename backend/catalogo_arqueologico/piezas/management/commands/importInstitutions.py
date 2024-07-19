@@ -60,3 +60,4 @@ class Command(BaseCommand):
                     logger.info(
                         f"Institution {institution[column]} already exists. Skipping its creation"
                     )
+                    continue

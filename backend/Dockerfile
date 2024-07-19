@@ -13,11 +13,18 @@ RUN apk update && apk add --no-cache \
 # Upgrade pip
 RUN pip install --upgrade pip
 
-# Copy the requirements file and install dependencies
-COPY ./requirements.txt /app/requirements.txt
+# Set work directory
 WORKDIR /app
+
+# Copy the requirements file and install dependencies
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copy the application code
-COPY . /app
+COPY . .
 
+# Ensure the entrypoint script has the correct permissions
+RUN chmod +x /app/entrypoint.sh
+
+# Use CMD instead of ENTRYPOINT
+CMD ["/bin/sh", "/app/entrypoint.sh"]

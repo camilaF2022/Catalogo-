@@ -43,7 +43,7 @@ class Institution(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         """
@@ -291,7 +291,7 @@ class Artifact(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    description = models.CharField(max_length=300)
+    description = models.CharField(max_length=500)
     id_thumbnail = models.ForeignKey(
         Thumbnail, on_delete=models.SET_NULL, null=True, related_name="artifact"
     )
@@ -429,7 +429,7 @@ class ArtifactRequester(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=50)
-    rut = models.CharField(max_length=50)
+    rut = models.CharField(max_length=9)
     email = models.EmailField()
     comments = models.TextField(max_length=500, null=True)
     is_registered = models.BooleanField(default=True)

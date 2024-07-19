@@ -85,12 +85,19 @@ class Command(BaseCommand):
                 descriptionArtifact = artifact_description_tuple[1].strip()
                 # Get the thumbnail, model, shape, culture, tags
                 # (these models are already created)
-                idThumbnail = Thumbnail.objects.get(path__icontains=realId)
+                try:
+                    idThumbnail = Thumbnail.objects.get(path__icontains=realId)
+                except Thumbnail.DoesNotExist:
+                    logger.warning(f"Thumbnail for artifact {realId} not found.")
+                    idThumbnail = None
                 idModel = Model.objects.filter(
                     Q(texture__icontains=realId)
                     & Q(object__icontains=realId)
                     & Q(material__icontains=realId)
                 ).first()
+                if idModel is None:
+                    logger.warning(f"Model for artifact {realId} not found. Skipping its creation")
+                    continue
                 # Get attributes using the auxiliary tables
                 idShape = ShapeIds.objects.get(artifactid=int(realId))
                 idCulture = CultureIds.objects.get(artifactid=int(realId))

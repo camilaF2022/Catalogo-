@@ -4,5 +4,6 @@
 venv/
 __pycache__/
 catalogo_arqueologico/media/
-catalogo_arqueologico/multimedia/
 catalogo_arqueologico/db.sqlite3
+catalogo_arqueologico/static/
+.env

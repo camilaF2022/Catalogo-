@@ -4,7 +4,7 @@ services:
   db:
     image: postgres:12
     container_name: postgres-db
-    env_file: backend/catalogo_arqueologico/.env
+    env_file: ./backend/catalogo_arqueologico/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -13,14 +13,15 @@ services:
   django:
     build: ./backend
     container_name: django-backend
-    env_file: backend/catalogo_arqueologico/.env
+    env_file: ./backend/catalogo_arqueologico/.env
     volumes:
       - ./backend:/app
+      - ./data:/app/data  # Mount the data directory
+      - django_media:/app/media  # Use a named volume for media
     ports:
       - "8000:8000"
     depends_on:
       - db
-    command: python /app/catalogo_arqueologico/manage.py runserver 0.0.0.0:8000
 
   react:
     build: ./frontend
@@ -35,3 +36,4 @@ services:
 
 volumes:
   postgres_data:
+  django_media:  # Named volume for Django media files
