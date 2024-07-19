@@ -23,7 +23,6 @@ services:
       - "8000:8000"
     depends_on:
       - db
-    command: sh -c "cd catalogo_arqueologico && exec python manage.py runserver 0.0.0.0:8000"
 
   react:
     build: ./frontend
@@ -35,7 +34,6 @@ services:
       - "3000:3000"
     depends_on:
       - django
-    command: sh -c "npm start"
 
   nginx:
     build:

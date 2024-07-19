@@ -12,8 +12,6 @@ done
 >&2 echo "Postgres is up - executing command"
 
 if [ ! -f /app/.setup_done ]; then
-  cd /app/catalogo_arqueologico
-
   python manage.py migrate --noinput
   python manage.py collectstatic --noinput
 
