@@ -147,9 +147,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 
-STATIC_ROOT = "static/"
+STATIC_ROOT = "/app/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -167,7 +167,7 @@ REST_FRAMEWORK = {
 }
 
 # Paths of the different types of files to be imported
-DATA_ROOT = "/app/data/"
+DATA_ROOT = "/data/"
 CULTURE_CSV_PATH = os.path.join(DATA_ROOT, "coleccion-cultura.csv")
 MODEL_FOLDER_PATH = os.path.join(DATA_ROOT, "complete-dataset/")
 SHAPE_FOLDER_PATH = os.path.join(DATA_ROOT, "clasificacion-forma/")

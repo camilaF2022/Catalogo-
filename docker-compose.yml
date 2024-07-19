@@ -16,8 +16,9 @@ services:
     env_file: ./backend/catalogo_arqueologico/.env
     volumes:
       - ./backend:/app
-      - ./data:/app/data  # Mount the data directory
-      - django_media:/app/media  # Use a named volume for media
+      - ./data:/data
+      - django_static:/app/static # This line ensures the statics files are stored in a volume
+      - django_media:/app/media # This line ensures the media files are stored in a volume
     ports:
       - "8000:8000"
     depends_on:
@@ -28,12 +29,28 @@ services:
     container_name: react-frontend
     volumes:
       - ./frontend:/app
+      - react_build:/app/build # This line ensures the static frontend files are stored in a volume
     ports:
       - "3000:3000"
     depends_on:
       - django
-    command: npm start
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - django
+      - react
+    volumes:
+      - django_static:/static # This line mounts the static files in Nginx
+      - django_media:/media # This line mounts the media files in Nginx
+      - react_build:/react # This line mounts the static files in Nginx
 
 volumes:
   postgres_data:
-  django_media:  # Named volume for Django media files
+  django_media:
+  django_static:
+  react_build:

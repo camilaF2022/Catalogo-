@@ -16,11 +16,5 @@ COPY . .
 # Build the React app
 RUN npm run build
 
-# # Use a minimal web server to serve the static files
-# FROM nginx:alpine
-
-# # Copy the built files from the previous stage
-# COPY --from=0 /app/build /usr/share/nginx/html
-
-# # Start the nginx server
-# CMD ["nginx", "-g", "daemon off;"]
+# Start the application
+CMD ["npm", "start"]
