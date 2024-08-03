@@ -11,14 +11,23 @@ import SearchIcon from "@mui/icons-material/Search";
 import Clear from "@mui/icons-material/Clear";
 import { styled } from "@mui/system";
 import { useSearchParams } from "react-router-dom";
-import useSnackBars from "../../../hooks/useSnackbars";
 import { API_URLS } from "../../../api";
+import { useSnackBars } from "../../../hooks/useSnackbars";
+import { useToken } from "../../../hooks/useToken";
 
-const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
+/**
+ * The CatalogFilter component allows users to filter artifacts by query, shape, culture, and tags.
+ * It provides text inputs and autocomplete dropdowns for each filter category.
+ * @param {object} filter - The current filter state containing query, shape, culture, and tags.
+ * @param {function} setFilter - Function to update the filter state.
+ * @returns {JSX.Element} Component for filtering artifacts.
+ */
+const CatalogFilter = ({ filter, setFilter }) => {
   const { addAlert } = useSnackBars();
+  const { token } = useToken();
   // Search params from the URL
   const [searchParams, setSearchParams] = useSearchParams();
-  // Avoid updating the search params when the component mounts and there are search params
+  // Avoid updating the URL when the component mounts and there are search params already
   const [updateParamsFlag, setUpdateParamsFlag] = useState(false);
 
   // Retrieved data from the API
@@ -28,14 +37,11 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
   const [cultureOptions, setCultureOptions] = useState([]);
   const [tagOptions, setTagOptions] = useState([]);
 
-  // Filter state
-  const [filter, setFilter] = useState({
-    query: "",
-    shape: "",
-    culture: "",
-    tags: [],
-  });
-
+  /**
+   * Updates the filter state when a filter option changes.
+   * @param {string} name - The name of the filter category (query, shape, culture, tags).
+   * @param {string | string[]} value - The new value(s) for the filter category.
+   */
   const handleFilterChange = (name, value) => {
     setFilter({ ...filter, [name]: value });
   };
@@ -61,81 +67,37 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
 
   // Fetch data from the API
   useEffect(() => {
-    fetch(API_URLS.ALL_ARTIFACTS)
-      .then((response) => response.json())
+    fetch(API_URLS.ALL_METADATA, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
-        let artifacts = response.data;
+        if (!response.ok) {
+          throw new Error(response.detail);
+        }
+        return response.json();
+      })
+      .then((response) => {
+        let metadata = response.data;
 
-        let shapes = new Set();
-        let cultures = new Set();
-        let tags = new Set();
+        let shapes = metadata.shapes;
+        let shapesNames = shapes.map((shape) => shape.value);
+        let cultures = metadata.cultures;
+        let culturesNames = cultures.map((culture) => culture.value);
+        let tags = metadata.tags;
+        let tagsNames = tags.map((tag) => tag.value);
 
-        artifacts.forEach((artifact) => {
-          let { attributes } = artifact;
-          let { shape, culture, tags: artifactTags } = attributes;
-          shapes.add(JSON.stringify(shape.value));
-          cultures.add(JSON.stringify(culture.value));
-          artifactTags.forEach((tag) => tags.add(JSON.stringify(tag.value)));
-        });
-
-        setShapeOptions(Array.from(shapes).map(JSON.parse));
-        setCultureOptions(Array.from(cultures).map(JSON.parse));
-        setTagOptions(Array.from(tags).map(JSON.parse));
+        setShapeOptions(shapesNames);
+        setCultureOptions(culturesNames);
+        setTagOptions(tagsNames);
       })
       .catch((error) => {
         setErrors(true);
-        addAlert(error.message);
+        addAlert("Error al cargar los metadatos");
       })
       .finally(() => setLoading(false));
-  }, []);
-
-  // Filter artifacts based on the filter state
-  useEffect(() => {
-    let filtered = artifactList.filter((artifact) => {
-      const { shape: artifactShape, culture: artifactCulture, tags:artifactTags, description: artifactDescription } = artifact.attributes;
-      const artifactTagsInLowerCase = artifactTags.map((tag) => tag.value.toLowerCase());
-      
-      const {
-        query,
-        shape: filterShape,
-        culture: filterCulture,
-        tags: filterTags,
-      } = filter;
-
-      const filterTagsInLowerCase = filterTags.map((tag) => tag.toLowerCase());
-
-      if (
-        query &&
-        !artifactDescription
-          .toLowerCase()
-          .includes(query.toLowerCase()) &&
-        !query.includes(String(artifact.id))
-      ) {
-        return false;
-      }
-
-      if (filterShape && artifactShape.value.toLowerCase() !== filterShape.toLowerCase()) {
-        return false;
-      }
-
-      if (
-        filterCulture &&
-        artifactCulture.value.toLowerCase() !== filterCulture.toLowerCase()
-      ) {
-        return false;
-      }
-
-      if (
-        filterTagsInLowerCase.length > 0 &&
-        !filterTagsInLowerCase.every((tagInFilter) => artifactTagsInLowerCase.includes(tagInFilter))
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-    setFilteredArtifacts(filtered);
-  }, [filter, artifactList]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update the URL search params when the user applies a filter
   useEffect(() => {
@@ -167,6 +129,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
 
   return (
     <CustomBox>
+      {/* Text field for searching by query */}
       <TextField
         InputProps={{
           startAdornment: (
@@ -176,6 +139,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
           ),
           endAdornment: filter.query && (
             <InputAdornment position="end">
+              {/* Button to clear search */}
               <IconButton
                 aria-label="Clear search"
                 onClick={() => handleFilterChange("query", "")}
@@ -197,6 +161,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
           handleFilterChange(event.target.name, event.target.value)
         }
       />
+      {/* Autocomplete dropdowns for shape, culture, and tags */}
       <CustomStack direction="row">
         <Autocomplete
           fullWidth
@@ -207,7 +172,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
             handleFilterChange("shape", value.target.textContent)
           }
           options={shapeOptions}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => option ?? ""}
           noOptionsText="No hay formas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (
@@ -219,6 +184,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
           )}
           disabled={loading || errors}
         />
+        {/* Autocomplete for culture */}
         <Autocomplete
           fullWidth
           id="culture"
@@ -228,7 +194,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
             handleFilterChange("culture", value.target.textContent)
           }
           options={cultureOptions}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => option ?? ""}
           noOptionsText="No hay culturas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (
@@ -240,6 +206,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
           )}
           disabled={loading || errors}
         />
+        {/* Autocomplete for tags */}
         <Autocomplete
           multiple
           limitTags={2}
@@ -254,7 +221,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
             )
           }
           options={tagOptions}
-          getOptionLabel={(option) => option}
+          getOptionLabel={(option) => option ?? ""}
           noOptionsText="No hay etiquetas con ese nombre"
           filterSelectedOptions
           renderInput={(params) => (
@@ -271,6 +238,7 @@ const CustomFilter = ({ artifactList, setFilteredArtifacts }) => {
   );
 };
 
+// Custom styled Grid container for layout and spacing
 const CustomBox = styled(Grid)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -280,9 +248,10 @@ const CustomBox = styled(Grid)(({ theme }) => ({
   marginBottom: theme.spacing(3),
 }));
 
+// Custom styled Stack for arranging Autocomplete components horizontally
 const CustomStack = styled(Stack)(({ theme }) => ({
   width: "100%",
   columnGap: theme.spacing(2),
 }));
 
-export default CustomFilter;
+export default CatalogFilter;

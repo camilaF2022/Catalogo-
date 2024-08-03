@@ -1,3 +1,7 @@
+"""	
+This module contains a Django management command that imports descriptions from a CSV file. After importing the descriptions, the command creates the artifacts, adding images to them if they have.
+"""
+
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from django.core.files import File
@@ -14,6 +18,16 @@ logger.setLevel("INFO")
 
 
 def addImages(self, artifact, realId):
+    """
+    This function adds images to an artifact.
+
+    Args:
+        artifact (Artifact): The artifact to which the images will be added.
+        realId (str): The id of the artifact.
+
+    Returns:
+        None
+    """
     multimedia_path = settings.MULTIMEDIA_FOLDER_PATH
 
     if not os.path.exists(multimedia_path):
@@ -45,9 +59,20 @@ def addImages(self, artifact, realId):
 
 
 class Command(BaseCommand):
-    help = "Import descriptions from a CSV file. The CSV file must contain a list of ids and descriptions."
+    """
+    This command imports descriptions from a CSV file, creating an artifact for each description.
+
+    Attributes:
+        help (str): A short description of the command that is displayed when running
+            'python manage.py help importDescriptions'.
+    """
+
+    help = "Import descriptions from a CSV file, creating an artifact for each description. The CSV file must contain a list of ids and descriptions."
 
     def handle(self, *args, **kwargs):
+        """
+        Executes the command to import descriptions from a CSV file.
+        """
         descriptions_file = settings.DESCRIPTIONS_CSV_PATH
         if not os.path.exists(descriptions_file):
             logger.error(f"File {descriptions_file} not found. Stop")
@@ -57,17 +82,22 @@ class Command(BaseCommand):
             artifact_description_relationships = csv.reader(archivo_csv, delimiter=",")
             for artifact_description_tuple in artifact_description_relationships:
                 realId = artifact_description_tuple[0]
-                descriptionArtifact = artifact_description_tuple[1]
+                descriptionArtifact = artifact_description_tuple[1].strip()
                 # Get the thumbnail, model, shape, culture, tags
                 # (these models are already created)
-                idThumbnail = Thumbnail.objects.get(
-                    path__icontains=realId
-                )
+                try:
+                    idThumbnail = Thumbnail.objects.get(path__icontains=realId)
+                except Thumbnail.DoesNotExist:
+                    logger.warning(f"Thumbnail for artifact {realId} not found.")
+                    idThumbnail = None
                 idModel = Model.objects.filter(
                     Q(texture__icontains=realId)
                     & Q(object__icontains=realId)
                     & Q(material__icontains=realId)
                 ).first()
+                if idModel is None:
+                    logger.warning(f"Model for artifact {realId} not found. Skipping its creation")
+                    continue
                 # Get attributes using the auxiliary tables
                 idShape = ShapeIds.objects.get(artifactid=int(realId))
                 idCulture = CultureIds.objects.get(artifactid=int(realId))
@@ -75,7 +105,7 @@ class Command(BaseCommand):
 
                 realShape = Shape.objects.get(id=idShape.shape)
                 realCulture = Culture.objects.get(id=idCulture.culture)
-                
+
                 try:
                     # Create artifact object
                     newArtifact = Artifact.objects.create(

@@ -11,9 +11,20 @@ logger.setLevel("INFO")
 
 
 class Command(BaseCommand):
+    """
+    This command imports thumbnails from a folder.
+
+    Attributes:
+        help (str): A short description of the command that is displayed when running
+            'python manage.py help importThumbs'.
+    """
+
     help = "Import thumbnails from a folder. The folder must contain photo type files."
 
     def handle(self, *args, **kwargs):
+        """
+        Executes the command to import thumbnails from a folder.
+        """
         thumb_folder = settings.THUMBNAILS_FOLDER_PATH
         if not os.path.exists(thumb_folder):
             logger.error(f"Folder {thumb_folder} not found. Stop")
@@ -25,7 +36,7 @@ class Command(BaseCommand):
             # If the file already exists, skip the creation of the model
             # This avoids the upload of the same thumbnail multiple times
             if os.path.exists(
-                os.path.join(settings.MEDIA_ROOT, settings.THUMBNAILS_ROOT, thumb_name)
+                os.path.join(settings.MEDIA_ROOT, settings.THUMBNAILS_URL, thumb_name)
             ):
                 logger.warning(
                     f"Skipping creation of {artifactId} thumbnail model due to existing file"

@@ -1,28 +1,18 @@
-// Source: https://www.digitalocean.com/community/tutorials/how-to-add-login-authentication-to-react-applications
+import { useContext } from "react";
+import { TokenContext } from "./components/TokenProvider";
 
-import { useState } from "react";
-
-export default function useToken() {
-  const getToken = () => {
-    const tokenString = sessionStorage.getItem("token");
-    // const userToken = JSON.parse(tokenString);
-    return tokenString;
-  };
-
-  const [token, setToken] = useState(getToken());
-  const saveToken = (userToken) => {
-    if (!!userToken) {
-      // if token is not null, save it to sessionStorage
-      sessionStorage.setItem("token", JSON.stringify(userToken));
-    } else {
-      // if token is null, remove it from sessionStorage
-      sessionStorage.removeItem("token");
-    }
-    setToken(userToken);
-  };
-
-  return {
-    setToken: saveToken,
-    token,
-  };
-}
+/**
+ * Custom hook to access TokenContext and retrieve authentication token and setToken function.
+ * @returns {{
+ *   token: string | null,     // Current authentication token stored in TokenProvider.
+ *   setToken: Function        // Function to update the authentication token in TokenProvider.
+ * }}
+ * @throws Will throw an error if used outside of a TokenProvider.
+ */
+export const useToken = () => {
+  const context = useContext(TokenContext); // Retrieves context from TokenProvider.
+  if (!context) {
+    throw new Error("useToken must be used within a TokenProvider");
+  }
+  return context; // Returns context containing token and setToken function.
+};

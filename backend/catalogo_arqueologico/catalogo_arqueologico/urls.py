@@ -1,28 +1,31 @@
 """
-URL configuration for catalogo_arqueologico project.
+This module configures URL patterns for the Django project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+It includes routes for:
+- The Django admin interface.
+- Authentication via the `LoginView`.
+- The catalog section, which is handled by including URL patterns from the `piezas` application.
+
+Additionally, it configures the serving of media files in development through Django's static serve 
+mechanism.
+
+Imports:
+- `admin` for admin site URLs.
+- `path` and `include` for URL routing.
+- `obtain_auth_token` from Django REST Framework for token authentication (unused in current 
+    urlpatterns but available for future use).
+- `settings` and `static` for serving media files in development.
+- `LoginView` for authentication views.
 """
+
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.authtoken.views import obtain_auth_token
 from django.conf import settings
 from django.conf.urls.static import static
 from catalogo_arqueologico.views import LoginView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('auth/', obtain_auth_token),
-    path('catalog/', include('piezas.urls')),  # FIXME: Change `piezas` app to `catalog`
+    path("admin/", admin.site.urls),
+    path("api/auth/", LoginView.as_view()),
+    path("api/catalog/", include("piezas.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
