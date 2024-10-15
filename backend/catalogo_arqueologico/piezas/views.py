@@ -17,6 +17,7 @@ import math
 import zipfile
 import pandas as pd
 import time
+import re
 import shutil
 from io import BytesIO
 import logging
@@ -743,6 +744,14 @@ class BulkLoadingAPIView(generics.GenericAPIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
         
+        #validate the excel file
+        valid, errors = self.validate_data(artifacts)
+        if not valid:
+            return Response(
+                {"detail": "Error al validar el archivo Excel", "errores": errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
         # Unzip the ZIP file and put the files in a temporary folder
         temp_dir = settings.MEDIA_ROOT+"temp/"+str(hash(zip_file.name+str(time.time())))
         try:
@@ -757,14 +766,16 @@ class BulkLoadingAPIView(generics.GenericAPIView):
         
         #list all files in the temp folder
         files = self.list_files(temp_dir)
-        #eliminar el prefijo del path de los archivos
-        # Eliminar el prefijo del path de los archivos
         files_not_temp_path = [file.replace(temp_dir, "") for file in files]
-
-        # Normalizar las rutas
         files_not_temp_path = [os.path.normpath(file) for file in files_not_temp_path]
-        
-        #print(files)
+        #validar que los archivos necesarios estén en el zip
+        valid, errors, data_with_files = self.validate_files(artifacts, files_not_temp_path)
+        if not valid:
+            self.delete_files(temp_dir)
+            return Response(
+                {"detail": "Error al validar los archivos", "errores": errors, "data_with_files": data_with_files},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         # Iterate over the artifacts and create or update them
         print("Iterating over artifacts")
         for index, row in artifacts.iterrows():
@@ -872,20 +883,11 @@ class BulkLoadingAPIView(generics.GenericAPIView):
         # Delete the temporary folder and its contents
         self.delete_files(temp_dir)
 
-
-        """ if errores != []:
-            return Response(
-                {"detail": "Error al cargar las piezas", "errores": errores},
-                status=status.HTTP_400_BAD_REQUEST,
-            ) """
         
         return Response(
             {"detail": "Carga masiva exitosa"},
             status=status.HTTP_201_CREATED,
         )
-
-        
-
 
     def read_excel(self, excel_file) -> pd.DataFrame:
         """
@@ -901,7 +903,7 @@ class BulkLoadingAPIView(generics.GenericAPIView):
         excel = excel.sort_values(by=excel.columns[0], ascending=False)
         return excel
 
-    def validate_data(self, data: pd.DataFrame):
+    def validate_data(self, data: pd.DataFrame) -> tuple[bool, list[str]]:
         """
         Validates the data read from the Excel file.
 
@@ -910,8 +912,36 @@ class BulkLoadingAPIView(generics.GenericAPIView):
 
         Returns:
             bool: A boolean indicating whether the data is valid.
+            list[str]: A list of error messages.
         """
-        pass
+        valid = True
+        errors = []
+        #chequeamos que tenga 5 columnas sin nulls
+        if data.shape[1] != 5:
+            valid = False
+            errors.append("El archivo Excel debe tener 5 columnas: id o nombre, descripción, forma, cultura, etiquetas")
+        
+        for index, row in data.iterrows():
+            # chequeamos que no haya filas con nulls
+            if row.isnull().values.any():
+                valid = False
+                errors.append(f"La fila {index+2} tiene valores nulos")
+                continue
+            #chequeamos que la columna de cultura tenga solo culturas existentes
+            if not Culture.objects.filter(name=row.iloc[3]).exists():
+                valid = False
+                errors.append(f"La fila {index+2} tiene una cultura inexistente: {row.iloc[3]}")
+            #chequeamos que la columna de tags tenga solo tags existentes
+            tags = row.iloc[4].split(",")
+            for tag in tags:
+                if not Tag.objects.filter(name=tag).exists():
+                    valid = False
+                    errors.append(f"La fila {index+2} tiene una etiqueta inexistente: {tag}")
+            #chequeamos que la columna de forma tenga solo formas existentes
+            if not Shape.objects.filter(name=row.iloc[2]).exists():
+                valid = False
+                errors.append(f"La fila {index+2} tiene una forma inexistente: {row.iloc[2]}")
+        return valid, errors 
 
     def list_files(self, path: str) -> list:
         """
@@ -933,6 +963,49 @@ class BulkLoadingAPIView(generics.GenericAPIView):
                     file_list.append(full_path)
         return file_list
 
+    def validate_files(self, data: pd.DataFrame, files: list) -> tuple[bool, list[str], list]:
+        """
+        Validates the files in the ZIP file based on the data from the Excel file.
+
+        Args:
+            data: The data from the Excel file.
+            files: The files in the ZIP file.
+
+        Returns:
+            bool: A boolean indicating whether the files are valid.
+            list: A list of error messages.
+            list: A list of dictionaries containing the data for the artifacts and their files.
+        """
+        valid = True
+        errors = []
+        files_filtered = files
+        data_with_files = []
+        pattern = lambda id: re.compile(rf"(^.*[.\,/_\\-]+0*{re.escape(id)}[.\,/_\\-]+.*$)")
+        for index, row in data.iterrows():
+            id = str(row.iloc[0])
+            files_row = [file for file in files_filtered if pattern(id).search(file)]
+            if len(files_row) == 0:
+                valid = False
+                errors.append(f"La pieza {id} no tiene archivos asociados")
+                continue
+            else:
+                thumbnail = [file for file in files_row if "thumbnail" in file]
+                if thumbnail == []:
+                    valid = False
+                    errors.append(f"La pieza {id} no tiene thumbnail")
+                elif len(thumbnail) > 1:
+                    valid = False
+                    errors.append(f"La pieza {id} tiene más de un thumbnail: {thumbnail}")
+                model_files = [file for file in files_row if "obj" in file]
+                images = [file for file in files_row if "jpg" in file and file not in thumbnail and file not in model_files]
+                if len(images) == 0 and len(model_files) < 3:
+                    valid = False
+                    errors.append(f"La pieza {id} no tiene ni modelo ni imágenes: {model_files}, {images}")
+                else:
+                    data_with_files.append({"data": row, "file_thumbnail": thumbnail[0], "files_model": model_files, "files_images": images})
+                files_filtered = [file for file in files_filtered if file not in files_row]
+        return valid, errors, data_with_files
+
     def delete_files(self, path: str):
         """
         Deletes files in a directory and its subdirectories.
@@ -949,10 +1022,6 @@ class BulkLoadingAPIView(generics.GenericAPIView):
                 logger.info(f"Deleted file: {path}")
         except Exception as e:
             logger.error(f"Error al eliminar archivos: {e}")
-
-
-    def handle_file_uploads(self, instance, files, data):
-        pass
 
 
 class InstitutionAPIView(generics.ListCreateAPIView):
