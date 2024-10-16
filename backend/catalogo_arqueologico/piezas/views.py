@@ -773,62 +773,45 @@ class BulkLoadingAPIView(generics.GenericAPIView):
         if not valid:
             self.delete_files(temp_dir)
             return Response(
-                {"detail": "Error al validar los archivos", "errores": errors, "data_with_files": data_with_files},
+                {"detail": "Error al validar los archivos", "errores": errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         # Iterate over the artifacts and create or update them
-        print("Iterating over artifacts")
-        for index, row in artifacts.iterrows():
+        for data in data_with_files:
             try:
-                print(index, row)
-                #buscar las etiquetas
-                tags = row.iloc[4].split(",")
+                #buscar etiquetas
                 tags_instances = []
-                for tag in tags:
+                for tag in data["tags"]:
                     tag_instance = Tag.objects.get(name=tag)
                     tags_instances.append(tag_instance)
                 
                 #buscar la cultura
-                culture_instance = Culture.objects.get(name=row.iloc[3])
+                culture_instance = Culture.objects.get(name=data["culture"])
 
                 #buscar la forma
-                shape_instance = Shape.objects.get(name=row.iloc[2])
+                shape_instance = Shape.objects.get(name=data["shape"])
 
                 #descripción
-                description = row.iloc[1]
-                #check if the artifact has files
-                artifact_files = [file for file in files_not_temp_path if str(row.iloc[0]) in file]
+                description = data["description"]
 
                 #buscar algun archivo de thumbnail
-                thumbnail = [file for file in artifact_files if "thumbnail" in file]
-                if thumbnail != []:
-                    thumbnail_path = os.path.normpath(temp_dir + thumbnail[0])
-                    thumbnail_file = File(open(thumbnail_path, "rb"), name=thumbnail[0])
-                    thumbnail_instance = Thumbnail.objects.create(path=thumbnail_file)
-                else:
-                    errores.append(f"La pieza {row.iloc[0]} no tiene thumbnail")
-                    continue
+                thumbnail = data["file_thumbnail"]
+                thumbnail_path = os.path.normpath(temp_dir + thumbnail)
+                thumbnail_file = File(open(thumbnail_path, "rb"), name=thumbnail)
+                thumbnail_instance = Thumbnail.objects.create(path=thumbnail_file)
 
                 #buscar los archivos de modelo
-                model_files = [file for file in artifact_files if "obj" in file]
-                # debe existir un archivo de textura (jpg), objeto (obj) y material (mtl)
-                if len(model_files) < 3:
-                    errores.append(f"La pieza {row.iloc[0]} no tiene los archivos necesarios para el modelo")
-                    continue
-
-                texture_file = [file for file in model_files if file.endswith(".jpg")]
-                object_file = [file for file in model_files if file.endswith(".obj")]
-                material_file = [file for file in model_files if file.endswith(".mtl")]
-
+                models = data["files_model"]
+                texture_file = [file for file in models if file.endswith(".jpg")]
+                object_file = [file for file in models if file.endswith(".obj")]
+                material_file = [file for file in models if file.endswith(".mtl")]
                 if texture_file != [] and object_file != [] and material_file != []:
                     texture_path = os.path.normpath(temp_dir + texture_file[0])
                     object_path = os.path.normpath(temp_dir + object_file[0])
                     material_path = os.path.normpath(temp_dir + material_file[0])
-
                     texture_file = File(open(texture_path, "rb"), name=texture_file[0])
                     object_file = File(open(object_path, "rb"), name=object_file[0])
                     material_file = File(open(material_path, "rb"), name=material_file[0])
-
                     model, created = Model.objects.get_or_create(
                         texture=texture_file,
                         object=object_file,
@@ -841,20 +824,7 @@ class BulkLoadingAPIView(generics.GenericAPIView):
                 else:
                     model = None
 
-                #buscar las imagenes
-                images = [file for file in artifact_files if "jpg" in file]
-                #eliminar las imagenes que son el thumbnail o textura
-                images = [image for image in images if image not in thumbnail and image not in texture_file]
-
-                
-
-
-                #chequeamos que el elemento tenga al menos una imagen o un modelo
-                if model is None and images == []:
-                    errores.append(f"La pieza {row.iloc[0]} no tiene ni modelo ni imágenes")
-                    continue
-
-                #crear la pieza
+                # crear la pieza
                 artifact = Artifact.objects.create(
                     description=description,
                     id_thumbnail=thumbnail_instance,
@@ -863,8 +833,8 @@ class BulkLoadingAPIView(generics.GenericAPIView):
                     id_culture=culture_instance,
                 )
                 artifact.save()
-
-
+                #imagenes
+                images = data["files_images"]
                 images_instances = []
                 for image in images:
                     image_path = os.path.normpath(temp_dir + image)
@@ -875,10 +845,11 @@ class BulkLoadingAPIView(generics.GenericAPIView):
                 for tag_instance in tags_instances:
                     artifact.id_tags.add(tag_instance)
             except Exception as e:
-                print(e)
-                errores.append(f"Error al cargar la pieza {row.iloc[0]}: {e}")
-                continue
-
+                self.delete_files(temp_dir)
+                return Response(
+                    {"detail": f"Error al cargar las piezas: {e}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
 
         # Delete the temporary folder and its contents
         self.delete_files(temp_dir)
@@ -980,7 +951,7 @@ class BulkLoadingAPIView(generics.GenericAPIView):
         errors = []
         files_filtered = files
         data_with_files = []
-        pattern = lambda id: re.compile(rf"(^.*[.\,/_\\-]+0*{re.escape(id)}[.\,/_\\-]+.*$)")
+        pattern = lambda id: re.compile(rf"(^.*[\/\\]+0*{re.escape(id)}[.\,/_\\-]+.*$)")
         for index, row in data.iterrows():
             id = str(row.iloc[0])
             files_row = [file for file in files_filtered if pattern(id).search(file)]
@@ -997,12 +968,24 @@ class BulkLoadingAPIView(generics.GenericAPIView):
                     valid = False
                     errors.append(f"La pieza {id} tiene más de un thumbnail: {thumbnail}")
                 model_files = [file for file in files_row if "obj" in file]
-                images = [file for file in files_row if "jpg" in file and file not in thumbnail and file not in model_files]
-                if len(images) == 0 and len(model_files) < 3:
+                obj = [file for file in model_files if file.endswith(".obj")]
+                mtl = [file for file in model_files if file.endswith(".mtl")]
+                jpg = [file for file in model_files if file.endswith(".jpg")]
+                images = [file for file in files_row if (("jpg" in file) or ("png" in file))
+                           and file not in thumbnail and file not in model_files]
+                if len(images) == 0 and (len(obj) == 0 or len(mtl) == 0 or len(jpg) == 0):
                     valid = False
-                    errors.append(f"La pieza {id} no tiene ni modelo ni imágenes: {model_files}, {images}")
+                    if len(obj) == 0:
+                        errors.append(f"La pieza {id} no tiene archivo .obj")
+                    if len(mtl) == 0:
+                        errors.append(f"La pieza {id} no tiene archivo .mtl")
+                    if len(jpg) == 0:
+                        errors.append(f"La pieza {id} no tiene archivo .jpg")
+                    if len(images) == 0:
+                        errors.append(f"La pieza {id} no tiene imágenes ni modelo")
                 else:
-                    data_with_files.append({"data": row, "file_thumbnail": thumbnail[0], "files_model": model_files, "files_images": images})
+                    data_with_files.append({
+                        "description": row.iloc[1],"shape": row.iloc[2], "culture": row.iloc[3], "tags": row.iloc[4].split(","), "file_thumbnail": thumbnail[0], "files_model": model_files, "files_images": images})
                 files_filtered = [file for file in files_filtered if file not in files_row]
         return valid, errors, data_with_files
 
