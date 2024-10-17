@@ -797,8 +797,9 @@ class BulkLoadingAPIView(generics.GenericAPIView):
                 #buscar algun archivo de thumbnail
                 thumbnail = data["file_thumbnail"]
                 thumbnail_path = os.path.normpath(temp_dir + thumbnail)
-                thumbnail_file = File(open(thumbnail_path, "rb"), name=thumbnail)
-                thumbnail_instance = Thumbnail.objects.create(path=thumbnail_file)
+                with open(thumbnail_path, "rb") as f:
+                    thumbnail_file = File(f, name=thumbnail)
+                    thumbnail_instance = Thumbnail.objects.create(path=thumbnail_file)
 
                 #buscar los archivos de modelo
                 models = data["files_model"]
@@ -809,14 +810,17 @@ class BulkLoadingAPIView(generics.GenericAPIView):
                     texture_path = os.path.normpath(temp_dir + texture_file[0])
                     object_path = os.path.normpath(temp_dir + object_file[0])
                     material_path = os.path.normpath(temp_dir + material_file[0])
-                    texture_file = File(open(texture_path, "rb"), name=texture_file[0])
-                    object_file = File(open(object_path, "rb"), name=object_file[0])
-                    material_file = File(open(material_path, "rb"), name=material_file[0])
-                    model, created = Model.objects.get_or_create(
-                        texture=texture_file,
-                        object=object_file,
-                        material=material_file,
-                    )
+                    with open(texture_path, "rb") as f:
+                        texture_file = File(f, name=texture_file[0])
+                        with open(object_path, "rb") as f:
+                            object_file = File(f, name=object_file[0])
+                            with open(material_path, "rb") as f:
+                                material_file = File(f, name=material_file[0])
+                                model, created = Model.objects.get_or_create(
+                                    texture=texture_file,
+                                    object=object_file,
+                                    material=material_file,
+                                )
                     if created:
                         logger.info(f"Model created: {model.texture}, {model.object}, {model.material}")
                     else:
@@ -838,9 +842,10 @@ class BulkLoadingAPIView(generics.GenericAPIView):
                 images_instances = []
                 for image in images:
                     image_path = os.path.normpath(temp_dir + image)
-                    image_file = File(open(image_path, "rb"), name=image)
-                    image_instance = Image.objects.create(path=image_file, id_artifact=artifact)
-                    images_instances.append(image_instance)
+                    with open(image_path, "rb") as f:
+                        image_file = File(f, name=image)
+                        image_instance = Image.objects.create(path=image_file, id_artifact=artifact)
+                        images_instances.append(image_instance)
 
                 for tag_instance in tags_instances:
                     artifact.id_tags.add(tag_instance)
@@ -871,7 +876,6 @@ class BulkLoadingAPIView(generics.GenericAPIView):
             DataFrame: A Pandas DataFrame containing the data from the Excel file
         """
         excel = pd.read_excel(excel_file, engine="openpyxl", header=0)
-        excel = excel.sort_values(by=excel.columns[0], ascending=False)
         return excel
 
     def validate_data(self, data: pd.DataFrame) -> tuple[bool, list[str]]:
