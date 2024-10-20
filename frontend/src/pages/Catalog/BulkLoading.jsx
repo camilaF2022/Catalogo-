@@ -6,6 +6,8 @@ import {
     Button,
     TextField,
     FormLabel,
+    CircularProgress,
+    Modal,
     Box,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -14,29 +16,23 @@ import { API_URLS } from "../../api";
 import { useToken } from "../../hooks/useToken";
 import { useSnackBars } from "../../hooks/useSnackbars";
 
-
-
-
 const BulkLoading = () => {
     const { token } = useToken();
     const { addAlert } = useSnackBars();
-
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState(false);
     const [newObjectAttributes, setNewObjectAttributes] = useState({
         excel: {},
         zip: {},
     });
-    
-    useEffect(() => {
-        setLoading(false);
-    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true); 
         const formData = new FormData();
         formData.append("excel", newObjectAttributes.excel);
         formData.append("zip", newObjectAttributes.zip);
+
         await fetch(`${API_URLS.DETAILED_ARTIFACT}/bulkloading`, {
             method: "POST",
             headers: {
@@ -44,18 +40,20 @@ const BulkLoading = () => {
             },
             body: formData,
         }).then((response) => {
-                if (response.ok) {
-                    addAlert("Carga masiva exitosa");
-                } else {
-                    addAlert("Error en la carga masiva");
-                }
-            })
-            .catch((error) => {
-                addAlert(error.message);
-            });
-
+            if (response.ok) {
+                addAlert("Carga masiva exitosa");
+            } else {
+                addAlert("Error en la carga masiva");
+            }
+        })
+        .catch((error) => {
+            addAlert(error.message);
+        })
+        .finally(() => {
+            setLoading(false);
+        });
     };
-    
+
     return (
         <Container>
             <Box component="form" onSubmit={handleSubmit}>
@@ -67,36 +65,40 @@ const BulkLoading = () => {
                     </Grid>
                     <CustomBox>
                         <Typography variant="p">
-                            Instrucciones para la carga masiva: 
-                        </Typography><br />
+                            Instrucciones para la carga masiva:
+                        </Typography>
+                        <br />
                         <Typography variant="p">
                             1. Descargar la plantilla de Excel.
-                        </Typography><br />
+                        </Typography>
+                        <br />
                         <Typography variant="p">
                             2. Llenar la plantilla con la información correspondiente.
-                        </Typography><br />
+                        </Typography>
+                        <br />
                         <Typography variant="p">
-                            3. Subir la plantilla de Excel y el archivo ZIP con la información multimedia (modelos 3D, texturas, imagenes, etc).
-                        </Typography><br />
+                            3. Subir la plantilla de Excel y el archivo ZIP con la información multimedia.
+                        </Typography>
+                        <br />
                         <Typography variant="p">
                             4. Hacer clic en el botón "Subir".
                         </Typography>
-                    </CustomBox>    
+                    </CustomBox>
                     <Grid item xs={12}>
-                    <ColumnGrid item xs={12}  rowGap={2}>
-                        <UploadButton
-                            label="Excel *"
-                            name="excel"
-                            isRequired
-                            setStateFn={setNewObjectAttributes}
-                        />
-                        <UploadButton
-                            label="Zip *"
-                            name="zip"
-                            isRequired
-                            setStateFn={setNewObjectAttributes}
-                        />
-                    </ColumnGrid>
+                        <ColumnGrid item xs={12} rowGap={2}>
+                            <UploadButton
+                                label="Excel *"
+                                name="excel"
+                                isRequired
+                                setStateFn={setNewObjectAttributes}
+                            />
+                            <UploadButton
+                                label="Zip *"
+                                name="zip"
+                                isRequired
+                                setStateFn={setNewObjectAttributes}
+                            />
+                        </ColumnGrid>
                     </Grid>
                     <Grid item xs={12}>
                         <Button type="submit" variant="contained" color="primary">
@@ -105,21 +107,24 @@ const BulkLoading = () => {
                     </Grid>
                 </Grid>
             </Box>
+
+            <Modal open={loading}>
+                <ModalBox>
+                    <CircularProgress size={80} />
+                    <LoadingText variant="h6">
+                        Verificando el formato de sus archivos ...                        
+                        Este proceso puede tomar unos minutos
+                    </LoadingText>
+                </ModalBox>
+            </Modal>
         </Container>
     );
 };
-
 
 const CustomTypography = styled(Typography)({
     textAlign: "center",
     marginBottom: "1rem",
 });
-
-
-const ColumnGrid = styled(Grid)(({ theme }) => ({
-    display: "flex",
-    flexDirection: "column",
-  }));
 
 const CustomBox = styled("div")(({ theme }) => ({
     border: "1px solid #000",
@@ -129,5 +134,32 @@ const CustomBox = styled("div")(({ theme }) => ({
     width: "100%",
 }));
 
+const ColumnGrid = styled(Grid)(({ theme }) => ({
+    display: "flex",
+    flexDirection: "column",
+}));
+
+const ModalBox = styled(Box)(({ theme }) => ({
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    padding: "2rem",
+    borderRadius: "10px",
+    boxShadow: theme.shadows[5],
+    width: "400px", // Ajustar el tamaño del modal
+    height: "300px", // Ajustar la altura
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+}));
+
+const LoadingText = styled(Typography)({
+    marginTop: "3rem",
+    fontSize: "1.2rem",
+    textAlign: "center",
+});
 
 export default BulkLoading;
