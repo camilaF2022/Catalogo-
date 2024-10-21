@@ -15,6 +15,25 @@ import UploadButton from "../sharedComponents/UploadButton";
 import { API_URLS } from "../../api";
 import { useToken } from "../../hooks/useToken";
 import { useSnackBars } from "../../hooks/useSnackbars";
+import DownloadIcon from '@mui/icons-material/Download';
+
+
+const FormContainer = styled(Container)({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '100vh',
+});
+
+const FormBox = styled(Box)({
+    width: '100%',
+    maxWidth: '700px',
+    padding: '20px',
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+    borderRadius: '8px',
+    backgroundColor: '#fff',
+});
 
 const BulkLoading = () => {
     const { token } = useToken();
@@ -55,8 +74,8 @@ const BulkLoading = () => {
     };
 
     return (
-        <Container>
-            <Box component="form" onSubmit={handleSubmit}>
+        <FormContainer>
+            <FormBox component="form" onSubmit={handleSubmit}>
                 <Grid container rowGap={4}>
                     <Grid item xs={12}>
                         <CustomTypography variant="h1">
@@ -84,6 +103,15 @@ const BulkLoading = () => {
                             4. Hacer clic en el botón "Subir".
                         </Typography>
                     </CustomBox>
+                    <Button
+                            variant="contained"
+                            color="primary"
+                            href="/plantilla.xlsx" // URL de la plantilla de Excel para
+                            download
+                            startIcon={<DownloadIcon />}
+                        >
+                            Descargar plantilla
+                    </Button>
                     <Grid item xs={12}>
                         <ColumnGrid item xs={12} rowGap={2}>
                             <UploadButton
@@ -106,7 +134,7 @@ const BulkLoading = () => {
                         </Button>
                     </Grid>
                 </Grid>
-            </Box>
+            </FormBox>
 
             <Modal open={loading}>
                 <ModalBox>
@@ -117,7 +145,7 @@ const BulkLoading = () => {
                     </LoadingText>
                 </ModalBox>
             </Modal>
-        </Container>
+        </FormContainer>
     );
 };
 
@@ -130,7 +158,6 @@ const CustomBox = styled("div")(({ theme }) => ({
     border: "1px solid #000",
     padding: "1rem",
     borderRadius: "0.5rem",
-    marginBottom: "1rem",
     width: "100%",
 }));
 
